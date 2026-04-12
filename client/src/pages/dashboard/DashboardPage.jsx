@@ -1,4 +1,5 @@
 import { useAuth } from '../../hooks/useAuth';
+import { Link } from 'react-router-dom';
 import {
   HiOutlineFolder,
   HiOutlineUpload,
@@ -10,104 +11,93 @@ import {
   HiOutlineAcademicCap,
 } from 'react-icons/hi';
 
-const StatCard = ({ icon: Icon, label, value, color, subtext }) => (
-  <div className="bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 p-5 group animate-slide-up">
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-text-muted text-xs font-medium uppercase tracking-wider">{label}</p>
-        <p className="text-2xl font-bold text-text-heading mt-1">{value}</p>
-        {subtext && (
-          <p className="text-xs text-text-muted mt-1">{subtext}</p>
-        )}
-      </div>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color} group-hover:scale-110 transition-transform duration-300`}>
-        <Icon className="w-6 h-6" />
+const statColors = {
+  navy: { bg: '#1a365d10', icon: '#1a365d', iconBg: '#1a365d15' },
+  gold: { bg: '#d69e2e10', icon: '#b7791f', iconBg: '#d69e2e15' },
+  blue: { bg: '#3182ce10', icon: '#3182ce', iconBg: '#3182ce15' },
+  green: { bg: '#38a16910', icon: '#38a169', iconBg: '#38a16915' },
+  orange: { bg: '#dd6b2010', icon: '#dd6b20', iconBg: '#dd6b2015' },
+  red: { bg: '#e53e3e10', icon: '#e53e3e', iconBg: '#e53e3e15' },
+};
+
+function StatCard({ icon: Icon, label, value, color, subtext, delay = 0 }) {
+  const c = statColors[color] || statColors.navy;
+  return (
+    <div
+      className="card p-5 animate-slide-up group"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#a0aec0' }}>
+            {label}
+          </p>
+          <p className="text-2xl font-bold mt-1.5" style={{ color: '#1a202c' }}>{value}</p>
+          {subtext && (
+            <p className="text-[11px] mt-1" style={{ color: '#a0aec0' }}>{subtext}</p>
+          )}
+        </div>
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+          style={{ background: c.iconBg }}
+        >
+          <Icon className="w-6 h-6" style={{ color: c.icon }} />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default function DashboardPage() {
   const { user, isAdmin, isTeacher } = useAuth();
 
-  // Placeholder stats — will be dynamic in later phases
   const stats = [
-    {
-      icon: HiOutlineFolder,
-      label: 'Total Resources',
-      value: '—',
-      color: 'bg-primary/10 text-primary',
-      subtext: 'Coming in Phase 4',
-    },
-    {
-      icon: HiOutlineUpload,
-      label: 'My Uploads',
-      value: '—',
-      color: 'bg-nitj-gold/10 text-nitj-gold-dark',
-      subtext: 'Coming in Phase 4',
-    },
-    {
-      icon: HiOutlineBookmark,
-      label: 'Bookmarks',
-      value: '—',
-      color: 'bg-info/10 text-info',
-      subtext: 'Coming in Phase 8',
-    },
-    {
-      icon: HiOutlineCloudDownload,
-      label: 'Downloads',
-      value: '—',
-      color: 'bg-success/10 text-success',
-      subtext: 'Coming in Phase 6',
-    },
+    { icon: HiOutlineFolder, label: 'Total Resources', value: '—', color: 'navy', subtext: 'Coming in Phase 4' },
+    { icon: HiOutlineUpload, label: 'My Uploads', value: '—', color: 'gold', subtext: 'Coming in Phase 4' },
+    { icon: HiOutlineBookmark, label: 'Bookmarks', value: '—', color: 'blue', subtext: 'Coming in Phase 8' },
+    { icon: HiOutlineCloudDownload, label: 'Downloads', value: '—', color: 'green', subtext: 'Coming in Phase 6' },
   ];
 
   const adminStats = [
-    {
-      icon: HiOutlineShieldCheck,
-      label: 'Pending Verification',
-      value: '—',
-      color: 'bg-warning/10 text-warning',
-      subtext: 'Coming in Phase 5',
-    },
-    {
-      icon: HiOutlineUsers,
-      label: 'Total Users',
-      value: '—',
-      color: 'bg-primary/10 text-primary',
-      subtext: 'Coming in Phase 3',
-    },
-    {
-      icon: HiOutlineStar,
-      label: 'Average Rating',
-      value: '—',
-      color: 'bg-nitj-gold/10 text-nitj-gold-dark',
-      subtext: 'Coming in Phase 8',
-    },
-    {
-      icon: HiOutlineAcademicCap,
-      label: 'Departments',
-      value: '—',
-      color: 'bg-success/10 text-success',
-      subtext: 'Coming in Phase 4',
-    },
+    { icon: HiOutlineShieldCheck, label: 'Pending Verification', value: '—', color: 'orange', subtext: 'Coming in Phase 5' },
+    { icon: HiOutlineUsers, label: 'Total Users', value: '—', color: 'navy', subtext: 'Coming in Phase 3' },
+    { icon: HiOutlineStar, label: 'Average Rating', value: '—', color: 'gold', subtext: 'Coming in Phase 8' },
+    { icon: HiOutlineAcademicCap, label: 'Departments', value: '—', color: 'green', subtext: 'Coming in Phase 4' },
+  ];
+
+  const quickActions = [
+    { icon: HiOutlineUpload, title: 'Upload Resource', desc: 'Share notes, PDFs, assignments with your peers', href: '/upload', gradient: 'linear-gradient(135deg, #d69e2e, #ecc94b)' },
+    { icon: HiOutlineFolder, title: 'Browse Resources', desc: 'Discover resources organized by subject & semester', href: '/resources', gradient: 'linear-gradient(135deg, #1a365d, #2c5282)' },
+    { icon: HiOutlineAcademicCap, title: 'My Department', desc: 'View resources in your department', href: '/resources', gradient: 'linear-gradient(135deg, #38a169, #48bb78)' },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-7">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-nitj-navy to-nitj-navy-light rounded-2xl p-6 md:p-8 text-white shadow-lg animate-fade-in">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-white/15 border-2 border-nitj-gold/30 flex items-center justify-center flex-shrink-0">
-            <span className="text-nitj-gold text-xl font-bold">
+      <div
+        className="rounded-2xl px-7 py-7 animate-fade-in"
+        style={{
+          background: 'linear-gradient(135deg, #0a1929 0%, #1a365d 40%, #2c5282 100%)',
+          boxShadow: '0 8px 30px rgba(26, 54, 93, 0.25)',
+        }}
+      >
+        <div className="flex items-center gap-5">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(214,158,46,0.35)',
+            }}
+          >
+            <span className="text-2xl font-bold" style={{ color: '#ecc94b' }}>
               {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || '?'}
             </span>
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold">
+            <h1 className="text-xl md:text-2xl font-bold text-white">
               Welcome back, {user?.firstName || user?.email?.split('@')[0]}!
             </h1>
-            <p className="text-white/60 text-sm mt-0.5">
+            <p className="text-white/50 text-sm mt-0.5">
               {isAdmin
                 ? 'System Administrator — Full access to all features'
                 : isTeacher
@@ -120,23 +110,23 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div>
-        <h2 className="text-lg font-semibold text-text-heading mb-4">Overview</h2>
+        <h2 className="text-[15px] font-bold mb-4" style={{ color: '#2d3748' }}>Overview</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat) => (
-            <StatCard key={stat.label} {...stat} />
+          {stats.map((stat, i) => (
+            <StatCard key={stat.label} {...stat} delay={i * 50} />
           ))}
         </div>
       </div>
 
-      {/* Admin/Teacher Stats */}
+      {/* Admin Stats */}
       {(isAdmin || isTeacher) && (
         <div>
-          <h2 className="text-lg font-semibold text-text-heading mb-4">
+          <h2 className="text-[15px] font-bold mb-4" style={{ color: '#2d3748' }}>
             {isAdmin ? 'Administration' : 'Teaching'}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {adminStats.map((stat) => (
-              <StatCard key={stat.label} {...stat} />
+            {adminStats.map((stat, i) => (
+              <StatCard key={stat.label} {...stat} delay={i * 50} />
             ))}
           </div>
         </div>
@@ -144,60 +134,41 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-lg font-semibold text-text-heading mb-4">Quick Actions</h2>
+        <h2 className="text-[15px] font-bold mb-4" style={{ color: '#2d3748' }}>Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <QuickAction
-            icon={HiOutlineUpload}
-            title="Upload Resource"
-            description="Share notes, PDFs, assignments with your peers"
-            href="/upload"
-            color="bg-nitj-gold"
-          />
-          <QuickAction
-            icon={HiOutlineFolder}
-            title="Browse Resources"
-            description="Discover resources organized by subject & semester"
-            href="/resources"
-            color="bg-primary"
-          />
-          <QuickAction
-            icon={HiOutlineAcademicCap}
-            title="My Department"
-            description="View resources in your department"
-            href="/resources"
-            color="bg-success"
-          />
+          {quickActions.map((action, i) => (
+            <Link
+              key={action.title}
+              to={action.href}
+              className="card p-5 group animate-slide-up block"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center mb-3.5 group-hover:scale-110 transition-transform duration-300"
+                style={{ background: action.gradient }}
+              >
+                <action.icon className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-sm" style={{ color: '#2d3748' }}>{action.title}</h3>
+              <p className="text-[12px] mt-1" style={{ color: '#a0aec0' }}>{action.desc}</p>
+            </Link>
+          ))}
         </div>
       </div>
 
       {/* System Status */}
-      <div className="bg-white rounded-xl shadow-card p-6 animate-slide-up">
-        <h2 className="text-lg font-semibold text-text-heading mb-3">System Status</h2>
+      <div className="card p-6 animate-slide-up">
+        <h2 className="text-[15px] font-bold mb-3" style={{ color: '#2d3748' }}>System Status</h2>
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
-          <span className="text-sm text-text-body">
-            Phase 1 Complete — Project architecture and skeleton built successfully
+          <div className="w-3 h-3 rounded-full animate-pulse" style={{ background: '#38a169' }} />
+          <span className="text-sm" style={{ color: '#4a5568' }}>
+            Phase 2 Complete — Authentication system is fully operational
           </span>
         </div>
-        <p className="text-xs text-text-muted mt-2">
-          Authentication, resource upload, and search features coming in the next phases.
+        <p className="text-[12px] mt-2" style={{ color: '#a0aec0' }}>
+          User management, resource upload, and search features coming in the next phases.
         </p>
       </div>
     </div>
-  );
-}
-
-function QuickAction({ icon: Icon, title, description, href, color }) {
-  return (
-    <a
-      href={href}
-      className="bg-white rounded-xl shadow-card hover:shadow-card-hover p-5 transition-all duration-300 group block animate-slide-up"
-    >
-      <div className={`w-10 h-10 rounded-lg ${color} text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-        <Icon className="w-5 h-5" />
-      </div>
-      <h3 className="font-semibold text-text-heading text-sm">{title}</h3>
-      <p className="text-xs text-text-muted mt-1">{description}</p>
-    </a>
   );
 }

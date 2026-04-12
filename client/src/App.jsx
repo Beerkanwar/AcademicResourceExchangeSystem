@@ -6,6 +6,7 @@ import ChangePasswordPage from './pages/auth/ChangePasswordPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import UserManagementPage from './pages/admin/UserManagementPage';
 
 export default function App() {
   return (
@@ -97,7 +98,7 @@ export default function App() {
           path="/admin/users"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <PlaceholderPage title="User Management" phase={3} />
+              <UserManagementPage />
             </ProtectedRoute>
           }
         />
@@ -137,16 +138,16 @@ export default function App() {
 function PlaceholderPage({ title, phase }) {
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-card p-8 text-center">
-        <div className="w-16 h-16 rounded-full bg-nitj-gold/10 mx-auto flex items-center justify-center mb-4">
-          <span className="text-nitj-gold text-2xl">🚧</span>
+      <div className="card p-8 text-center">
+        <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: '#d69e2e10' }}>
+          <span className="text-2xl">🚧</span>
         </div>
-        <h1 className="text-2xl font-bold text-text-heading">{title}</h1>
-        <p className="text-text-muted mt-2">
-          This page will be implemented in <span className="font-semibold text-nitj-gold">Phase {phase}</span>
+        <h1 className="text-2xl font-bold" style={{ color: '#1a202c' }}>{title}</h1>
+        <p className="mt-2 text-[14px]" style={{ color: '#a0aec0' }}>
+          This page will be implemented in <span className="font-semibold" style={{ color: '#d69e2e' }}>Phase {phase}</span>
         </p>
-        <div className="mt-4 inline-block bg-primary/5 rounded-lg px-4 py-2">
-          <p className="text-xs text-primary font-medium">
+        <div className="mt-4 inline-block rounded-lg px-4 py-2" style={{ background: '#edf2f7' }}>
+          <p className="text-[12px] font-medium" style={{ color: '#718096' }}>
             Skeleton route registered — ready for implementation
           </p>
         </div>

@@ -14,15 +14,8 @@ import {
   HiX,
 } from 'react-icons/hi';
 
-const navItemClass = ({ isActive }) =>
-  `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-    isActive
-      ? 'bg-white/15 text-white shadow-sm'
-      : 'text-white/70 hover:bg-white/10 hover:text-white'
-  }`;
-
 export default function Sidebar({ isOpen, onClose }) {
-  const { user, isAdmin, isTeacher } = useAuth();
+  const { isAdmin, isTeacher } = useAuth();
 
   const mainLinks = [
     { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
@@ -43,37 +36,49 @@ export default function Sidebar({ isOpen, onClose }) {
     { to: '/admin/settings', icon: HiOutlineCog, label: 'Settings' },
   ];
 
+  const navItemClass = ({ isActive }) =>
+    `flex items-center gap-3 px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 group ${
+      isActive
+        ? 'text-white'
+        : 'text-white/55 hover:text-white/90 hover:bg-white/[0.06]'
+    }`;
+
+  const navItemStyle = (isActive) =>
+    isActive
+      ? {
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06))',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+        }
+      : {};
+
   return (
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-[2px]" onClick={onClose} />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-nitj-navy-dark z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed lg:sticky top-0 left-0 h-screen w-[240px] z-50 lg:z-auto flex-shrink-0 transform transition-transform duration-300 ease-in-out lg:translate-x-0 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
+        style={{
+          background: 'linear-gradient(180deg, #0a1929 0%, #0f2440 50%, #132e57 100%)',
+          borderRight: '1px solid rgba(255,255,255,0.05)',
+        }}
       >
-        {/* Close button (mobile) */}
+        {/* Mobile close button */}
         <div className="flex items-center justify-between p-4 lg:hidden">
-          <span className="text-white font-semibold text-sm">QUICK LINKS</span>
-          <button
-            onClick={onClose}
-            className="text-white/70 hover:text-white"
-            aria-label="Close sidebar"
-          >
+          <span className="text-white/80 font-semibold text-xs uppercase tracking-widest">Menu</span>
+          <button onClick={onClose} className="text-white/50 hover:text-white p-1" aria-label="Close sidebar">
             <HiX className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation */}
-        <div className="p-3 pt-20 lg:pt-4 space-y-1 overflow-y-auto h-full pb-20">
-          <p className="text-white/40 text-xs font-semibold uppercase tracking-wider px-4 mb-2">
+        <div className="px-3 pt-4 lg:pt-5 pb-8 space-y-1">
+          <p className="text-white/25 text-[10px] font-bold uppercase tracking-[0.15em] px-3.5 mb-3">
             Quick Links
           </p>
 
@@ -82,9 +87,10 @@ export default function Sidebar({ isOpen, onClose }) {
               key={link.to}
               to={link.to}
               className={navItemClass}
+              style={({ isActive }) => navItemStyle(isActive)}
               onClick={onClose}
             >
-              <link.icon className="w-5 h-5 flex-shrink-0" />
+              <link.icon className="w-[18px] h-[18px] flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity" />
               {link.label}
             </NavLink>
           ))}
@@ -92,8 +98,8 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Verification — Teachers and Admin */}
           {(isAdmin || isTeacher) && (
             <>
-              <div className="my-3 border-t border-white/10" />
-              <p className="text-white/40 text-xs font-semibold uppercase tracking-wider px-4 mb-2">
+              <div className="my-4 mx-3 border-t border-white/[0.06]" />
+              <p className="text-white/25 text-[10px] font-bold uppercase tracking-[0.15em] px-3.5 mb-3">
                 Verification
               </p>
               {verificationLinks.map((link) => (
@@ -101,12 +107,15 @@ export default function Sidebar({ isOpen, onClose }) {
                   key={link.to}
                   to={link.to}
                   className={navItemClass}
+                  style={({ isActive }) => navItemStyle(isActive)}
                   onClick={onClose}
                 >
-                  <link.icon className="w-5 h-5 flex-shrink-0" />
-                  {link.label}
-                  {/* Pending badge placeholder */}
-                  <span className="ml-auto bg-nitj-gold text-nitj-navy-dark text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  <link.icon className="w-[18px] h-[18px] flex-shrink-0 opacity-70" />
+                  <span className="flex-1">{link.label}</span>
+                  <span
+                    className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                    style={{ background: '#d69e2e', color: '#0f2440' }}
+                  >
                     0
                   </span>
                 </NavLink>
@@ -117,8 +126,8 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Admin section */}
           {isAdmin && (
             <>
-              <div className="my-3 border-t border-white/10" />
-              <p className="text-white/40 text-xs font-semibold uppercase tracking-wider px-4 mb-2">
+              <div className="my-4 mx-3 border-t border-white/[0.06]" />
+              <p className="text-white/25 text-[10px] font-bold uppercase tracking-[0.15em] px-3.5 mb-3">
                 Administration
               </p>
               {adminLinks.map((link) => (
@@ -126,9 +135,10 @@ export default function Sidebar({ isOpen, onClose }) {
                   key={link.to}
                   to={link.to}
                   className={navItemClass}
+                  style={({ isActive }) => navItemStyle(isActive)}
                   onClick={onClose}
                 >
-                  <link.icon className="w-5 h-5 flex-shrink-0" />
+                  <link.icon className="w-[18px] h-[18px] flex-shrink-0 opacity-70" />
                   {link.label}
                 </NavLink>
               ))}
