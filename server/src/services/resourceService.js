@@ -278,6 +278,49 @@ class ResourceService {
   }
 
   /**
+   * Verify a resource (Approve or Reject)
+   */
+  static async verifyResource(resourceId, action, userId, userRole, reason = '') {
+    const resource = await Resource.findOne({ _id: resourceId, isDeleted: false });
+    if (!resource) throw new NotFoundError('Resource not found');
+
+    if (![ROLES.ADMIN, ROLES.TEACHER].includes(userRole)) {
+      throw new ForbiddenError('Only teachers and admins can verify resources');
+    }
+
+    if (action === 'approve') {
+      resource.status = RESOURCE_STATUS.APPROVED;
+      resource.rejectionReason = '';
+    } else if (action === 'reject') {
+      if (!reason.trim()) {
+        throw new BadRequestError('Reason is required when rejecting a resource');
+      }
+      resource.status = RESOURCE_STATUS.REJECTED;
+      resource.rejectionReason = reason.trim();
+    } else {
+      throw new BadRequestError('Invalid verification action');
+    }
+
+    resource.verifiedBy = userId;
+    resource.verifiedAt = new Date();
+    await resource.save();
+
+    await AuditLog.create({
+      actor: userId,
+      action: action === 'approve' ? AUDIT_ACTIONS.RESOURCE_APPROVED : AUDIT_ACTIONS.RESOURCE_REJECTED,
+      targetType: 'Resource',
+      targetId: resource._id,
+      details: { 
+        title: resource.title,
+        status: resource.status,
+        reason: action === 'reject' ? reason : undefined
+      },
+    });
+
+    return resource;
+  }
+
+  /**
    * Extract text from uploaded files (for full-text search)
    */
   static async extractText(filePath, mimeType) {

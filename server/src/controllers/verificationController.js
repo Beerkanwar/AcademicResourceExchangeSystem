@@ -1,9 +1,16 @@
 const ApiResponse = require('../utils/apiResponse');
+const ResourceService = require('../services/resourceService');
+const { RESOURCE_STATUS } = require('../utils/constants');
 
 const verificationController = {
   getPending: async (req, res, next) => {
     try {
-      return ApiResponse.success(res, [], 'Get pending resources — coming in Phase 5');
+      const result = await ResourceService.listResources({
+        ...req.query,
+        status: RESOURCE_STATUS.PENDING,
+        showAll: true,
+      });
+      return ApiResponse.success(res, result, 'Pending resources retrieved');
     } catch (error) {
       next(error);
     }
@@ -11,7 +18,13 @@ const verificationController = {
 
   approve: async (req, res, next) => {
     try {
-      return ApiResponse.success(res, null, 'Approve resource — coming in Phase 5');
+      const resource = await ResourceService.verifyResource(
+        req.params.id,
+        'approve',
+        req.user._id,
+        req.user.role
+      );
+      return ApiResponse.success(res, resource, 'Resource approved successfully');
     } catch (error) {
       next(error);
     }
@@ -19,7 +32,14 @@ const verificationController = {
 
   reject: async (req, res, next) => {
     try {
-      return ApiResponse.success(res, null, 'Reject resource — coming in Phase 5');
+      const resource = await ResourceService.verifyResource(
+        req.params.id,
+        'reject',
+        req.user._id,
+        req.user.role,
+        req.body.reason
+      );
+      return ApiResponse.success(res, resource, 'Resource rejected successfully');
     } catch (error) {
       next(error);
     }

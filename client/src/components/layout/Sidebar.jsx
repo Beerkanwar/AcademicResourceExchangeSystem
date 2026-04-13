@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import api from '../../api/axios';
 import { useAuth } from '../../hooks/useAuth';
 import {
   HiOutlineHome,
@@ -16,6 +18,19 @@ import {
 
 export default function Sidebar({ isOpen, onClose }) {
   const { isAdmin, isTeacher } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (isAdmin || isTeacher) {
+      const fetchCount = async () => {
+        try {
+          const res = await api.get('/verification/pending');
+          setPendingCount(res.data.data?.pagination?.total || res.data.data?.resources?.length || 0);
+        } catch { /* ignore */ }
+      };
+      fetchCount();
+    }
+  }, [isAdmin, isTeacher]);
 
   const mainLinks = [
     { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
@@ -110,12 +125,14 @@ export default function Sidebar({ isOpen, onClose }) {
                 >
                   <link.icon className="w-[18px] h-[18px] flex-shrink-0 opacity-70" />
                   <span className="flex-1">{link.label}</span>
-                  <span
-                    className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={{ background: '#d69e2e', color: '#0f2440' }}
-                  >
-                    0
-                  </span>
+                  {pendingCount > 0 && (
+                    <span
+                      className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                      style={{ background: '#d69e2e', color: '#0f2440' }}
+                    >
+                      {pendingCount}
+                    </span>
+                  )}
                 </NavLink>
               ))}
             </>

@@ -10,6 +10,7 @@ import UserManagementPage from './pages/admin/UserManagementPage';
 import UploadResourcePage from './pages/resources/UploadResourcePage';
 import BrowseResourcesPage from './pages/resources/BrowseResourcesPage';
 import ResourceDetailPage from './pages/resources/ResourceDetailPage';
+import VerificationQueuePage from './pages/admin/VerificationQueuePage';
 
 export default function App() {
   return (
@@ -99,7 +100,7 @@ export default function App() {
           path="/verification"
           element={
             <ProtectedRoute allowedRoles={['admin', 'teacher']}>
-              <PlaceholderPage title="Verification Queue" phase={5} />
+              <VerificationQueuePage />
             </ProtectedRoute>
           }
         />
