@@ -7,6 +7,9 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import UserManagementPage from './pages/admin/UserManagementPage';
+import UploadResourcePage from './pages/resources/UploadResourcePage';
+import BrowseResourcesPage from './pages/resources/BrowseResourcesPage';
+import ResourceDetailPage from './pages/resources/ResourceDetailPage';
 
 export default function App() {
   return (
@@ -56,7 +59,15 @@ export default function App() {
           path="/resources"
           element={
             <ProtectedRoute>
-              <PlaceholderPage title="Browse Resources" phase={6} />
+              <BrowseResourcesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/resources/:id"
+          element={
+            <ProtectedRoute>
+              <ResourceDetailPage />
             </ProtectedRoute>
           }
         />
@@ -72,7 +83,7 @@ export default function App() {
           path="/upload"
           element={
             <ProtectedRoute>
-              <PlaceholderPage title="Upload Resource" phase={4} />
+              <UploadResourcePage />
             </ProtectedRoute>
           }
         />
