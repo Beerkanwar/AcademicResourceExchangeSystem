@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../api/axios';
 import {
@@ -10,6 +11,9 @@ import {
   HiOutlinePencil,
   HiOutlineCheck,
   HiOutlineX,
+  HiOutlineFolderOpen,
+  HiOutlineDocumentText,
+  HiOutlineChevronRight,
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
@@ -30,10 +34,19 @@ export default function ProfilePage() {
     lastName: '',
     phone: '',
   });
+  const [myUploads, setMyUploads] = useState([]);
 
   useEffect(() => {
     fetchProfile();
+    fetchMyUploads();
   }, []);
+
+  const fetchMyUploads = async () => {
+    try {
+      const res = await api.get('/resources/user/my-uploads');
+      setMyUploads(res.data.data.resources || []);
+    } catch { /* ignore */ }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -225,6 +238,68 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Upload History / Document Status Tracking */}
+      <div className="card border-none shadow-xl bg-white" style={{ borderRadius: '10px' }}>
+        <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-black uppercase tracking-widest text-slate-800 flex items-center gap-3">
+              <HiOutlineFolderOpen className="w-6 h-6 text-nitj-gold" /> My Uploads Repository
+            </h2>
+            <p className="text-sm font-medium text-slate-500 mt-1">Track the verification status of your contributed documents.</p>
+          </div>
+        </div>
+        <div className="p-10">
+           {myUploads.length === 0 ? (
+             <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+               <HiOutlineDocumentText className="w-10 h-10 mx-auto text-slate-400 mb-4" />
+               <h3 className="text-sm font-black uppercase tracking-widest text-slate-600">No Archives Found</h3>
+               <p className="text-xs font-medium text-slate-500 mt-2">You have not uploaded any intelligence to the network yet.</p>
+             </div>
+           ) : (
+             <div className="space-y-4">
+               {myUploads.map((doc) => {
+                 const statusColors = {
+                   approved: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+                   pending: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+                   rejected: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+                 };
+                 const color = statusColors[doc.status] || statusColors.pending;
+
+                 return (
+                   <Link key={doc._id} to={`/resources/${doc._id}`} className="group block border border-slate-100 rounded-xl p-5 hover:border-nitj-gold/40 hover:shadow-lg transition-all relative overflow-hidden bg-white">
+                     <div className="flex items-center justify-between gap-6">
+                        <div className="flex items-center gap-5 min-w-0">
+                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${color.bg} ${color.text} border ${color.border}`}>
+                             {doc.status === 'approved' ? <HiOutlineCheck className="w-6 h-6" /> : doc.status === 'rejected' ? <HiOutlineX className="w-6 h-6" /> : <HiOutlineFolderOpen className="w-6 h-6" />}
+                           </div>
+                           <div className="min-w-0">
+                             <h4 className="text-sm font-black text-slate-800 truncate group-hover:text-nitj-gold transition-colors">{doc.title}</h4>
+                             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
+                               Uploaded: {new Date(doc.createdAt).toLocaleDateString()} • {doc.fileType.toUpperCase()}
+                             </p>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-4 shrink-0">
+                           <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${color.bg} ${color.text}`}>
+                             {doc.status}
+                           </span>
+                           <HiOutlineChevronRight className="w-5 h-5 text-slate-300 group-hover:text-nitj-gold transition-colors" />
+                        </div>
+                     </div>
+                     {doc.status === 'rejected' && doc.rejectionReason && (
+                        <div className="mt-4 pt-4 border-t border-red-100">
+                           <p className="text-xs font-bold text-red-600 uppercase tracking-widest mb-1">Rejection Reason:</p>
+                           <p className="text-sm font-medium text-red-900/80 bg-red-50 p-3 rounded-lg border border-red-100 leading-relaxed">{doc.rejectionReason}</p>
+                        </div>
+                     )}
+                   </Link>
+                 );
+               })}
+             </div>
+           )}
         </div>
       </div>
     </div>

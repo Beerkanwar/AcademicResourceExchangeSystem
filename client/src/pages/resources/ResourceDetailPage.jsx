@@ -225,6 +225,49 @@ export default function ResourceDetailPage() {
         </div>
       </div>
 
+      {/* Resource Preview */}
+      <div className="card overflow-hidden border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+        <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
+          <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-800 flex items-center gap-2">
+            <HiOutlineEye className="w-4 h-4 text-nitj-gold" /> In-Browser Preview
+          </h3>
+        </div>
+        <div className="bg-slate-50 relative" style={{ minHeight: '400px' }}>
+          {['pdf'].includes(resource.fileType) ? (
+            <iframe 
+              src={`/uploads/${resource.storedFilename}`} 
+              className="w-full"
+              style={{ height: '70vh', minHeight: '600px', border: 'none' }}
+              title="PDF Preview"
+            />
+          ) : ['png', 'jpg', 'jpeg'].includes(resource.fileType) ? (
+            <div className="p-8 flex justify-center bg-slate-100/50">
+               <img src={`/uploads/${resource.storedFilename}`} alt="Resource Preview" className="max-w-full rounded-lg shadow-xl" />
+            </div>
+          ) : ['txt'].includes(resource.fileType) ? (
+             <iframe 
+              src={`/uploads/${resource.storedFilename}`} 
+              className="w-full bg-white p-6 font-mono text-sm leading-relaxed"
+              style={{ height: '500px', border: 'none' }}
+              title="Text Preview"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 text-center px-6">
+               <div className="w-20 h-20 rounded-2xl bg-white shadow-inner flex items-center justify-center mb-6">
+                  {FILE_ICONS[resource.fileType] || '📄'}
+               </div>
+               <h4 className="text-xl font-black text-slate-800 tracking-tight uppercase">Native Preview Unavailable</h4>
+               <p className="text-sm font-medium text-slate-500 max-w-sm mt-3 leading-relaxed">
+                 The verification portal cannot natively render <strong className="text-slate-700">.{resource.fileType.toUpperCase()}</strong> binary files. Please download the resource to view its contents securely.
+               </p>
+               <button onClick={handleDownload} className="mt-8 btn-accent flex items-center gap-3 px-8 h-12 text-sm shadow-xl shadow-accent/20">
+                 <HiOutlineDownload className="w-5 h-5" /> Execute Download
+               </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Rejection Reason */}
       {resource.status === 'rejected' && resource.rejectionReason && (
         <div className="card p-5" style={{ borderLeft: '4px solid #e53e3e' }}>
