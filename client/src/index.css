@@ -37,23 +37,49 @@
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slide-down {
-  from { opacity: 0; transform: translateY(-12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* ========== Base Styles ========== */
@@ -82,13 +108,16 @@ body {
   width: 7px;
   height: 7px;
 }
+
 ::-webkit-scrollbar-track {
   background: #e2e8f0;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #a0aec0;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #718096;
 }
@@ -106,16 +135,18 @@ body {
 /* ========== Reusable Card System ========== */
 .card {
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
+
 .card:hover {
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 4px 10px -4px rgba(0,0,0,0.04);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
+
 .card-elevated {
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2e8f0;
 }
 
@@ -125,16 +156,18 @@ body {
   padding: 10px 14px 10px 44px;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 13px;
   color: #2d3748;
   background: #ffffff;
   transition: all 0.2s ease;
 }
+
 .input-field:focus {
   outline: none;
   border-color: #d69e2e;
   box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.15);
 }
+
 .input-field::placeholder {
   color: #a0aec0;
 }
@@ -157,11 +190,13 @@ body {
   transition: all 0.25s ease;
   box-shadow: 0 2px 8px rgba(26, 54, 93, 0.25);
 }
+
 .btn-primary:hover {
   background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
   box-shadow: 0 4px 14px rgba(26, 54, 93, 0.35);
   transform: translateY(-1px);
 }
+
 .btn-primary:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -173,17 +208,18 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 18px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #d69e2e 0%, #ecc94b 100%);
   color: #0f2440;
   border: none;
   border-radius: 10px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow: 0 2px 6px rgba(214, 158, 46, 0.3);
 }
+
 .btn-accent:hover {
   box-shadow: 0 4px 12px rgba(214, 158, 46, 0.45);
   transform: translateY(-1px);
@@ -199,17 +235,42 @@ body {
   font-weight: 600;
   letter-spacing: 0.02em;
 }
-.badge-admin { background: rgba(229, 62, 62, 0.1); color: #e53e3e; }
-.badge-teacher { background: rgba(49, 130, 206, 0.1); color: #3182ce; }
-.badge-student { background: rgba(56, 161, 105, 0.1); color: #38a169; }
-.badge-pending { background: rgba(221, 107, 32, 0.1); color: #dd6b20; }
-.badge-approved { background: rgba(56, 161, 105, 0.1); color: #38a169; }
-.badge-rejected { background: rgba(229, 62, 62, 0.1); color: #e53e3e; }
+
+.badge-admin {
+  background: rgba(229, 62, 62, 0.1);
+  color: #e53e3e;
+}
+
+.badge-teacher {
+  background: rgba(49, 130, 206, 0.1);
+  color: #3182ce;
+}
+
+.badge-student {
+  background: rgba(56, 161, 105, 0.1);
+  color: #38a169;
+}
+
+.badge-pending {
+  background: rgba(221, 107, 32, 0.1);
+  color: #dd6b20;
+}
+
+.badge-approved {
+  background: rgba(56, 161, 105, 0.1);
+  color: #38a169;
+}
+
+.badge-rejected {
+  background: rgba(229, 62, 62, 0.1);
+  color: #e53e3e;
+}
 
 /* ========== Gradient Panels ========== */
 .gradient-navy {
   background: linear-gradient(135deg, #0f2440 0%, #1a365d 40%, #2c5282 100%);
 }
+
 .gradient-header {
   background: linear-gradient(135deg, #0f2440 0%, #1a365d 50%, #2c5282 100%);
 }

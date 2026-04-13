@@ -129,207 +129,235 @@ export default function UploadResourcePage() {
   const ext = file ? file.name.split('.').pop().toLowerCase() : '';
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
+    <div className="w-full max-w-6xl mx-auto space-y-10 animate-fade-in pb-16">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-bold" style={{ color: '#1a202c' }}>Upload Resource</h1>
-        <p className="text-[13px] mt-0.5" style={{ color: '#a0aec0' }}>
-          Share academic materials with your peers at NITJ
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-8">
+        <div>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Upload Resource</h1>
+          <p className="text-base text-slate-500 mt-2 font-medium">
+            Contribute high-quality academic materials to the NITJ repository.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 bg-white px-4 py-2 rounded-lg border border-slate-200">
+          <span className="w-2.5 h-2.5 rounded-full bg-nitj-gold shadow-[0_0_8px_rgba(214,158,46,0.4)]" />
+          Internal Secure Upload
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Drop Zone */}
-        <div
-          className={`card p-0 overflow-hidden transition-all ${dragging ? 'ring-2 ring-offset-2' : ''}`}
-          style={dragging ? { borderColor: '#d69e2e', ringColor: '#d69e2e' } : {}}
-          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={handleDrop}
-        >
-          {!file ? (
-            <label
-              htmlFor="file-upload"
-              className="flex flex-col items-center justify-center py-14 px-6 cursor-pointer group"
-              style={{ background: 'linear-gradient(180deg, #f7fafc 0%, #ffffff 100%)' }}
-            >
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                style={{ background: 'linear-gradient(135deg, #d69e2e20, #ecc94b20)', border: '2px dashed #d69e2e40' }}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Left Column — File and Main Details */}
+        <div className="lg:col-span-2 space-y-10">
+          {/* Drop Zone */}
+          <div
+            className={`card p-0 overflow-hidden transition-all duration-300 border-none shadow-sm ${dragging ? 'ring-4 ring-nitj-gold/20' : 'hover:shadow-xl'}`}
+            style={{ borderRadius: '10px' }}
+            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+          >
+            {!file ? (
+              <label
+                htmlFor="file-upload"
+                className="flex flex-col items-center justify-center py-24 px-8 cursor-pointer group bg-slate-50/30"
               >
-                <HiOutlineCloudUpload className="w-8 h-8" style={{ color: '#d69e2e' }} />
-              </div>
-              <p className="text-[14px] font-semibold" style={{ color: '#2d3748' }}>
-                Drop your file here or <span style={{ color: '#d69e2e' }}>browse</span>
-              </p>
-              <p className="text-[12px] mt-1" style={{ color: '#a0aec0' }}>
-                PDF, PPT, DOC, TXT, ZIP, Excel, Images • Max 50MB
-              </p>
-              <input
-                id="file-upload"
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,.zip,.rar,.xlsx,.xls,.csv,.png,.jpg,.jpeg"
-                onChange={(e) => e.target.files[0] && selectFile(e.target.files[0])}
-              />
-            </label>
-          ) : (
-            <div className="p-5">
-              <div className="flex items-center gap-4">
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-                  style={{ background: '#1a365d10' }}
+                  className="w-24 h-24 rounded-xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 bg-white shadow-xl"
+                  style={{ border: '2px dashed rgba(214,158,46,0.2)' }}
                 >
-                  {FILE_ICONS[ext] || '📄'}
+                  <HiOutlineCloudUpload className="w-12 h-12 text-nitj-gold" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold truncate" style={{ color: '#2d3748' }}>{file.name}</p>
-                  <p className="text-[12px]" style={{ color: '#a0aec0' }}>
-                    {formatSize(file.size)} • .{ext.toUpperCase()}
-                  </p>
+                <h3 className="text-xl font-black text-slate-800 tracking-tight uppercase">Deploy Academic File</h3>
+                <p className="text-base text-slate-500 mt-3 max-w-sm text-center font-medium">
+                  Drag and drop your document here or <span className="text-nitj-gold font-black underline decoration-2 underline-offset-4">select from system</span>
+                </p>
+                <div className="mt-10 flex flex-wrap justify-center gap-3">
+                  {['PDF', 'PPTX', 'DOCX', 'ZIP'].map(ext => (
+                    <span key={ext} className="px-3 py-1.5 rounded-md bg-white border border-slate-200 text-[11px] font-black text-slate-400 tracking-widest">{ext}</span>
+                  ))}
                 </div>
-                {!uploading && (
-                  <button type="button" onClick={removeFile} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors" style={{ color: '#e53e3e' }}>
-                    <HiOutlineX className="w-5 h-5" />
-                  </button>
+                <input
+                  id="file-upload"
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => e.target.files[0] && selectFile(e.target.files[0])}
+                />
+              </label>
+            ) : (
+              <div className="p-10 bg-white">
+                <div className="flex items-center gap-8">
+                  <div
+                    className="w-20 h-20 rounded-xl flex items-center justify-center text-4xl flex-shrink-0 bg-slate-50 shadow-inner"
+                  >
+                    {FILE_ICONS[ext] || '📄'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-black text-slate-800 truncate tracking-tight">{file.name}</h3>
+                    <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-2">
+                      {formatSize(file.size)} • {ext} archive
+                    </p>
+                  </div>
+                  {!uploading && (
+                    <button type="button" onClick={removeFile} className="p-4 rounded-xl bg-slate-50 text-slate-400 hover:text-danger hover:bg-danger/5 transition-all shadow-sm">
+                      <HiOutlineX className="w-6 h-6" />
+                    </button>
+                  )}
+                </div>
+                {/* Upload Progress */}
+                {uploading && (
+                  <div className="mt-10">
+                    <div className="flex justify-between items-end mb-3">
+                      <span className="text-[11px] font-black text-nitj-gold uppercase tracking-[0.25em]">Transmission in Progress...</span>
+                      <span className="text-lg font-black text-slate-800">{progress}%</span>
+                    </div>
+                    <div className="h-3 rounded-full bg-slate-100 overflow-hidden shadow-inner">
+                      <div
+                        className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #d69e2e, #ecc94b)' }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
-              {/* Upload Progress */}
-              {uploading && (
-                <div className="mt-3">
-                  <div className="h-2 rounded-full overflow-hidden" style={{ background: '#e2e8f0' }}>
-                    <div
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #d69e2e, #ecc94b)' }}
-                    />
-                  </div>
-                  <p className="text-[11px] mt-1 text-right font-medium" style={{ color: '#d69e2e' }}>{progress}%</p>
+            )}
+          </div>
+
+          {/* Metadata */}
+          <div className="card p-10 space-y-8 border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+            <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
+              <div className="p-3 rounded-xl bg-slate-50 text-slate-600 shadow-sm">
+                 <HiOutlineDocumentText className="w-6 h-6" />
+              </div>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Resource Classification</h2>
+            </div>
+
+            <div className="space-y-8">
+              <Field label="Document Identification (Title) *" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="e.g. ADVANCED ALGORITHMS - UNIT 1 LECTURE NOTES" />
+              
+              <div className="space-y-3">
+                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Resource Context / Abstract</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Provide a detailed technical abstract of the resource content..."
+                  rows={5}
+                  className="input-field !pl-5 pt-4 h-auto text-base"
+                  style={{ resize: 'vertical' }}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Field label="Academic Author / Professor" value={form.author} onChange={(v) => setForm({ ...form, author: v })} placeholder="e.g. DR. R.K. SINGH" />
+                <Field label="Academic Year" value={form.academicYear} onChange={(v) => setForm({ ...form, academicYear: v })} placeholder="e.g. 2026-27" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column — Categorization */}
+        <div className="space-y-10">
+          {/* Categorization */}
+          <div className="card p-10 space-y-8 border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-slate-50 text-slate-600 shadow-sm">
+                 <HiOutlineAcademicCap className="w-6 h-6" />
+              </div>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Hierarchy</h2>
+            </div>
+
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Department</label>
+                <select
+                  value={form.department}
+                  onChange={(e) => setForm({ ...form, department: e.target.value, subject: '' })}
+                  className="input-field !pl-5 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat font-bold text-slate-700"
+                >
+                  <option value="">Select Department</option>
+                  {departments.map((d) => (
+                    <option key={d._id} value={d._id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Semester Cycle</label>
+                <select
+                  value={form.semester}
+                  onChange={(e) => setForm({ ...form, semester: e.target.value, subject: '' })}
+                  className="input-field !pl-5 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat font-bold text-slate-700"
+                >
+                  <option value="">Select Semester</option>
+                  {[1,2,3,4,5,6,7,8].map((s) => (
+                    <option key={s} value={s}>Semester {s}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Subject Module</label>
+                <select
+                  value={form.subject}
+                  onChange={(e) => {
+                    const sub = subjects.find((s) => s._id === e.target.value);
+                    setForm({ ...form, subject: e.target.value, courseCode: sub?.code || form.courseCode });
+                  }}
+                  className="input-field !pl-4 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+                  disabled={!form.department}
+                >
+                  <option value="">Select Subject</option>
+                  {subjects.map((s) => (
+                    <option key={s._id} value={s._id}>{s.name} ({s.code})</option>
+                  ))}
+                </select>
+              </div>
+
+              <Field label="System Course Code" value={form.courseCode} onChange={(v) => setForm({ ...form, courseCode: v })} placeholder="e.g. CSP-301" />
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div className="card p-10 space-y-8 border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-slate-50 text-slate-600 shadow-sm">
+                 <HiOutlineTag className="w-6 h-6" />
+              </div>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Keywords</h2>
+            </div>
+            
+            <div className="space-y-6">
+              <Field
+                label="Search Keywords (CSV)"
+                value={form.tags}
+                onChange={(v) => setForm({ ...form, tags: v })}
+                placeholder="e.g. notes, midterm, verified"
+              />
+              {form.tags && (
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {form.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, i) => (
+                    <span key={i} className="px-4 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                      #{tag}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Metadata */}
-        <div className="card p-6 space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <HiOutlineDocumentText className="w-5 h-5" style={{ color: '#1a365d' }} />
-            <h2 className="text-[15px] font-bold" style={{ color: '#2d3748' }}>Resource Details</h2>
           </div>
 
-          <Field label="Title *" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="e.g. Data Structures — Linked List Notes" />
-          <div>
-            <label className="block text-[12px] font-semibold mb-1" style={{ color: '#4a5568' }}>Description</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Brief description of the resource content..."
-              rows={3}
-              className="input-field !pl-3"
-              style={{ resize: 'vertical' }}
-            />
+          {/* Actions */}
+          <div className="flex flex-col gap-4">
+            <button type="submit" disabled={uploading || !file} className="btn-primary h-[56px] text-base font-black uppercase tracking-widest shadow-2xl shadow-primary/20">
+              {uploading ? (
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <><HiOutlineCloudUpload className="w-6 h-6" /> Deploy Resource</>
+              )}
+            </button>
+            <button type="button" onClick={() => navigate(-1)}
+              className="w-full h-[52px] rounded-xl text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-danger hover:bg-danger/5 transition-all border border-transparent hover:border-danger/10">
+              Abort Transmission
+            </button>
           </div>
-          <Field label="Author / Professor" value={form.author} onChange={(v) => setForm({ ...form, author: v })} placeholder="e.g. Dr. Kumar" />
-        </div>
-
-        {/* Academic Details */}
-        <div className="card p-6 space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <HiOutlineAcademicCap className="w-5 h-5" style={{ color: '#1a365d' }} />
-            <h2 className="text-[15px] font-bold" style={{ color: '#2d3748' }}>Academic Details</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[12px] font-semibold mb-1" style={{ color: '#4a5568' }}>Department</label>
-              <select
-                value={form.department}
-                onChange={(e) => setForm({ ...form, department: e.target.value, subject: '' })}
-                className="input-field !pl-3"
-              >
-                <option value="">Select Department</option>
-                {departments.map((d) => (
-                  <option key={d._id} value={d._id}>{d.name} ({d.code})</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[12px] font-semibold mb-1" style={{ color: '#4a5568' }}>Semester</label>
-              <select
-                value={form.semester}
-                onChange={(e) => setForm({ ...form, semester: e.target.value, subject: '' })}
-                className="input-field !pl-3"
-              >
-                <option value="">Select Semester</option>
-                {[1,2,3,4,5,6,7,8].map((s) => (
-                  <option key={s} value={s}>Semester {s}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[12px] font-semibold mb-1" style={{ color: '#4a5568' }}>Subject</label>
-              <select
-                value={form.subject}
-                onChange={(e) => {
-                  const sub = subjects.find((s) => s._id === e.target.value);
-                  setForm({ ...form, subject: e.target.value, courseCode: sub?.code || form.courseCode });
-                }}
-                className="input-field !pl-3"
-                disabled={!form.department}
-              >
-                <option value="">Select Subject</option>
-                {subjects.map((s) => (
-                  <option key={s._id} value={s._id}>{s.name} ({s.code})</option>
-                ))}
-              </select>
-            </div>
-            <Field label="Course Code" value={form.courseCode} onChange={(v) => setForm({ ...form, courseCode: v })} placeholder="e.g. CS301" />
-          </div>
-
-          <Field label="Academic Year" value={form.academicYear} onChange={(v) => setForm({ ...form, academicYear: v })} placeholder="e.g. 2025-26" />
-        </div>
-
-        {/* Tags */}
-        <div className="card p-6 space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <HiOutlineTag className="w-5 h-5" style={{ color: '#1a365d' }} />
-            <h2 className="text-[15px] font-bold" style={{ color: '#2d3748' }}>Tags</h2>
-          </div>
-          <Field
-            label="Tags (comma-separated)"
-            value={form.tags}
-            onChange={(v) => setForm({ ...form, tags: v })}
-            placeholder="e.g. notes, midterm, important, linked-list"
-          />
-          {form.tags && (
-            <div className="flex flex-wrap gap-1.5">
-              {form.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, i) => (
-                <span key={i} className="badge" style={{ background: '#1a365d10', color: '#1a365d' }}>
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Submit */}
-        <div className="flex gap-3">
-          <button type="button" onClick={() => navigate(-1)}
-            className="flex-1 py-2.5 rounded-lg text-[13px] font-medium transition-colors"
-            style={{ border: '1px solid #e2e8f0', color: '#718096' }}>
-            Cancel
-          </button>
-          <button type="submit" disabled={uploading || !file} className="btn-primary flex-[2]">
-            {uploading ? (
-              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Uploading...</>
-            ) : (
-              <><HiOutlineCloudUpload className="w-5 h-5" /> Upload Resource</>
-            )}
-          </button>
         </div>
       </form>
     </div>

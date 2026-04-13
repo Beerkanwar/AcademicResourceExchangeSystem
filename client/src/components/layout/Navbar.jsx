@@ -15,11 +15,11 @@ export default function Navbar({ onToggleSidebar }) {
     <nav className="sticky top-0 z-50" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.15)' }}>
       {/* Top Banner */}
       <div className="gradient-header border-b border-white/5">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-4">
+        <div className="w-full mx-auto px-4 sm:px-6 md:px-8 py-2.5 flex items-center gap-4 transition-all">
           <img
             src="/nitj-logo.png"
             alt="NIT Jalandhar Logo"
-            className="h-11 w-11 object-contain drop-shadow-md"
+            className="w-[44px] h-[44px] object-contain drop-shadow-md"
           />
           <div className="leading-tight">
             <p className="text-white/50 text-[10px] tracking-wide">
@@ -34,8 +34,8 @@ export default function Navbar({ onToggleSidebar }) {
 
       {/* Main Navbar */}
       <div style={{ background: '#1a365d' }}>
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-11">
+        <div className="w-full mx-auto px-4 sm:px-6 md:px-8 transition-all">
+          <div className="flex items-center justify-between h-[44px]">
             {/* Left */}
             <div className="flex items-center gap-4">
               {isAuthenticated && (
@@ -68,18 +68,21 @@ export default function Navbar({ onToggleSidebar }) {
                   <input
                     type="text"
                     placeholder="Search resources, subjects, tags..."
-                    className="w-full rounded-lg pl-10 pr-4 py-[7px] text-[13px] text-white placeholder:text-white/35 focus:outline-none transition-all"
+                    className="w-full rounded-lg pl-10 pr-4 py-[7px] text-[13px] text-white placeholder:text-white/35 transition-all"
                     style={{
                       background: 'rgba(255,255,255,0.08)',
                       border: '1px solid rgba(255,255,255,0.1)',
+                      outline: 'none',
                     }}
                     onFocus={(e) => {
                       e.target.style.background = 'rgba(255,255,255,0.14)';
-                      e.target.style.borderColor = 'rgba(214,158,46,0.4)';
+                      e.target.style.borderColor = '#d69e2e';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(214, 158, 46, 0.15)';
                     }}
                     onBlur={(e) => {
                       e.target.style.background = 'rgba(255,255,255,0.08)';
                       e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+                      e.target.style.boxShadow = 'none';
                     }}
                   />
                 </div>

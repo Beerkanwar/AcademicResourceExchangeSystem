@@ -68,7 +68,8 @@ export default function ChangePasswordPage() {
   );
 
   return (
-    <div className="max-w-lg mx-auto animate-scale-in">
+    <div className="min-h-[85vh] flex items-center justify-center p-4">
+      <div className="w-full max-w-[min(92vw,480px)] animate-scale-in">
       <div
         className="rounded-2xl overflow-hidden"
         style={{
@@ -117,6 +118,7 @@ export default function ChangePasswordPage() {
           )}
         </form>
       </div>
+    </div>
     </div>
   );
 }

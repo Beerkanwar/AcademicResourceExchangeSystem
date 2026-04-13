@@ -70,7 +70,6 @@ export default function BrowseResourcesPage() {
   useEffect(() => { fetchResources(); }, [fetchResources]);
 
   const handleSearch = (e) => { e.preventDefault(); fetchResources(1); };
-  const formatSize = (bytes) => bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(0)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   const timeAgo = (date) => {
     const diff = Date.now() - new Date(date).getTime();
     const mins = Math.floor(diff / 60000);
@@ -83,186 +82,227 @@ export default function BrowseResourcesPage() {
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="w-full space-y-10 animate-fade-in pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: '#1a202c' }}>Browse Resources</h1>
-          <p className="text-[13px]" style={{ color: '#a0aec0' }}>
-            {pagination.total} resource{pagination.total !== 1 ? 's' : ''} available
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Resource Repository</h1>
+          <p className="text-base text-slate-500 mt-2 font-medium">
+            Explore verified academic intelligence across all NITJ departments.
           </p>
         </div>
-        <Link to="/upload" className="btn-accent flex items-center gap-2 w-fit text-[13px]">
-          + Upload Resource
-        </Link>
+        <div className="flex items-center gap-4">
+          <div className="px-5 py-2.5 bg-white rounded-lg border border-slate-200 shadow-sm text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_8px_rgba(56,161,105,0.4)]" />
+            {pagination.total} Records Online
+          </div>
+          <Link to="/upload" className="btn-accent flex items-center gap-3 px-8 h-12 text-sm shadow-xl shadow-accent/20">
+            + DEPLOY NEW
+          </Link>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="card p-4">
+      {/* Modern Filter Bar */}
+      <div className="card p-3 md:p-4 overflow-hidden shadow-sm border-none bg-slate-100/50" style={{ borderRadius: '10px' }}>
         <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-3">
-          <div className="relative flex-1">
-            <HiOutlineSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a0aec0' }} />
+          <div className="relative flex-[2.5]">
+            <HiOutlineSearch className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              placeholder="Search by title, tags, content..."
-              className="input-field"
+              placeholder="Query by subject code, title, or keywords..."
+              className="input-field h-14 pl-14 pr-6 bg-white border-none shadow-sm text-base font-medium"
             />
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex flex-1 gap-3">
             <select
               value={filters.department}
               onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-              className="input-field !pl-3 !w-auto min-w-[130px]"
+              className="input-field h-14 !pl-5 flex-1 bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
             >
-              <option value="">All Depts</option>
-              {departments.map((d) => <option key={d._id} value={d._id}>{d.code}</option>)}
+              <option value="">All Departments</option>
+              {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
             </select>
             <select
               value={filters.semester}
               onChange={(e) => setFilters({ ...filters, semester: e.target.value })}
-              className="input-field !pl-3 !w-auto min-w-[120px]"
+              className="input-field h-14 !pl-5 flex-1 bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
             >
-              <option value="">All Sems</option>
-              {[1,2,3,4,5,6,7,8].map((s) => <option key={s} value={s}>Sem {s}</option>)}
+              <option value="">All Semesters</option>
+              {[1,2,3,4,5,6,7,8].map((s) => <option key={s} value={s}>Semester {s}</option>)}
             </select>
+          </div>
+          <div className="flex gap-3">
             <select
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
                 const [sortBy, sortOrder] = e.target.value.split('-');
                 setFilters({ ...filters, sortBy, sortOrder });
               }}
-              className="input-field !pl-3 !w-auto min-w-[130px]"
+              className="input-field h-14 !pl-5 min-w-[160px] bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
             >
-              <option value="createdAt-desc">Newest</option>
-              <option value="createdAt-asc">Oldest</option>
-              <option value="downloads-desc">Most Downloaded</option>
+              <option value="createdAt-desc">Newest First</option>
+              <option value="downloads-desc">High Usage</option>
               <option value="averageRating-desc">Top Rated</option>
-              <option value="views-desc">Most Viewed</option>
             </select>
-            <button type="submit" className="btn-primary !w-auto !px-5">
-              <HiOutlineFilter className="w-4 h-4" /> Filter
+            <button type="submit" className="btn-primary !w-auto h-14 px-8 shadow-xl shadow-primary/20">
+              <HiOutlineFilter className="w-6 h-6" />
             </button>
           </div>
         </form>
       </div>
 
-      {/* Resource Grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="card p-5 animate-pulse">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl" style={{ background: '#edf2f7' }} />
-                <div className="flex-1"><div className="h-4 rounded w-3/4" style={{ background: '#edf2f7' }} /></div>
+      {/* Content Grid */}
+      <section className="min-h-[500px]">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="card p-8 animate-pulse border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+                <div className="flex items-center gap-5 mb-8">
+                  <div className="w-16 h-16 rounded-xl bg-slate-100" />
+                  <div className="flex-1 space-y-3">
+                    <div className="h-5 rounded bg-slate-100 w-3/4" />
+                    <div className="h-4 rounded bg-slate-100 w-1/2" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="h-4 rounded bg-slate-100 w-full" />
+                  <div className="h-4 rounded bg-slate-100 w-full" />
+                  <div className="h-4 rounded bg-slate-100 w-2/3" />
+                </div>
               </div>
-              <div className="h-3 rounded w-full mb-2" style={{ background: '#edf2f7' }} />
-              <div className="h-3 rounded w-2/3" style={{ background: '#edf2f7' }} />
+            ))}
+          </div>
+        ) : resources.length === 0 ? (
+          <div className="card p-24 text-center border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+            <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
+               <span className="text-5xl">🔎</span>
             </div>
-          ))}
-        </div>
-      ) : resources.length === 0 ? (
-        <div className="card p-12 text-center">
-          <p className="text-5xl mb-4">📚</p>
-          <h3 className="text-lg font-bold" style={{ color: '#2d3748' }}>No resources found</h3>
-          <p className="text-[13px] mt-1" style={{ color: '#a0aec0' }}>
-            {filters.search ? 'Try adjusting your search or filters' : 'Be the first to upload a resource!'}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {resources.map((resource, i) => {
-            const badge = STATUS_BADGE[resource.status] || STATUS_BADGE.pending;
-            return (
-              <Link
-                key={resource._id}
-                to={`/resources/${resource._id}`}
-                className="card p-5 group animate-slide-up block"
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                {/* File icon + title */}
-                <div className="flex items-start gap-3 mb-3">
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform"
-                    style={{ background: '#1a365d08' }}
-                  >
-                    {FILE_ICONS[resource.fileType] || '📄'}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-[14px] font-semibold truncate group-hover:text-[#d69e2e] transition-colors" style={{ color: '#2d3748' }}>
-                      {resource.title}
-                    </h3>
-                    <p className="text-[11px] truncate" style={{ color: '#a0aec0' }}>
-                      {resource.uploadedBy?.firstName || resource.uploadedBy?.email?.split('@')[0] || 'Unknown'}
-                      {resource.department ? ` • ${resource.department.code}` : ''}
-                    </p>
-                  </div>
-                </div>
+            <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">No intelligence found</h3>
+            <p className="text-base text-slate-500 mt-3 max-w-md mx-auto leading-relaxed font-medium">
+              {filters.search 
+                ? "The specified query yielded zero results within the current filtration parameters." 
+                : "The central repository is currently void of records in this classification."}
+            </p>
+            {filters.search && (
+               <button 
+                onClick={() => setFilters({ search: '', department: '', semester: '', sortBy: 'createdAt', sortOrder: 'desc' })}
+                className="mt-10 text-nitj-gold font-black text-[11px] uppercase tracking-[0.3em] hover:underline"
+               >
+                 [ Reset System Filters ]
+               </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {resources.map((resource, i) => {
+              return (
+                <Link
+                  key={resource._id}
+                  to={`/resources/${resource._id}`}
+                  className="card p-8 group animate-slide-up block border-none shadow-sm hover:shadow-2xl transition-all relative overflow-hidden bg-white"
+                  style={{ animationDelay: `${i * 30}ms`, borderRadius: '10px' }}
+                >
+                  <div className="relative z-10">
+                    {/* Header */}
+                    <div className="flex items-start gap-5 mb-6">
+                      <div
+                        className="w-16 h-16 rounded-xl flex items-center justify-center text-4xl flex-shrink-0 group-hover:scale-110 transition-transform duration-500 bg-slate-50 shadow-inner"
+                      >
+                        {FILE_ICONS[resource.fileType] || '📄'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-black text-slate-800 truncate group-hover:text-nitj-gold transition-colors leading-tight tracking-tight uppercase">
+                          {resource.title}
+                        </h3>
+                        <p className="text-[10px] font-black text-slate-400 mt-2 uppercase tracking-[0.2em] truncate">
+                           {resource.department?.code || 'GEN'} • SEM 0{resource.semester}
+                        </p>
+                      </div>
+                    </div>
 
-                {/* Description */}
-                {resource.description && (
-                  <p className="text-[12px] mb-3 line-clamp-2" style={{ color: '#718096' }}>
-                    {resource.description}
-                  </p>
-                )}
-
-                {/* Tags */}
-                {resource.tags?.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {resource.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: '#1a365d08', color: '#4a5568' }}>
-                        #{tag}
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      <span className="px-3 py-1 rounded-md bg-slate-100 text-[9px] font-black text-slate-500 uppercase tracking-widest border border-slate-200">
+                        {resource.fileType}
                       </span>
-                    ))}
-                    {resource.tags.length > 3 && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ color: '#a0aec0' }}>
-                        +{resource.tags.length - 3}
+                      {resource.tags?.slice(0, 2).map((tag) => (
+                        <span key={tag} className="px-3 py-1 rounded-md bg-nitj-gold/10 text-[9px] font-black text-nitj-gold uppercase tracking-widest border border-nitj-gold/10">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Description */}
+                    {resource.description && (
+                      <p className="text-sm text-slate-500 line-clamp-3 mb-8 leading-relaxed font-medium">
+                        {resource.description}
+                      </p>
+                    )}
+
+                    {/* Stats Footer */}
+                    <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                      <div className="flex items-center gap-5 text-[11px] font-black text-slate-400">
+                        <span className="flex items-center gap-2"><HiOutlineDownload className="w-4 h-4" />{resource.downloads}</span>
+                        <span className="flex items-center gap-2"><HiOutlineStar className="w-4 h-4 text-nitj-gold" />{resource.averageRating > 0 ? resource.averageRating.toFixed(1) : '—'}</span>
+                      </div>
+                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                        {timeAgo(resource.createdAt)}
                       </span>
-                    )}
+                    </div>
                   </div>
-                )}
+                  {/* Hover effect decorative element */}
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-full -mr-20 -mt-20 group-hover:bg-nitj-gold/5 transition-colors duration-500" />
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid #f7fafc' }}>
-                  <div className="flex items-center gap-3 text-[11px]" style={{ color: '#a0aec0' }}>
-                    <span className="flex items-center gap-1"><HiOutlineEye className="w-3.5 h-3.5" />{resource.views}</span>
-                    <span className="flex items-center gap-1"><HiOutlineDownload className="w-3.5 h-3.5" />{resource.downloads}</span>
-                    {resource.averageRating > 0 && (
-                      <span className="flex items-center gap-1"><HiOutlineStar className="w-3.5 h-3.5" />{resource.averageRating.toFixed(1)}</span>
-                    )}
-                  </div>
-                  <span className="flex items-center gap-1 text-[11px]" style={{ color: '#a0aec0' }}>
-                    <HiOutlineClock className="w-3 h-3" />{timeAgo(resource.createdAt)}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Pagination */}
+      {/* Enhanced Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-3 pt-12">
           <button
             disabled={pagination.page <= 1}
             onClick={() => fetchResources(pagination.page - 1)}
-            className="p-2 rounded-lg disabled:opacity-30 transition-colors"
-            style={{ border: '1px solid #e2e8f0' }}
+            className="w-12 h-12 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 disabled:opacity-30 hover:border-nitj-gold hover:text-nitj-gold transition-all shadow-sm"
           >
-            <HiOutlineChevronLeft className="w-4 h-4" style={{ color: '#4a5568' }} />
+            <HiOutlineChevronLeft className="w-6 h-6" />
           </button>
-          <span className="text-[13px] font-medium" style={{ color: '#4a5568' }}>
-            Page {pagination.page} of {pagination.pages}
-          </span>
+          
+          <div className="flex items-center gap-3">
+            {[...Array(pagination.pages)].map((_, i) => {
+               const pageNum = i + 1;
+               if (pageNum === 1 || pageNum === pagination.pages || Math.abs(pageNum - pagination.page) <= 1) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => fetchResources(pageNum)}
+                      className={`w-12 h-12 rounded-lg text-sm font-black transition-all uppercase tracking-widest ${
+                        pagination.page === pageNum 
+                          ? 'bg-nitj-gold text-white shadow-xl shadow-nitj-gold/30 scale-110' 
+                          : 'bg-white border border-slate-200 text-slate-600 hover:border-nitj-gold'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+               }
+               if (pageNum === 2 || pageNum === pagination.pages - 1) {
+                 return <span key={pageNum} className="text-slate-300 font-black">...</span>;
+               }
+               return null;
+            })}
+          </div>
+
           <button
             disabled={pagination.page >= pagination.pages}
             onClick={() => fetchResources(pagination.page + 1)}
-            className="p-2 rounded-lg disabled:opacity-30 transition-colors"
-            style={{ border: '1px solid #e2e8f0' }}
+            className="w-12 h-12 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 disabled:opacity-30 hover:border-nitj-gold hover:text-nitj-gold transition-all shadow-sm"
           >
-            <HiOutlineChevronRight className="w-4 h-4" style={{ color: '#4a5568' }} />
+            <HiOutlineChevronRight className="w-6 h-6" />
           </button>
         </div>
       )}

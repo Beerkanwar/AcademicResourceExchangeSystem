@@ -24,24 +24,24 @@ function StatCard({ icon: Icon, label, value, color, subtext, delay = 0 }) {
   const c = statColors[color] || statColors.navy;
   return (
     <div
-      className="card p-5 animate-slide-up group"
+      className="card p-8 animate-slide-up group border-none shadow-sm hover:shadow-xl bg-white"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#a0aec0' }}>
+          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">
             {label}
           </p>
-          <p className="text-2xl font-bold mt-1.5" style={{ color: '#1a202c' }}>{value}</p>
+          <p className="text-4xl font-black text-slate-800 tracking-tighter">{value}</p>
           {subtext && (
-            <p className="text-[11px] mt-1" style={{ color: '#a0aec0' }}>{subtext}</p>
+            <p className="text-xs font-bold mt-2 text-slate-300 uppercase tracking-widest">{subtext}</p>
           )}
         </div>
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+          className="w-16 h-16 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-inner"
           style={{ background: c.iconBg }}
         >
-          <Icon className="w-6 h-6" style={{ color: c.icon }} />
+          <Icon className="w-8 h-8" style={{ color: c.icon }} />
         </div>
       </div>
     </div>
@@ -52,121 +52,141 @@ export default function DashboardPage() {
   const { user, isAdmin, isTeacher } = useAuth();
 
   const stats = [
-    { icon: HiOutlineFolder, label: 'Total Resources', value: '—', color: 'navy', subtext: 'Coming in Phase 4' },
-    { icon: HiOutlineUpload, label: 'My Uploads', value: '—', color: 'gold', subtext: 'Coming in Phase 4' },
-    { icon: HiOutlineBookmark, label: 'Bookmarks', value: '—', color: 'blue', subtext: 'Coming in Phase 8' },
-    { icon: HiOutlineCloudDownload, label: 'Downloads', value: '—', color: 'green', subtext: 'Coming in Phase 6' },
+    { icon: HiOutlineFolder, label: 'Resources', value: '—', color: 'navy', subtext: 'Phase 4' },
+    { icon: HiOutlineUpload, label: 'Uploads', value: '—', color: 'gold', subtext: 'Phase 4' },
+    { icon: HiOutlineBookmark, label: 'Bookmarks', value: '—', color: 'blue', subtext: 'Phase 8' },
+    { icon: HiOutlineCloudDownload, label: 'Downloads', value: '—', color: 'green', subtext: 'Phase 6' },
   ];
 
   const adminStats = [
-    { icon: HiOutlineShieldCheck, label: 'Pending Verification', value: '—', color: 'orange', subtext: 'Coming in Phase 5' },
-    { icon: HiOutlineUsers, label: 'Total Users', value: '—', color: 'navy', subtext: 'Coming in Phase 3' },
-    { icon: HiOutlineStar, label: 'Average Rating', value: '—', color: 'gold', subtext: 'Coming in Phase 8' },
-    { icon: HiOutlineAcademicCap, label: 'Departments', value: '—', color: 'green', subtext: 'Coming in Phase 4' },
+    { icon: HiOutlineShieldCheck, label: 'Pending', value: '—', color: 'orange', subtext: 'Phase 5' },
+    { icon: HiOutlineUsers, label: 'Users', value: '—', color: 'navy', subtext: 'Phase 3' },
+    { icon: HiOutlineStar, label: 'Rating', value: '—', color: 'gold', subtext: 'Phase 8' },
+    { icon: HiOutlineAcademicCap, label: 'Depts', value: '—', color: 'green', subtext: 'Phase 4' },
   ];
 
   const quickActions = [
-    { icon: HiOutlineUpload, title: 'Upload Resource', desc: 'Share notes, PDFs, assignments with your peers', href: '/upload', gradient: 'linear-gradient(135deg, #d69e2e, #ecc94b)' },
-    { icon: HiOutlineFolder, title: 'Browse Resources', desc: 'Discover resources organized by subject & semester', href: '/resources', gradient: 'linear-gradient(135deg, #1a365d, #2c5282)' },
-    { icon: HiOutlineAcademicCap, title: 'My Department', desc: 'View resources in your department', href: '/resources', gradient: 'linear-gradient(135deg, #38a169, #48bb78)' },
+    { icon: HiOutlineUpload, title: 'Upload Resource', desc: 'Share academic materials with peers', href: '/upload', gradient: 'linear-gradient(135deg, #d69e2e, #ecc94b)' },
+    { icon: HiOutlineFolder, title: 'Browse Repository', desc: 'Explore verified notes and papers', href: '/resources', gradient: 'linear-gradient(135deg, #1a365d, #2c5282)' },
+    { icon: HiOutlineAcademicCap, title: 'My Department', desc: 'View department-specific resources', href: '/resources', gradient: 'linear-gradient(135deg, #38a169, #48bb78)' },
   ];
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-10">
       {/* Welcome Banner */}
       <div
-        className="rounded-2xl px-7 py-7 animate-fade-in"
+        className="px-10 py-12 animate-fade-in relative overflow-hidden"
         style={{
+          borderRadius: '18px',
           background: 'linear-gradient(135deg, #0a1929 0%, #1a365d 40%, #2c5282 100%)',
-          boxShadow: '0 8px 30px rgba(26, 54, 93, 0.25)',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
         }}
       >
-        <div className="flex items-center gap-5">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -mr-40 -mt-40 blur-3xl" />
+        
+        <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+            className="w-24 h-24 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{
               background: 'rgba(255,255,255,0.1)',
-              border: '2px solid rgba(214,158,46,0.35)',
+              border: '2px solid rgba(236,201,75,0.3)',
+              boxShadow: '0 0 30px rgba(0,0,0,0.2)',
             }}
           >
-            <span className="text-2xl font-bold" style={{ color: '#ecc94b' }}>
+            <span className="text-4xl font-black" style={{ color: '#ecc94b' }}>
               {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || '?'}
             </span>
           </div>
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white">
-              Welcome back, {user?.firstName || user?.email?.split('@')[0]}!
+          <div className="text-center md:text-left">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight">
+              Welcome, {user?.firstName || user?.email?.split('@')[0]}!
             </h1>
-            <p className="text-white/50 text-sm mt-0.5">
+            <p className="text-white/50 text-base md:text-lg mt-2 font-medium">
               {isAdmin
-                ? 'System Administrator — Full access to all features'
+                ? 'System Administrator • Full Repository Access'
                 : isTeacher
-                ? 'Teacher — Upload, verify, and manage resources'
-                : 'Student — Browse, download, and bookmark resources'}
+                ? 'Faculty Member • Resource Management Access'
+                : 'Student Member • Resource Discovery Access'}
             </p>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div>
-        <h2 className="text-[15px] font-bold mb-4" style={{ color: '#2d3748' }}>Overview</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-[13px] font-black uppercase tracking-[0.25em] text-slate-400">System Repository Stats</h2>
+          <div className="h-px flex-1 bg-slate-200 ml-6 hidden sm:block" />
+        </div>
+        <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 20vw, 280px), 1fr))' }}>
           {stats.map((stat, i) => (
             <StatCard key={stat.label} {...stat} delay={i * 50} />
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Admin Stats */}
       {(isAdmin || isTeacher) && (
-        <div>
-          <h2 className="text-[15px] font-bold mb-4" style={{ color: '#2d3748' }}>
-            {isAdmin ? 'Administration' : 'Teaching'}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-[13px] font-black uppercase tracking-[0.25em] text-slate-400">
+              {isAdmin ? 'Administrative Control' : 'Teaching Analytics'}
+            </h2>
+            <div className="h-px flex-1 bg-slate-200 ml-6 hidden sm:block" />
+          </div>
+          <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 20vw, 280px), 1fr))' }}>
             {adminStats.map((stat, i) => (
               <StatCard key={stat.label} {...stat} delay={i * 50} />
             ))}
           </div>
-        </div>
+        </section>
       )}
 
       {/* Quick Actions */}
-      <div>
-        <h2 className="text-[15px] font-bold mb-4" style={{ color: '#2d3748' }}>Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-[13px] font-black uppercase tracking-[0.25em] text-slate-400">Rapid Deployment</h2>
+          <div className="h-px flex-1 bg-slate-200 ml-6 hidden sm:block" />
+        </div>
+        <div className="grid gap-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(260px, 30vw, 360px), 1fr))' }}>
           {quickActions.map((action, i) => (
             <Link
               key={action.title}
               to={action.href}
-              className="card p-5 group animate-slide-up block"
+              className="card p-8 group animate-slide-up block relative overflow-hidden bg-white border-none shadow-sm hover:shadow-2xl transition-all"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center mb-3.5 group-hover:scale-110 transition-transform duration-300"
-                style={{ background: action.gradient }}
-              >
-                <action.icon className="w-5 h-5 text-white" />
+              <div className="relative z-10">
+                <div
+                  className="w-16 h-16 rounded-lg flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                  style={{ background: action.gradient }}
+                >
+                  <action.icon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-black text-xl text-slate-800 tracking-tight">{action.title}</h3>
+                <p className="text-base mt-2 text-slate-500 font-medium leading-relaxed">{action.desc}</p>
+                <div className="mt-8 flex items-center gap-2 text-nitj-gold font-bold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                  Launch Action <span className="text-lg">→</span>
+                </div>
               </div>
-              <h3 className="font-bold text-sm" style={{ color: '#2d3748' }}>{action.title}</h3>
-              <p className="text-[12px] mt-1" style={{ color: '#a0aec0' }}>{action.desc}</p>
+              {/* Decorative accent */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 group-hover:bg-slate-100/50 transition-colors" />
             </Link>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* System Status */}
-      <div className="card p-6 animate-slide-up">
-        <h2 className="text-[15px] font-bold mb-3" style={{ color: '#2d3748' }}>System Status</h2>
-        <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full animate-pulse" style={{ background: '#38a169' }} />
-          <span className="text-sm" style={{ color: '#4a5568' }}>
-            Phase 2 Complete — Authentication system is fully operational
+      <div className="card p-10 animate-slide-up border-none shadow-sm bg-white">
+        <h2 className="text-lg font-black text-slate-800 mb-4 uppercase tracking-tight">Technical Infrastructure Status</h2>
+        <div className="flex items-center gap-4 p-5 bg-success/5 rounded-lg border border-success/10">
+          <div className="w-4 h-4 rounded-full bg-success animate-pulse shadow-[0_0_12px_rgba(56,161,105,0.4)]" />
+          <span className="text-base font-bold text-success-dark">
+            Phase 2 Operational — Production Environment Stable
           </span>
         </div>
-        <p className="text-[12px] mt-2" style={{ color: '#a0aec0' }}>
-          User management, resource upload, and search features coming in the next phases.
+        <p className="text-sm mt-5 text-slate-500 font-bold uppercase tracking-widest leading-loose">
+          Core Authentication Module Active • User Management (Phase 3) Deploying Next
         </p>
       </div>
     </div>
