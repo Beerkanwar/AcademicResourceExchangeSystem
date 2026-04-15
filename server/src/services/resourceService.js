@@ -381,6 +381,108 @@ class ResourceService {
     }
     return '';
   }
+  /**
+   * Upload a new version for an existing resource
+   */
+  static async uploadNewVersion(resourceId, file, userId, userRole) {
+    if (!file) throw new BadRequestError('No file uploaded');
+
+    const resource = await Resource.findOne({ _id: resourceId, isDeleted: false });
+    if (!resource) {
+      fs.unlinkSync(file.path);
+      throw new NotFoundError('Resource not found');
+    }
+
+    if (resource.uploadedBy.toString() !== userId && userRole !== ROLES.ADMIN) {
+      fs.unlinkSync(file.path);
+      throw new ForbiddenError('You can only update versions on your own resources');
+    }
+
+    const fileHash = await generateFileHashFromPath(file.path);
+    const existingResource = await Resource.findOne({ fileHash, isDeleted: false });
+    if (existingResource) {
+      fs.unlinkSync(file.path);
+      throw new BadRequestError('This exact file already exists globally in the repository');
+    }
+
+    // Archive current active document to versions array
+    resource.versions.push({
+      version: resource.currentVersion,
+      originalFilename: resource.originalFilename,
+      storedFilename: resource.storedFilename,
+      filePath: resource.filePath,
+      fileSize: resource.fileSize,
+      fileHash: resource.fileHash,
+      mimeType: resource.mimeType,
+      uploadedAt: resource.updatedAt || resource.createdAt,
+    });
+
+    let extractedText = '';
+    try {
+      extractedText = await ResourceService.extractText(file.path, file.mimetype);
+    } catch (err) { /* ignore */ }
+
+    // Overwrite master properties
+    resource.originalFilename = file.originalname;
+    resource.storedFilename = file.filename;
+    resource.filePath = file.path;
+    resource.fileSize = file.size;
+    resource.fileType = path.extname(file.originalname).toLowerCase().replace('.', '');
+    resource.mimeType = file.mimetype;
+    resource.fileHash = fileHash;
+    resource.extractedText = extractedText;
+    
+    resource.currentVersion += 1;
+
+    // Reset verification natively unless Admin or Teacher
+    if (userRole !== ROLES.ADMIN && userRole !== ROLES.TEACHER) {
+      resource.status = RESOURCE_STATUS.PENDING;
+    }
+
+    await resource.save();
+
+    await AuditLog.create({
+      actor: userId,
+      action: 'version_uploaded',
+      targetType: 'Resource',
+      targetId: resource._id,
+      details: { title: resource.title, newVersion: resource.currentVersion },
+    });
+
+    return Resource.findById(resource._id)
+      .populate('uploadedBy', 'firstName lastName email role')
+      .populate('subject', 'name code')
+      .populate('department', 'name code');
+  }
+
+  /**
+   * Download a specific historic version of a resource
+   */
+  static async downloadVersion(resourceId, versionId, userId) {
+    const resource = await Resource.findOne({ _id: resourceId, isDeleted: false });
+    if (!resource) throw new NotFoundError('Resource not found');
+
+    const versionDoc = resource.versions.find(v => v._id.toString() === versionId.toString());
+    if (!versionDoc) throw new NotFoundError('Specific version archive not found');
+
+    if (!fs.existsSync(versionDoc.filePath)) {
+      throw new NotFoundError('Archived file missing from disk structure');
+    }
+
+    await AuditLog.create({
+      actor: userId,
+      action: 'resource_downloaded',
+      targetType: 'Resource',
+      targetId: resource._id,
+      details: { versionRecord: versionDoc.version },
+    });
+
+    return {
+      filePath: versionDoc.filePath,
+      filename: versionDoc.originalFilename,
+      mimeType: versionDoc.mimeType,
+    };
+  }
 }
 
 module.exports = ResourceService;

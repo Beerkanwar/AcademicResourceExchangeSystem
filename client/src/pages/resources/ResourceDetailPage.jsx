@@ -14,6 +14,7 @@ import {
   HiOutlinePencil,
   HiOutlineArrowLeft,
   HiOutlineDocumentText,
+  HiOutlineUpload,
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
@@ -67,6 +68,42 @@ export default function ResourceDetailPage() {
       setResource((prev) => ({ ...prev, downloads: prev.downloads + 1 }));
     } catch {
       toast.error('Download failed');
+    }
+  };
+
+  const handleVersionUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const toastId = toast.loading('Uploading structural payload...');
+    try {
+      const response = await api.post(`/resources/${id}/versions`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast.success(response.data.message || 'Version appended natively!', { id: toastId });
+      fetchResource();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Version overwrite failed', { id: toastId });
+    }
+  };
+
+  const downloadOldVersion = async (version) => {
+    try {
+      const response = await api.get(`/resources/${id}/versions/${version._id}/download`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', version.originalFilename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success(`Legacy [v${version.version}] accessed`);
+    } catch {
+      toast.error('Failed to parse secure legacy payload');
     }
   };
 
@@ -128,7 +165,12 @@ export default function ResourceDetailPage() {
               {FILE_ICONS[resource.fileType] || '📄'}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold text-white leading-tight">{resource.title}</h1>
+              <h1 className="text-lg font-bold text-white leading-tight flex items-center gap-3">
+                {resource.title}
+                <span className="text-[11px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-inner inline-flex items-center" style={{ background: '#ecc94b', color: '#1a365d' }}>
+                  VERSION {resource.currentVersion || 1}
+                </span>
+              </h1>
               <p className="text-[12px] text-white/50 mt-1">
                 {resource.originalFilename} • {formatSize(resource.fileSize)} • .{resource.fileType?.toUpperCase()}
               </p>
@@ -205,16 +247,29 @@ export default function ResourceDetailPage() {
             </button>
             {canEdit && (
               <>
+                <button
+                  onClick={() => document.getElementById('version-upload').click()}
+                  className="flex items-center justify-center gap-2 flex-1 py-2.5 rounded-lg text-[13px] font-medium transition-colors border shadow-sm"
+                  style={{ borderColor: '#38a169', color: '#276749', background: '#f0fff4' }}
+                >
+                  <HiOutlineUpload className="w-4 h-4" /> Record New Version
+                </button>
+                <input 
+                  type="file" 
+                  id="version-upload" 
+                  className="hidden" 
+                  onChange={handleVersionUpload} 
+                />
                 <Link
                   to={`/resources/${id}/edit`}
-                  className="flex items-center justify-center gap-2 flex-1 py-2.5 rounded-lg text-[13px] font-medium transition-colors"
+                  className="flex items-center justify-center gap-2 flex-[0.7] py-2.5 rounded-lg text-[13px] font-medium transition-colors"
                   style={{ border: '1px solid #e2e8f0', color: '#3182ce' }}
                 >
                   <HiOutlinePencil className="w-4 h-4" /> Edit
                 </Link>
                 <button
                   onClick={handleDelete}
-                  className="flex items-center justify-center gap-2 py-2.5 px-5 rounded-lg text-[13px] font-medium transition-colors"
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-[13px] font-medium transition-colors bg-white shadow-sm"
                   style={{ border: '1px solid #e53e3e20', color: '#e53e3e' }}
                 >
                   <HiOutlineTrash className="w-4 h-4" />
@@ -267,6 +322,45 @@ export default function ResourceDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Version History Table */}
+      {resource.versions && resource.versions.length > 0 && (
+        <div className="card overflow-hidden border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
+          <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
+            <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-800 flex items-center gap-2">
+              <HiOutlineClock className="w-4 h-4 text-nitj-gold" /> Version Archives
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-600">
+              <thead className="bg-slate-50 text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">
+                <tr>
+                  <th className="px-6 py-4">Version</th>
+                  <th className="px-6 py-4">Filename Bound</th>
+                  <th className="px-6 py-4">Archived On</th>
+                  <th className="px-6 py-4 text-right">Payload Access</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {resource.versions.map(v => (
+                  <tr key={v._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4 font-black text-slate-800">v{v.version}</td>
+                    <td className="px-6 py-4 font-medium">{v.originalFilename}</td>
+                    <td className="px-6 py-4 text-[11px] font-bold tracking-wider text-slate-400">
+                      {new Date(v.uploadedAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button onClick={() => downloadOldVersion(v)} className="text-nitj-gold hover:text-nitj-navy transition-colors font-black text-[10px] uppercase tracking-widest">
+                        Execute Download
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Rejection Reason */}
       {resource.status === 'rejected' && resource.rejectionReason && (

@@ -19,5 +19,8 @@ router.get('/:id', optionalAuth, resourceController.getById);
 router.put('/:id', auth, resourceController.update);
 router.delete('/:id', auth, resourceController.delete);
 router.get('/:id/download', auth, resourceController.download);
+// Versioning
+router.post('/:id/versions', auth, uploadLimiter, resourceController.uploadNewVersion);
+router.get('/:id/versions/:versionId/download', auth, resourceController.downloadVersion);
 
 module.exports = router;

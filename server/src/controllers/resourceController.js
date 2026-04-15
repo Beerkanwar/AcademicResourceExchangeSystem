@@ -159,6 +159,55 @@ const resourceController = {
       next(error);
     }
   },
+  /**
+   * POST /api/resources/:id/versions
+   */
+  uploadNewVersion: [
+    (req, res, next) => {
+      upload.single('file')(req, res, (err) => {
+        if (err) {
+          if (err.code === 'LIMIT_FILE_SIZE') return next(new BadRequestError('File size exceeds limit'));
+          return next(err);
+        }
+        next();
+      });
+    },
+    async (req, res, next) => {
+      try {
+        const resource = await ResourceService.uploadNewVersion(
+          req.params.id,
+          req.file,
+          req.user._id.toString(),
+          req.user.role
+        );
+        const message = resource.status === 'pending'
+          ? 'Version uploaded and sent for verification'
+          : 'Version updated successfully';
+        return ApiResponse.created(res, resource, message);
+      } catch (error) {
+        next(error);
+      }
+    }
+  ],
+
+  /**
+   * GET /api/resources/:id/versions/:versionId/download
+   */
+  downloadVersion: async (req, res, next) => {
+    try {
+      const { filePath, filename, mimeType } = await ResourceService.downloadVersion(
+        req.params.id,
+        req.params.versionId,
+        req.user._id
+      );
+
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+      return res.sendFile(filePath);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = resourceController;

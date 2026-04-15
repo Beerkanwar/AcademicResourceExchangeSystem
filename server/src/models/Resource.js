@@ -134,6 +134,21 @@ const resourceSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    versions: [
+      {
+        version: Number,
+        originalFilename: String,
+        storedFilename: String,
+        filePath: String,
+        fileSize: Number,
+        fileHash: String,
+        mimeType: String,
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     // Soft delete
     isDeleted: {
       type: Boolean,
