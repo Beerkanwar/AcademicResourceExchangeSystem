@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const User = require('../models/User');
-const { UnauthorizedError } = require('../utils/apiError');
+const { UnauthorizedError, ForbiddenError } = require('../utils/apiError');
 
 /**
  * JWT Authentication Middleware
@@ -70,4 +70,20 @@ const optionalAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { auth, optionalAuth };
+/**
+ * Role Guardian Middleware
+ * Checks if authenticated user has required role(s)
+ */
+const roleGuard = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return next(new ForbiddenError('Access denied. Authentication required.'));
+    }
+    if (!allowedRoles.includes(req.user.role)) {
+      return next(new ForbiddenError('Access denied. Insufficient permissions.'));
+    }
+    next();
+  };
+};
+
+module.exports = { auth, optionalAuth, roleGuard };

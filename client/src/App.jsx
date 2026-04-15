@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import LoginPage from './pages/auth/LoginPage';
@@ -11,6 +11,7 @@ import UploadResourcePage from './pages/resources/UploadResourcePage';
 import BrowseResourcesPage from './pages/resources/BrowseResourcesPage';
 import ResourceDetailPage from './pages/resources/ResourceDetailPage';
 import VerificationQueuePage from './pages/admin/VerificationQueuePage';
+import AdminPanelPage from './pages/admin/AdminPanelPage';
 
 export default function App() {
   return (
@@ -74,11 +75,7 @@ export default function App() {
         />
         <Route
           path="/search"
-          element={
-            <ProtectedRoute>
-              <PlaceholderPage title="Search" phase={7} />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/resources" replace />}
         />
         <Route
           path="/upload"
@@ -101,6 +98,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['admin', 'teacher']}>
               <VerificationQueuePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminPanelPage />
             </ProtectedRoute>
           }
         />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../api/axios';
 import {
   HiOutlineSearch,
@@ -26,19 +26,30 @@ const STATUS_BADGE = {
 };
 
 export default function BrowseResourcesPage() {
+  const [searchParams] = useSearchParams();
   const [resources, setResources] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
   const [loading, setLoading] = useState(true);
   const [departments, setDepartments] = useState([]);
+  const [subjects, setSubjects] = useState([]);
 
   // Filters
   const [filters, setFilters] = useState({
-    search: '',
-    department: '',
-    semester: '',
+    search: searchParams.get('search') || '',
+    department: searchParams.get('department') || '',
+    semester: searchParams.get('semester') || '',
+    subject: searchParams.get('subject') || '',
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
+
+  // Listen to external URL query updates (e.g. from global search bar)
+  useEffect(() => {
+    const q = searchParams.get('search');
+    if (q !== null && q !== filters.search) {
+      setFilters(prev => ({...prev, search: q}));
+    }
+  }, [searchParams]);
 
   const fetchResources = useCallback(async (page = 1) => {
     setLoading(true);
@@ -47,6 +58,7 @@ export default function BrowseResourcesPage() {
       if (filters.search) params.search = filters.search;
       if (filters.department) params.department = filters.department;
       if (filters.semester) params.semester = filters.semester;
+      if (filters.subject) params.subject = filters.subject;
       params.sortBy = filters.sortBy;
       params.sortOrder = filters.sortOrder;
 
@@ -66,6 +78,20 @@ export default function BrowseResourcesPage() {
     };
     fetchDepts();
   }, []);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const params = {};
+        if (filters.department) params.department = filters.department;
+        if (filters.semester) params.semester = filters.semester;
+        if (!params.department && !params.semester) { setSubjects([]); return; }
+        const res = await api.get('/subjects', { params });
+        setSubjects(res.data.data || []);
+      } catch { setSubjects([]); }
+    };
+    fetchSubjects();
+  }, [filters.department, filters.semester]);
 
   useEffect(() => { fetchResources(); }, [fetchResources]);
 
@@ -118,7 +144,7 @@ export default function BrowseResourcesPage() {
           <div className="flex flex-1 gap-3">
             <select
               value={filters.department}
-              onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+              onChange={(e) => setFilters({ ...filters, department: e.target.value, subject: '' })}
               className="input-field h-14 !pl-5 flex-1 bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
             >
               <option value="">All Departments</option>
@@ -126,11 +152,20 @@ export default function BrowseResourcesPage() {
             </select>
             <select
               value={filters.semester}
-              onChange={(e) => setFilters({ ...filters, semester: e.target.value })}
+              onChange={(e) => setFilters({ ...filters, semester: e.target.value, subject: '' })}
               className="input-field h-14 !pl-5 flex-1 bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
             >
               <option value="">All Semesters</option>
               {[1,2,3,4,5,6,7,8].map((s) => <option key={s} value={s}>Semester {s}</option>)}
+            </select>
+            <select
+              value={filters.subject}
+              onChange={(e) => setFilters({ ...filters, subject: e.target.value })}
+              disabled={!filters.department && !filters.semester}
+              className="input-field h-14 !pl-5 flex-[1.5] bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat disabled:opacity-50"
+            >
+              <option value="">All Subjects</option>
+              {subjects.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.code})</option>)}
             </select>
           </div>
           <div className="flex gap-3">
@@ -187,7 +222,7 @@ export default function BrowseResourcesPage() {
             </p>
             {filters.search && (
                <button 
-                onClick={() => setFilters({ search: '', department: '', semester: '', sortBy: 'createdAt', sortOrder: 'desc' })}
+                onClick={() => setFilters({ search: '', department: '', semester: '', subject: '', sortBy: 'createdAt', sortOrder: 'desc' })}
                 className="mt-10 text-nitj-gold font-black text-[11px] uppercase tracking-[0.3em] hover:underline"
                >
                  [ Reset System Filters ]

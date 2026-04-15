@@ -41,49 +41,49 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full flex bg-[#edf2f7]">
       {/* Left Branding Panel (Hidden on mobile) */}
-      <div className="hidden lg:flex flex-col flex-1 relative overflow-hidden" 
-           style={{ background: 'linear-gradient(135deg, #0a1929 0%, #0f2440 50%, #1a365d 100%)' }}>
-        
+      <div className="hidden lg:flex flex-col flex-1 relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #0a1929 0%, #0f2440 50%, #1a365d 100%)' }}>
+
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#d69e2e]/10 rounded-full -ml-20 -mb-20 blur-3xl flex items-center justify-center pointer-events-none" />
-        
+
         <div className="relative z-10 flex flex-col items-center justify-center h-full p-12 lg:p-20 text-center">
           <div className="w-[120px] h-[120px] rounded-full mb-8 flex items-center justify-center bg-white/5 border border-white/10 shadow-[0_0_40px_rgba(214,158,46,0.15)]">
             <img src="/nitj-logo.png" alt="NIT Jalandhar" className="w-20 h-20 object-contain drop-shadow-xl" />
           </div>
-          
+
           <h1 className="text-4xl xl:text-5xl font-black text-white tracking-tight mb-4 leading-tight">
             Academic Resource <br className="hidden xl:block" />
             <span style={{ color: '#ecc94b' }}>Exchange</span>
           </h1>
-          
+
           <p className="text-white/60 text-lg xl:text-xl font-medium max-w-md mx-auto leading-relaxed">
             The unified platform for NIT Jalandhar students and faculty to share and discover verified academic materials.
           </p>
 
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-lg">
-             <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
-                <div className="w-12 h-12 rounded-xl bg-[#d69e2e]/20 flex items-center justify-center">
-                  <HiOutlineLibrary className="w-6 h-6 text-[#ecc94b]" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-white font-bold text-sm">Centralized</h3>
-                  <p className="text-white/40 text-xs font-medium mt-0.5">Access all resources</p>
-                </div>
-             </div>
-             <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
-                <div className="w-12 h-12 rounded-xl bg-[#38a169]/20 flex items-center justify-center">
-                  <HiOutlineShieldCheck className="w-6 h-6 text-[#48bb78]" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-white font-bold text-sm">Verified</h3>
-                  <p className="text-white/40 text-xs font-medium mt-0.5">Faculty approved</p>
-                </div>
-             </div>
+            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+              <div className="w-12 h-12 rounded-xl bg-[#d69e2e]/20 flex items-center justify-center">
+                <HiOutlineLibrary className="w-6 h-6 text-[#ecc94b]" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-white font-bold text-sm">Centralized</h3>
+                <p className="text-white/40 text-xs font-medium mt-0.5">Access all resources</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+              <div className="w-12 h-12 rounded-xl bg-[#38a169]/20 flex items-center justify-center">
+                <HiOutlineShieldCheck className="w-6 h-6 text-[#48bb78]" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-white font-bold text-sm">Verified</h3>
+                <p className="text-white/40 text-xs font-medium mt-0.5">Faculty approved</p>
+              </div>
+            </div>
           </div>
         </div>
-        
+
         <div className="absolute bottom-8 left-0 w-full text-center text-white/30 text-xs font-bold tracking-widest uppercase">
           Dr B R Ambedkar National Institute of Technology
         </div>
@@ -92,7 +92,7 @@ export default function LoginPage() {
       {/* Right Login Panel */}
       <div className="flex-1 flex flex-col justify-center items-center p-6 lg:p-12 relative z-10 w-full animate-fade-in">
         <div className="w-full max-w-[min(92vw,440px)] animate-scale-in" style={{ animationDelay: '100ms' }}>
-          
+
           {/* Mobile Header Branding */}
           <div className="lg:hidden text-center mb-10">
             <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-white shadow-xl border border-slate-100 p-3">
@@ -207,7 +207,7 @@ export default function LoginPage() {
               </div>
             </form>
           </div>
-          
+
         </div>
       </div>
     </div>

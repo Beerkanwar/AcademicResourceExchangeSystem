@@ -265,9 +265,6 @@ class ResourceService {
     };
   }
 
-  /**
-   * Get current user's uploads
-   */
   static async getMyUploads(userId, { page = 1, limit = 20 }) {
     return ResourceService.listResources({
       page,
@@ -275,6 +272,42 @@ class ResourceService {
       uploadedBy: userId,
       showAll: true,
     });
+  }
+
+  /**
+   * Get dynamic dashboard stats for a user
+   */
+  static async getUserStats(userId) {
+    const mongoose = require('mongoose');
+    const uId = typeof userId === 'string' ? new mongoose.Types.ObjectId(userId) : userId;
+
+    const filter = { uploadedBy: uId, isDeleted: false };
+    
+    const [totalUploads, approved, pending, rejected, aggregation] = await Promise.all([
+      Resource.countDocuments(filter),
+      Resource.countDocuments({ ...filter, status: RESOURCE_STATUS.APPROVED }),
+      Resource.countDocuments({ ...filter, status: RESOURCE_STATUS.PENDING }),
+      Resource.countDocuments({ ...filter, status: RESOURCE_STATUS.REJECTED }),
+      Resource.aggregate([
+        { $match: { uploadedBy: uId, isDeleted: false } },
+        { 
+          $group: { 
+            _id: null, 
+            totalDownloads: { $sum: '$downloads' }, 
+            averageRating: { $avg: '$averageRating' } 
+          } 
+        }
+      ])
+    ]);
+
+    return {
+      totalUploads,
+      approved,
+      pending,
+      rejected,
+      totalDownloads: aggregation[0]?.totalDownloads || 0,
+      reputationScore: aggregation[0]?.averageRating ? Number(aggregation[0].averageRating.toFixed(1)) : 0
+    };
   }
 
   /**

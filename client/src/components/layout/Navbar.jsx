@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { HiOutlineSearch, HiOutlineBell, HiOutlineLogout, HiMenu } from 'react-icons/hi';
 
 export default function Navbar({ onToggleSidebar }) {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     logout();
@@ -67,6 +69,14 @@ export default function Navbar({ onToggleSidebar }) {
                   <HiOutlineSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/35 w-4 h-4" />
                   <input
                     type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && searchQuery.trim()) {
+                        navigate('/resources?search=' + encodeURIComponent(searchQuery.trim()));
+                        setSearchQuery('');
+                      }
+                    }}
                     placeholder="Search resources, subjects, tags..."
                     className="w-full rounded-lg pl-10 pr-4 py-[7px] text-[13px] text-white placeholder:text-white/35 transition-all"
                     style={{

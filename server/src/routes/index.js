@@ -11,6 +11,7 @@ const searchRoutes = require('./search');
 const bookmarkRoutes = require('./bookmarks');
 const ratingRoutes = require('./ratings');
 const auditRoutes = require('./audit');
+const adminRoutes = require('./admin');
 
 // Health check
 router.get('/health', (req, res) => {
@@ -33,5 +34,6 @@ router.use('/search', searchRoutes);
 router.use('/bookmarks', bookmarkRoutes);
 router.use('/ratings', ratingRoutes);
 router.use('/audit', auditRoutes);
+router.use('/admin', adminRoutes);
 
 module.exports = router;

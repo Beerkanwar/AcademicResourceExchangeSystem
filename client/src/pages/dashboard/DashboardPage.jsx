@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import api from '../../api/axios';
 import { Link } from 'react-router-dom';
 import {
   HiOutlineFolder,
@@ -50,19 +52,41 @@ function StatCard({ icon: Icon, label, value, color, subtext, delay = 0 }) {
 
 export default function DashboardPage() {
   const { user, isAdmin, isTeacher } = useAuth();
+  
+  const [userStats, setUserStats] = useState({
+    totalUploads: '—', totalDownloads: '—', reputationScore: '—', pending: '—'
+  });
+  const [adminData, setAdminData] = useState({
+    pendingResources: '—', totalUsers: '—', totalDepartments: '—', totalResources: '—'
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const uStats = await api.get('/resources/user/stats');
+        setUserStats(uStats.data.data);
+        
+        if (isAdmin || isTeacher) {
+          const aStats = await api.get('/admin/stats');
+          setAdminData(aStats.data.data);
+        }
+      } catch { /* ignore */ }
+    }
+    fetchStats();
+  }, [isAdmin, isTeacher]);
 
   const stats = [
-    { icon: HiOutlineFolder, label: 'Resources', value: '—', color: 'navy', subtext: 'Phase 4' },
-    { icon: HiOutlineUpload, label: 'Uploads', value: '—', color: 'gold', subtext: 'Phase 4' },
-    { icon: HiOutlineBookmark, label: 'Bookmarks', value: '—', color: 'blue', subtext: 'Phase 8' },
-    { icon: HiOutlineCloudDownload, label: 'Downloads', value: '—', color: 'green', subtext: 'Phase 6' },
+    { icon: HiOutlineUpload, label: 'Uploads', value: userStats.totalUploads, color: 'gold' },
+    { icon: HiOutlineShieldCheck, label: 'Pending Auth', value: userStats.pending, color: 'orange' },
+    { icon: HiOutlineCloudDownload, label: 'Downloads Received', value: userStats.totalDownloads, color: 'green' },
+    { icon: HiOutlineStar, label: 'Reputation', value: userStats.reputationScore, color: 'blue' },
   ];
 
   const adminStats = [
-    { icon: HiOutlineShieldCheck, label: 'Pending', value: '—', color: 'orange', subtext: 'Phase 5' },
-    { icon: HiOutlineUsers, label: 'Users', value: '—', color: 'navy', subtext: 'Phase 3' },
-    { icon: HiOutlineStar, label: 'Rating', value: '—', color: 'gold', subtext: 'Phase 8' },
-    { icon: HiOutlineAcademicCap, label: 'Depts', value: '—', color: 'green', subtext: 'Phase 4' },
+    { icon: HiOutlineShieldCheck, label: 'Pending DB', value: adminData.pendingResources, color: 'orange' },
+    { icon: HiOutlineUsers, label: 'Global Users', value: adminData.totalUsers, color: 'navy' },
+    { icon: HiOutlineFolder, label: 'Archives', value: adminData.totalResources, color: 'gold' },
+    { icon: HiOutlineAcademicCap, label: 'Depts', value: adminData.totalDepartments, color: 'green' },
   ];
 
   const quickActions = [
@@ -182,11 +206,11 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4 p-5 bg-success/5 rounded-lg border border-success/10">
           <div className="w-4 h-4 rounded-full bg-success animate-pulse shadow-[0_0_12px_rgba(56,161,105,0.4)]" />
           <span className="text-base font-bold text-success-dark">
-            Phase 2 Operational — Production Environment Stable
+            Phase 8 Operational — Full Dashboard Sync Active
           </span>
         </div>
         <p className="text-sm mt-5 text-slate-500 font-bold uppercase tracking-widest leading-loose">
-          Core Authentication Module Active • User Management (Phase 3) Deploying Next
+          Secure Database Connections Alive • Native Roles Guarded
         </p>
       </div>
     </div>

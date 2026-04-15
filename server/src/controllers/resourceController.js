@@ -147,6 +147,18 @@ const resourceController = {
       next(error);
     }
   },
+
+  /**
+   * GET /api/resources/user/stats
+   */
+  getUserStats: async (req, res, next) => {
+    try {
+      const stats = await ResourceService.getUserStats(req.user._id);
+      return ApiResponse.success(res, stats, 'User stats retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = resourceController;

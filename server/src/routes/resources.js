@@ -6,6 +6,7 @@ const { uploadLimiter } = require('../middleware/rateLimiter');
 
 // Specific routes MUST come before /:id to avoid being caught by param matching
 router.get('/user/my-uploads', auth, resourceController.getMyUploads);
+router.get('/user/stats', auth, resourceController.getUserStats);
 
 // Public (with optional auth for personalization)
 router.get('/', optionalAuth, resourceController.getAll);

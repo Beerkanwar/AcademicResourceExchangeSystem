@@ -35,7 +35,6 @@ export default function Sidebar({ isOpen, onClose }) {
   const mainLinks = [
     { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
     { to: '/resources', icon: HiOutlineFolder, label: 'Browse Resources' },
-    { to: '/search', icon: HiOutlineSearch, label: 'Search' },
     { to: '/upload', icon: HiOutlineUpload, label: 'Upload Resource' },
     { to: '/bookmarks', icon: HiOutlineBookmark, label: 'My Bookmarks' },
   ];
