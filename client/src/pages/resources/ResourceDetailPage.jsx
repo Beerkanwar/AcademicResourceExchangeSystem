@@ -15,6 +15,8 @@ import {
   HiOutlineArrowLeft,
   HiOutlineDocumentText,
   HiOutlineUpload,
+  HiOutlineBookmark,
+  HiBookmark
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
@@ -36,22 +38,35 @@ export default function ResourceDetailPage() {
   const { user } = useAuth();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
-    fetchResource();
-  }, [id]); // eslint-disable-line
+    const fetchResource = async () => {
+      try {
+        const res = await api.get(`/resources/${id}`);
+        if (res.data.success) {
+          setResource(res.data.data);
+        }
+      } catch (err) {
+        toast.error('Resource not found');
+        navigate('/resources');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchResource = async () => {
-    try {
-      const res = await api.get(`/resources/${id}`);
-      setResource(res.data.data);
-    } catch (err) {
-      toast.error('Resource not found');
-      navigate('/resources');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchBookmarkStatus = async () => {
+      try {
+        const res = await api.get(`/bookmarks/${id}/status`);
+        if (res.data.success) {
+          setIsBookmarked(res.data.data.bookmarked);
+        }
+      } catch { /* ignore */ }
+    };
+
+    fetchResource();
+    fetchBookmarkStatus();
+  }, [id, navigate]);
 
   const handleDownload = async () => {
     try {
@@ -68,6 +83,18 @@ export default function ResourceDetailPage() {
       setResource((prev) => ({ ...prev, downloads: prev.downloads + 1 }));
     } catch {
       toast.error('Download failed');
+    }
+  };
+
+  const handleBookmarkToggle = async () => {
+    try {
+      const res = await api.post(`/bookmarks/${id}`);
+      if (res.data.success) {
+        setIsBookmarked(res.data.data.bookmarked);
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      toast.error('Failed to toggle bookmark');
     }
   };
 
@@ -155,8 +182,11 @@ export default function ResourceDetailPage() {
 
       {/* Main Card */}
       <section className="panel mb-6">
-        <div className="content-card-header">
-          <HiOutlineDocumentText className="w-5 h-5 mr-2" /> Detail View
+        <div className="content-card-header flex justify-between items-center">
+          <div className="flex items-center"><HiOutlineDocumentText className="w-5 h-5 mr-2" /> Detail View</div>
+          <button onClick={handleBookmarkToggle} className="text-white hover:text-[#d69e2e] transition-colors" title={isBookmarked ? 'Remove Bookmark' : 'Save Bookmark'}>
+            {isBookmarked ? <HiBookmark className="w-5 h-5 text-[#d69e2e]" /> : <HiOutlineBookmark className="w-5 h-5" />}
+          </button>
         </div>
         <div className="content-card-body p-6">
           <div className="flex items-start gap-4 mb-6 pb-6 border-b border-[#e8eef5]">

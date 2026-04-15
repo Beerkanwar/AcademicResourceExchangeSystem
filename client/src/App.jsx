@@ -5,12 +5,15 @@ import LoginPage from './pages/auth/LoginPage';
 import ChangePasswordPage from './pages/auth/ChangePasswordPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProfilePage from './pages/profile/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import UserManagementPage from './pages/admin/UserManagementPage';
 import UploadResourcePage from './pages/resources/UploadResourcePage';
 import BrowseResourcesPage from './pages/resources/BrowseResourcesPage';
 import ResourceDetailPage from './pages/resources/ResourceDetailPage';
+import BookmarksPage from './pages/bookmarks/BookmarksPage';
 import VerificationQueuePage from './pages/admin/VerificationQueuePage';
+import UserManagementPage from './pages/admin/UserManagementPage';
+import DepartmentsPage from './pages/admin/DepartmentsPage';
+import AuditLogsPage from './pages/admin/AuditLogsPage';
+import NotFoundPage from './pages/NotFoundPage';
 import AdminPanelPage from './pages/admin/AdminPanelPage';
 
 export default function App() {
@@ -89,7 +92,7 @@ export default function App() {
           path="/bookmarks"
           element={
             <ProtectedRoute>
-              <PlaceholderPage title="My Bookmarks" phase={8} />
+              <BookmarksPage />
             </ProtectedRoute>
           }
         />
@@ -123,7 +126,7 @@ export default function App() {
           path="/admin/departments"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <PlaceholderPage title="Departments" phase={4} />
+              <DepartmentsPage />
             </ProtectedRoute>
           }
         />
@@ -131,15 +134,7 @@ export default function App() {
           path="/admin/audit"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <PlaceholderPage title="Audit Logs" phase={5} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/settings"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <PlaceholderPage title="Settings" phase={11} />
+              <AuditLogsPage />
             </ProtectedRoute>
           }
         />
@@ -148,27 +143,5 @@ export default function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
-  );
-}
-
-// Temporary placeholder for pages not yet implemented
-function PlaceholderPage({ title, phase }) {
-  return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="card p-8 text-center">
-        <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: '#d69e2e10' }}>
-          <span className="text-2xl">🚧</span>
-        </div>
-        <h1 className="text-2xl font-bold" style={{ color: '#1a202c' }}>{title}</h1>
-        <p className="mt-2 text-[14px]" style={{ color: '#a0aec0' }}>
-          This page will be implemented in <span className="font-semibold" style={{ color: '#d69e2e' }}>Phase {phase}</span>
-        </p>
-        <div className="mt-4 inline-block rounded-lg px-4 py-2" style={{ background: '#edf2f7' }}>
-          <p className="text-[12px] font-medium" style={{ color: '#718096' }}>
-            Skeleton route registered — ready for implementation
-          </p>
-        </div>
-      </div>
-    </div>
   );
 }

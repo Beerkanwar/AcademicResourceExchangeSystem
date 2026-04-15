@@ -11,7 +11,6 @@ import {
   HiOutlineUsers,
   HiOutlineClipboardList,
   HiOutlineAcademicCap,
-  HiOutlineCog,
   HiOutlineSearch,
   HiX,
 } from 'react-icons/hi';
@@ -47,7 +46,6 @@ export default function Sidebar({ isOpen, onClose }) {
     { to: '/admin/users', icon: HiOutlineUsers, label: 'Manage Users' },
     { to: '/admin/departments', icon: HiOutlineAcademicCap, label: 'Departments' },
     { to: '/admin/audit', icon: HiOutlineClipboardList, label: 'Audit Logs' },
-    { to: '/admin/settings', icon: HiOutlineCog, label: 'Settings' },
   ];
 
   const navItemClass = ({ isActive }) =>
