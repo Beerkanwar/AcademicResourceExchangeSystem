@@ -126,7 +126,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="yourname@nitj.ac.in"
-                    className="input-field shadow-sm bg-slate-50/50 hover:bg-white focus:bg-white"
+                    className="nitj-input w-full pl-[36px] shadow-sm bg-slate-50/50 hover:bg-white focus:bg-white"
                     autoComplete="email"
                     required
                   />
@@ -146,7 +146,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="input-field shadow-sm bg-slate-50/50 hover:bg-white focus:bg-white"
+                    className="nitj-input w-full pl-[36px] shadow-sm bg-slate-50/50 hover:bg-white focus:bg-white"
                     style={{ paddingRight: '48px' }}
                     autoComplete="current-password"
                     required
@@ -163,7 +163,7 @@ export default function LoginPage() {
               </div>
 
               {/* Submit */}
-              <button type="submit" disabled={loading} className="btn-primary mt-2 group relative overflow-hidden">
+              <button type="submit" disabled={loading} className="btn-nitj-submit w-full py-3 mt-2 group relative overflow-hidden">
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {loading ? (
                     <>

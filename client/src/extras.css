@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   --nitj-navy: #1a3a6e;
@@ -422,6 +422,7 @@ a {
   font-family: 'Open Sans', Arial, sans-serif !important;
   font-size: 0.855rem !important;
   transition: var(--transition);
+  padding: 10px 14px;
 }
 
 .nitj-textarea:focus,

@@ -109,7 +109,7 @@ export default function UserManagementPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, email, roll number..."
-              className="input-field"
+              className="nitj-input w-full pl-[36px]"
             />
           </div>
           <div className="flex gap-2">
@@ -118,7 +118,7 @@ export default function UserManagementPage() {
               <select
                 value={roleFilter}
                 onChange={(e) => { setRoleFilter(e.target.value); }}
-                className="input-field !pl-9 !pr-8 appearance-none cursor-pointer"
+                className="nitj-select w-full pl-[30px] pr-[30px] appearance-none cursor-pointer"
                 style={{ minWidth: '140px' }}
               >
                 <option value="">All Roles</option>
@@ -127,7 +127,7 @@ export default function UserManagementPage() {
                 <option value="admin">Admin</option>
               </select>
             </div>
-            <button type="submit" className="btn-primary !w-auto !px-5">
+            <button type="submit" className="btn-nitj-submit">
               Search
             </button>
           </div>
@@ -351,7 +351,7 @@ function UserModal({ user, departments, onClose, onSaved }) {
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="input-field !pl-3"
+                className="nitj-select w-full"
               >
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
@@ -365,7 +365,7 @@ function UserModal({ user, departments, onClose, onSaved }) {
             <select
               value={form.department}
               onChange={(e) => setForm({ ...form, department: e.target.value })}
-              className="input-field !pl-3"
+              className="nitj-select w-full"
             >
               <option value="">Select Department</option>
               {departments.map((d) => (
@@ -387,7 +387,7 @@ function UserModal({ user, departments, onClose, onSaved }) {
               style={{ border: '1px solid #e2e8f0', color: '#718096' }}>
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="btn-primary flex-1">
+            <button type="submit" disabled={saving} className="btn-nitj-submit flex-1">
               {saving ? 'Saving...' : isEdit ? 'Update User' : 'Create User'}
             </button>
           </div>
@@ -406,7 +406,7 @@ function Field({ label, type = 'text', value, onChange, placeholder }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="input-field !pl-3"
+        className="nitj-input w-full"
       />
     </div>
   );

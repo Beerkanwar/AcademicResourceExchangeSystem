@@ -102,9 +102,9 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full max-w-5xl mx-auto animate-fade-in space-y-8">
-      <div className="card overflow-hidden border-none shadow-2xl bg-white" style={{ borderRadius: '10px' }}>
+      <div className="panel shadow-sm">
         {/* Profile Header */}
-        <div className="gradient-header px-10 py-16 text-center relative overflow-hidden">
+        <div className="gradient-header px-10 py-16 text-center relative overflow-hidden rounded-t-lg">
           {/* Decorative background element */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -mr-40 -mt-40 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-nitj-gold/5 rounded-full -ml-32 -mb-32 blur-2xl" />
@@ -182,7 +182,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Details */}
-        <div className="p-10 md:p-14">
+        <div className="content-card-body p-10 md:p-14 border-t-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
             <ProfileField
               icon={HiOutlineUser}
@@ -242,16 +242,16 @@ export default function ProfilePage() {
       </div>
 
       {/* Upload History / Document Status Tracking */}
-      <div className="card border-none shadow-xl bg-white" style={{ borderRadius: '10px' }}>
-        <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between">
+      <div className="panel shadow-sm">
+        <div className="content-card-header bg-white border-b border-slate-200">
           <div>
-            <h2 className="text-xl font-black uppercase tracking-widest text-slate-800 flex items-center gap-3">
-              <HiOutlineFolderOpen className="w-6 h-6 text-nitj-gold" /> My Uploads Repository
+            <h2 className="text-lg font-black uppercase tracking-widest text-[#1a3a6e] flex items-center gap-3">
+              <HiOutlineFolderOpen className="w-6 h-6 text-[#d69e2e]" /> My Uploads Repository
             </h2>
             <p className="text-sm font-medium text-slate-500 mt-1">Track the verification status of your contributed documents.</p>
           </div>
         </div>
-        <div className="p-10">
+        <div className="content-card-body p-8 border-t-0">
            {myUploads.length === 0 ? (
              <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                <HiOutlineDocumentText className="w-10 h-10 mx-auto text-slate-400 mb-4" />

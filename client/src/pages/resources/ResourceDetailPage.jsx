@@ -147,7 +147,7 @@ export default function ResourceDetailPage() {
   const status = STATUS_COLORS[resource.status] || STATUS_COLORS.pending;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5 animate-fade-in">
+    <div className="max-w-5xl mx-auto space-y-5 animate-fade-in">
       {/* Back link */}
       <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-[13px] font-medium transition-colors" style={{ color: '#718096' }}>
         <HiOutlineArrowLeft className="w-4 h-4" /> Back to Resources

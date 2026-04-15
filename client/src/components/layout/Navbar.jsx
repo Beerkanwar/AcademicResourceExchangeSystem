@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { HiOutlineSearch, HiOutlineBell, HiOutlineLogout, HiMenu } from 'react-icons/hi';
@@ -6,6 +6,7 @@ import { HiOutlineSearch, HiOutlineBell, HiOutlineLogout, HiMenu } from 'react-i
 export default function Navbar({ onToggleSidebar }) {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
@@ -42,9 +43,9 @@ export default function Navbar({ onToggleSidebar }) {
                 <HiMenu className="w-5 h-5" />
               </button>
             )}
-            <div className="navbar-brand-erp">
+            <div className="navbar-brand-erp mr-6">
               <span className="erp-divider">|</span>
-              <span className="erp-label">ERP - NITJ</span>
+              <span className="erp-label">Resource Exchange System (RES)</span>
             </div>
           </div>
 
@@ -81,18 +82,22 @@ export default function Navbar({ onToggleSidebar }) {
                   </div>
                 </div>
 
+                <div className="mx-2 w-px h-6 bg-white/20"></div>
+
                 <button
                   onClick={handleLogout}
-                  className="text-white/40 hover:text-red-400 p-1"
+                  className="text-white/60 hover:text-red-400 p-2 ml-1"
                   title="Logout"
                 >
-                  <HiOutlineLogout className="w-4 h-4" />
+                  <HiOutlineLogout className="w-5 h-5" />
                 </button>
               </>
             ) : (
-              <Link to="/login" className="btn-nitj-secondary py-1 px-4 text-xs bg-white/20">
-                Login
-              </Link>
+              location.pathname !== '/login' && (
+                <Link to="/login" className="btn-nitj-secondary py-1 px-4 text-xs bg-white/20 ml-2">
+                  Login
+                </Link>
+              )
             )}
           </div>
         </div>

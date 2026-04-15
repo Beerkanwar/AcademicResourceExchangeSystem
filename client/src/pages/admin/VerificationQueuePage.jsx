@@ -71,9 +71,9 @@ export default function VerificationQueuePage() {
             Review and approve student-uploaded academic resources.
           </p>
         </div>
-        <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 bg-white px-5 py-2.5 rounded-lg border border-slate-200 shadow-sm">
           <HiOutlineShieldCheck className="w-4 h-4 text-nitj-gold" />
-          {resources.length} Pending
+          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{resources.length}</span> Pending
         </div>
       </div>
 
@@ -166,7 +166,7 @@ export default function VerificationQueuePage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 h-12 rounded-xl bg-danger text-white text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-danger/20 hover:bg-red-600 transition-colors"
+                  className="flex-1 h-12 rounded-xl bg-danger text-black text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-danger/20 hover:bg-red-600 transition-colors"
                 >
                   Confirm Reject
                 </button>
