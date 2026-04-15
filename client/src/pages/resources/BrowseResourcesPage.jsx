@@ -129,64 +129,65 @@ export default function BrowseResourcesPage() {
       </div>
 
       {/* Modern Filter Bar */}
-      <div className="card p-3 md:p-4 overflow-hidden shadow-sm border-none bg-slate-100/50" style={{ borderRadius: '10px' }}>
-        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-3">
-          <div className="relative flex-[2.5]">
-            <HiOutlineSearch className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="text"
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              placeholder="Query by subject code, title, or keywords..."
-              className="input-field h-14 pl-14 pr-6 bg-white border-none shadow-sm text-base font-medium"
-            />
-          </div>
-          <div className="flex flex-1 gap-3">
-            <select
-              value={filters.department}
-              onChange={(e) => setFilters({ ...filters, department: e.target.value, subject: '' })}
-              className="input-field h-14 !pl-5 flex-1 bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
-            >
-              <option value="">All Departments</option>
-              {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
-            </select>
-            <select
-              value={filters.semester}
-              onChange={(e) => setFilters({ ...filters, semester: e.target.value, subject: '' })}
-              className="input-field h-14 !pl-5 flex-1 bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
-            >
-              <option value="">All Semesters</option>
-              {[1,2,3,4,5,6,7,8].map((s) => <option key={s} value={s}>Semester {s}</option>)}
-            </select>
-            <select
-              value={filters.subject}
-              onChange={(e) => setFilters({ ...filters, subject: e.target.value })}
-              disabled={!filters.department && !filters.semester}
-              className="input-field h-14 !pl-5 flex-[1.5] bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat disabled:opacity-50"
-            >
-              <option value="">All Subjects</option>
-              {subjects.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.code})</option>)}
-            </select>
-          </div>
-          <div className="flex gap-3">
-            <select
-              value={`${filters.sortBy}-${filters.sortOrder}`}
-              onChange={(e) => {
-                const [sortBy, sortOrder] = e.target.value.split('-');
-                setFilters({ ...filters, sortBy, sortOrder });
-              }}
-              className="input-field h-14 !pl-5 min-w-[160px] bg-white border-none shadow-sm text-sm font-bold text-slate-600 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat"
-            >
-              <option value="createdAt-desc">Newest First</option>
-              <option value="downloads-desc">High Usage</option>
-              <option value="averageRating-desc">Top Rated</option>
-            </select>
-            <button type="submit" className="btn-primary !w-auto h-14 px-8 shadow-xl shadow-primary/20">
-              <HiOutlineFilter className="w-6 h-6" />
-            </button>
-          </div>
-        </form>
-      </div>
+      <section className="panel mb-6">
+        <div className="content-card-body p-4">
+          <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-[2]">
+              <input
+                type="text"
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                placeholder="Query by subject code, title, or keywords..."
+                className="form-control nitj-input w-full"
+              />
+            </div>
+            <div className="flex flex-1 gap-2">
+              <select
+                value={filters.department}
+                onChange={(e) => setFilters({ ...filters, department: e.target.value, subject: '' })}
+                className="form-select nitj-select flex-1"
+              >
+                <option value="">All Departments</option>
+                {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
+              </select>
+              <select
+                value={filters.semester}
+                onChange={(e) => setFilters({ ...filters, semester: e.target.value, subject: '' })}
+                className="form-select nitj-select flex-1"
+              >
+                <option value="">All Semesters</option>
+                {[1,2,3,4,5,6,7,8].map((s) => <option key={s} value={s}>Semester {s}</option>)}
+              </select>
+              <select
+                value={filters.subject}
+                onChange={(e) => setFilters({ ...filters, subject: e.target.value })}
+                disabled={!filters.department && !filters.semester}
+                className="form-select nitj-select flex-[1.5]"
+              >
+                <option value="">All Subjects</option>
+                {subjects.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.code})</option>)}
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={`${filters.sortBy}-${filters.sortOrder}`}
+                onChange={(e) => {
+                  const [sortBy, sortOrder] = e.target.value.split('-');
+                  setFilters({ ...filters, sortBy, sortOrder });
+                }}
+                className="form-select nitj-select min-w-[160px]"
+              >
+                <option value="createdAt-desc">Newest First</option>
+                <option value="downloads-desc">High Usage</option>
+                <option value="averageRating-desc">Top Rated</option>
+              </select>
+              <button type="submit" className="btn-nitj-submit px-4">
+                <HiOutlineFilter className="w-5 h-5" />
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
 
       {/* Content Grid */}
       <section className="min-h-[500px]">
@@ -236,59 +237,47 @@ export default function BrowseResourcesPage() {
                 <Link
                   key={resource._id}
                   to={`/resources/${resource._id}`}
-                  className="card p-8 group animate-slide-up block border-none shadow-sm hover:shadow-2xl transition-all relative overflow-hidden bg-white"
-                  style={{ animationDelay: `${i * 30}ms`, borderRadius: '10px' }}
+                  className="bg-white border border-[#c5d8ed] rounded-md p-5 block hover:border-[#1a3a6e] hover:shadow-md transition-all relative"
                 >
                   <div className="relative z-10">
                     {/* Header */}
-                    <div className="flex items-start gap-5 mb-6">
-                      <div
-                        className="w-16 h-16 rounded-xl flex items-center justify-center text-4xl flex-shrink-0 group-hover:scale-110 transition-transform duration-500 bg-slate-50 shadow-inner"
-                      >
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="text-3xl flex-shrink-0">
                         {FILE_ICONS[resource.fileType] || '📄'}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-lg font-black text-slate-800 truncate group-hover:text-nitj-gold transition-colors leading-tight tracking-tight uppercase">
+                        <h3 className="text-sm font-bold text-[#1a3a6e] truncate">
                           {resource.title}
                         </h3>
-                        <p className="text-[10px] font-black text-slate-400 mt-2 uppercase tracking-[0.2em] truncate">
+                        <p className="text-[10px] text-[#6c7a8e] mt-1 uppercase">
                            {resource.department?.code || 'GEN'} • SEM 0{resource.semester}
                         </p>
                       </div>
                     </div>
 
                     {/* Meta Info */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      <span className="px-3 py-1 rounded-md bg-slate-100 text-[9px] font-black text-slate-500 uppercase tracking-widest border border-slate-200">
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      <span className="px-2 py-0.5 rounded bg-[#e8eef5] text-[9px] font-bold text-[#1a3a6e] uppercase">
                         {resource.fileType}
                       </span>
                       {resource.tags?.slice(0, 2).map((tag) => (
-                        <span key={tag} className="px-3 py-1 rounded-md bg-nitj-gold/10 text-[9px] font-black text-nitj-gold uppercase tracking-widest border border-nitj-gold/10">
+                        <span key={tag} className="px-2 py-0.5 rounded bg-[#fffaf0] text-[9px] font-bold text-[#e8a020] border border-[#f3e5c9] uppercase">
                           #{tag}
                         </span>
                       ))}
                     </div>
 
-                    {/* Description */}
-                    {resource.description && (
-                      <p className="text-sm text-slate-500 line-clamp-3 mb-8 leading-relaxed font-medium">
-                        {resource.description}
-                      </p>
-                    )}
-
                     {/* Stats Footer */}
-                    <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                      <div className="flex items-center gap-5 text-[11px] font-black text-slate-400">
-                        <span className="flex items-center gap-2"><HiOutlineDownload className="w-4 h-4" />{resource.downloads}</span>
-                        <span className="flex items-center gap-2"><HiOutlineStar className="w-4 h-4 text-nitj-gold" />{resource.averageRating > 0 ? resource.averageRating.toFixed(1) : '—'}</span>
+                    <div className="flex items-center justify-between pt-4 border-t border-[#e8eef5]">
+                      <div className="flex items-center gap-4 text-xs text-[#6c7a8e] font-bold">
+                        <span className="flex items-center gap-1"><HiOutlineDownload className="w-3.5 h-3.5" />{resource.downloads}</span>
+                        <span className="flex items-center gap-1"><HiOutlineStar className="w-3.5 h-3.5 text-[#e8a020]" />{resource.averageRating > 0 ? resource.averageRating.toFixed(1) : '—'}</span>
                       </div>
-                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                      <span className="text-[10px] text-[#9ca3af]">
                         {timeAgo(resource.createdAt)}
                       </span>
                     </div>
                   </div>
-                  {/* Hover effect decorative element */}
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-full -mr-20 -mt-20 group-hover:bg-nitj-gold/5 transition-colors duration-500" />
                 </Link>
               );
             })}

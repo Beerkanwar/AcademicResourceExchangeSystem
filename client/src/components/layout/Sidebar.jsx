@@ -51,18 +51,9 @@ export default function Sidebar({ isOpen, onClose }) {
   ];
 
   const navItemClass = ({ isActive }) =>
-    `flex items-center gap-3 px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 group ${isActive
-      ? 'text-white'
-      : 'text-white/55 hover:text-white hover:bg-white/[0.06]'
-    }`;
+    `sidebar-item ${isActive ? 'active' : ''}`;
 
-  const navItemStyle = (isActive) =>
-    isActive
-      ? {
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06))',
-        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)',
-      }
-      : {};
+  const navItemStyle = (isActive) => ({});
 
   return (
     <>
@@ -71,28 +62,20 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-[2px]" onClick={onClose} />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-[100dvh] w-[260px] xl:w-[280px] z-50 lg:z-auto flex-shrink-0 transform transition-all duration-300 ease-in-out lg:translate-x-0 overflow-y-auto ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        style={{
-          background: 'linear-gradient(180deg, #0a1929 0%, #0f2440 50%, #132e57 100%)',
-          borderRight: '1px solid rgba(255,255,255,0.05)',
-        }}
+        className={`portal-sidebar transform transition-all duration-300 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0 fixed z-50 h-[100dvh]' : '-translate-x-full hidden lg:block'}`}
       >
         {/* Mobile close button */}
-        <div className="flex items-center justify-between p-4 lg:hidden">
-          <span className="text-white/80 font-semibold text-xs uppercase tracking-widest">Menu</span>
-          <button onClick={onClose} className="text-white/50 hover:text-white p-1" aria-label="Close sidebar">
+        <div className="flex items-center justify-between p-4 lg:hidden border-b border-[#c5d8ed] mb-2">
+          <span className="text-[#1a3a6e] font-bold text-xs uppercase tracking-widest">Menu</span>
+          <button onClick={onClose} className="text-[#1a3a6e]/50 hover:text-[#1a3a6e] p-1" aria-label="Close sidebar">
             <HiX className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation */}
-        <div className="px-3 pt-4 lg:pt-5 pb-8 space-y-1">
-          <p className="text-white/25 text-[10px] font-bold uppercase tracking-[0.15em] px-3.5 mb-3">
-            Quick Links
-          </p>
+        <div className="sidebar-nav">
+          <div className="sidebar-heading">Quick Links</div>
 
           {mainLinks.map((link) => (
             <NavLink
@@ -110,10 +93,7 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Verification — Teachers and Admin */}
           {(isAdmin || isTeacher) && (
             <>
-              <div className="my-4 mx-3 border-t border-white/[0.06]" />
-              <p className="text-white/25 text-[10px] font-bold uppercase tracking-[0.15em] px-3.5 mb-3">
-                Verification
-              </p>
+              <div className="sidebar-heading mt-4">Verification</div>
               {verificationLinks.map((link) => (
                 <NavLink
                   key={link.to}
@@ -140,10 +120,7 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Admin section */}
           {isAdmin && (
             <>
-              <div className="my-4 mx-3 border-t border-white/[0.06]" />
-              <p className="text-white/25 text-[10px] font-bold uppercase tracking-[0.15em] px-3.5 mb-3">
-                Administration
-              </p>
+              <div className="sidebar-heading mt-4">Administration</div>
               {adminLinks.map((link) => (
                 <NavLink
                   key={link.to}

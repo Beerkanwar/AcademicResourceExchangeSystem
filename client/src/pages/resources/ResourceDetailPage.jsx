@@ -154,212 +154,151 @@ export default function ResourceDetailPage() {
       </button>
 
       {/* Main Card */}
-      <div className="card overflow-hidden">
-        {/* Header */}
-        <div className="gradient-header px-6 py-6">
-          <div className="flex items-start gap-4">
-            <div
-              className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl flex-shrink-0"
-              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
-            >
-              {FILE_ICONS[resource.fileType] || '📄'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold text-white leading-tight flex items-center gap-3">
+      <section className="panel mb-6">
+        <div className="content-card-header">
+          <HiOutlineDocumentText className="w-5 h-5 mr-2" /> Detail View
+        </div>
+        <div className="content-card-body p-6">
+          <div className="flex items-start gap-4 mb-6 pb-6 border-b border-[#e8eef5]">
+            <div className="text-4xl">{FILE_ICONS[resource.fileType] || '📄'}</div>
+            <div className="flex-1">
+              <h1 className="text-xl font-bold text-[#1a3a6e] break-words">
                 {resource.title}
-                <span className="text-[11px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-inner inline-flex items-center" style={{ background: '#ecc94b', color: '#1a365d' }}>
-                  VERSION {resource.currentVersion || 1}
+                <span className="ml-3 text-xs bg-[#fffaf0] text-[#e8a020] border border-[#f3e5c9] px-2 py-0.5 rounded font-bold uppercase">
+                  Version {resource.currentVersion || 1}
                 </span>
               </h1>
-              <p className="text-[12px] text-white/50 mt-1">
-                {resource.originalFilename} • {formatSize(resource.fileSize)} • .{resource.fileType?.toUpperCase()}
+              <p className="text-xs text-[#6c7a8e] mt-2 font-mono">
+                {resource.originalFilename} • {formatSize(resource.fileSize)}
               </p>
             </div>
-            <span className="badge flex-shrink-0" style={{ background: status.bg, color: status.color }}>
+            <div className="badge" style={{ background: status.bg, color: status.color }}>
               {status.label}
-            </span>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="p-6 space-y-6">
-          {/* Description */}
-          {resource.description && (
-            <div>
-              <h3 className="text-[12px] font-bold uppercase tracking-wider mb-2" style={{ color: '#a0aec0' }}>Description</h3>
-              <p className="text-[14px] leading-relaxed" style={{ color: '#4a5568' }}>{resource.description}</p>
             </div>
-          )}
-
-          {/* Stats Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatBox icon={HiOutlineEye} label="Views" value={resource.views} color="#3182ce" />
-            <StatBox icon={HiOutlineDownload} label="Downloads" value={resource.downloads} color="#38a169" />
-            <StatBox icon={HiOutlineStar} label="Rating" value={resource.averageRating > 0 ? resource.averageRating.toFixed(1) : '—'} color="#d69e2e" />
-            <StatBox icon={HiOutlineClock} label="Uploaded" value={new Date(resource.createdAt).toLocaleDateString()} color="#718096" />
           </div>
 
-          {/* Academic Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {resource.department && (
-              <DetailRow icon={HiOutlineAcademicCap} label="Department" value={`${resource.department.name} (${resource.department.code})`} />
-            )}
-            {resource.semester && <DetailRow icon={HiOutlineDocumentText} label="Semester" value={`Semester ${resource.semester}`} />}
-            {resource.subject && <DetailRow icon={HiOutlineDocumentText} label="Subject" value={`${resource.subject.name} (${resource.subject.code})`} />}
-            {resource.courseCode && <DetailRow icon={HiOutlineDocumentText} label="Course Code" value={resource.courseCode} />}
-            {resource.author && <DetailRow icon={HiOutlineUser} label="Author" value={resource.author} />}
-            {resource.academicYear && <DetailRow icon={HiOutlineClock} label="Academic Year" value={resource.academicYear} />}
-          </div>
-
-          {/* Tags */}
-          {resource.tags?.length > 0 && (
-            <div>
-              <h3 className="text-[12px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: '#a0aec0' }}>
-                <HiOutlineTag className="w-3.5 h-3.5" /> Tags
-              </h3>
-              <div className="flex flex-wrap gap-1.5">
-                {resource.tags.map((tag) => (
-                  <span key={tag} className="badge" style={{ background: '#1a365d08', color: '#1a365d' }}>#{tag}</span>
-                ))}
+          <div className="space-y-6">
+            {resource.description && (
+              <div>
+                <h3 className="nitj-label">Description</h3>
+                <p className="text-sm text-[#4a5568]">{resource.description}</p>
               </div>
-            </div>
-          )}
-
-          {/* Uploader Info */}
-          <div className="flex items-center gap-3 p-3 rounded-lg" style={{ background: '#f7fafc' }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-bold" style={{ background: '#1a365d15', color: '#1a365d' }}>
-              {resource.uploadedBy?.firstName?.[0] || resource.uploadedBy?.email?.[0]?.toUpperCase() || '?'}
-            </div>
-            <div>
-              <p className="text-[13px] font-semibold" style={{ color: '#2d3748' }}>
-                {resource.uploadedBy?.firstName
-                  ? `${resource.uploadedBy.firstName} ${resource.uploadedBy.lastName || ''}`
-                  : resource.uploadedBy?.email}
-              </p>
-              <p className="text-[11px] capitalize" style={{ color: '#a0aec0' }}>{resource.uploadedBy?.role}</p>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-2">
-            <button onClick={handleDownload} className="btn-primary flex-1">
-              <HiOutlineDownload className="w-5 h-5" /> Download
-            </button>
-            {canEdit && (
-              <>
-                <button
-                  onClick={() => document.getElementById('version-upload').click()}
-                  className="flex items-center justify-center gap-2 flex-1 py-2.5 rounded-lg text-[13px] font-medium transition-colors border shadow-sm"
-                  style={{ borderColor: '#38a169', color: '#276749', background: '#f0fff4' }}
-                >
-                  <HiOutlineUpload className="w-4 h-4" /> Record New Version
-                </button>
-                <input 
-                  type="file" 
-                  id="version-upload" 
-                  className="hidden" 
-                  onChange={handleVersionUpload} 
-                />
-                <Link
-                  to={`/resources/${id}/edit`}
-                  className="flex items-center justify-center gap-2 flex-[0.7] py-2.5 rounded-lg text-[13px] font-medium transition-colors"
-                  style={{ border: '1px solid #e2e8f0', color: '#3182ce' }}
-                >
-                  <HiOutlinePencil className="w-4 h-4" /> Edit
-                </Link>
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-[13px] font-medium transition-colors bg-white shadow-sm"
-                  style={{ border: '1px solid #e53e3e20', color: '#e53e3e' }}
-                >
-                  <HiOutlineTrash className="w-4 h-4" />
-                </button>
-              </>
             )}
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <StatBox icon={HiOutlineEye} label="Views" value={resource.views} />
+              <StatBox icon={HiOutlineDownload} label="Downloads" value={resource.downloads} />
+              <StatBox icon={HiOutlineStar} label="Rating" value={resource.averageRating > 0 ? resource.averageRating.toFixed(1) : '—'} />
+              <StatBox icon={HiOutlineClock} label="Uploaded" value={new Date(resource.createdAt).toLocaleDateString()} />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {resource.department && <DetailRow icon={HiOutlineAcademicCap} label="Department" value={`${resource.department.name} (${resource.department.code})`} />}
+              {resource.semester && <DetailRow icon={HiOutlineDocumentText} label="Semester" value={`Semester ${resource.semester}`} />}
+              {resource.subject && <DetailRow icon={HiOutlineDocumentText} label="Subject" value={`${resource.subject.name} (${resource.subject.code})`} />}
+              {resource.courseCode && <DetailRow icon={HiOutlineDocumentText} label="Course Code" value={resource.courseCode} />}
+              {resource.author && <DetailRow icon={HiOutlineUser} label="Author" value={resource.author} />}
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button onClick={handleDownload} className="btn-nitj-primary flex-1 py-2 flex justify-center items-center gap-2">
+                <HiOutlineDownload className="w-5 h-5" /> Download Native File
+              </button>
+              {canEdit && (
+                <>
+                  <button onClick={() => document.getElementById('version-upload').click()} className="btn-nitj-submit flex-1 py-2 flex justify-center items-center gap-2">
+                    <HiOutlineUpload className="w-5 h-5" /> Record New Version
+                  </button>
+                  <input type="file" id="version-upload" className="hidden" onChange={handleVersionUpload} />
+                  <Link to={`/resources/${id}/edit`} className="btn-nitj-secondary flex justify-center items-center gap-2 px-6">
+                    <HiOutlinePencil className="w-4 h-4" /> Edit
+                  </Link>
+                  <button onClick={handleDelete} className="text-[#dc3545] border border-[#dc3545] hover:bg-[#ffebeb] px-4 rounded-md">
+                    <HiOutlineTrash className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Resource Preview */}
-      <div className="card overflow-hidden border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
-        <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
-          <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-800 flex items-center gap-2">
-            <HiOutlineEye className="w-4 h-4 text-nitj-gold" /> In-Browser Preview
-          </h3>
+      <section className="panel mb-6">
+        <div className="content-card-header">
+          <HiOutlineEye className="w-5 h-5 mr-2" /> Content Preview
         </div>
-        <div className="bg-slate-50 relative" style={{ minHeight: '400px' }}>
-          {['pdf'].includes(resource.fileType) ? (
-            <iframe 
-              src={`/uploads/${resource.storedFilename}`} 
-              className="w-full"
-              style={{ height: '70vh', minHeight: '600px', border: 'none' }}
-              title="PDF Preview"
-            />
-          ) : ['png', 'jpg', 'jpeg'].includes(resource.fileType) ? (
-            <div className="p-8 flex justify-center bg-slate-100/50">
-               <img src={`/uploads/${resource.storedFilename}`} alt="Resource Preview" className="max-w-full rounded-lg shadow-xl" />
-            </div>
-          ) : ['txt'].includes(resource.fileType) ? (
-             <iframe 
-              src={`/uploads/${resource.storedFilename}`} 
-              className="w-full bg-white p-6 font-mono text-sm leading-relaxed"
-              style={{ height: '500px', border: 'none' }}
-              title="Text Preview"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-               <div className="w-20 h-20 rounded-2xl bg-white shadow-inner flex items-center justify-center mb-6">
-                  {FILE_ICONS[resource.fileType] || '📄'}
-               </div>
-               <h4 className="text-xl font-black text-slate-800 tracking-tight uppercase">Native Preview Unavailable</h4>
-               <p className="text-sm font-medium text-slate-500 max-w-sm mt-3 leading-relaxed">
-                 The verification portal cannot natively render <strong className="text-slate-700">.{resource.fileType.toUpperCase()}</strong> binary files. Please download the resource to view its contents securely.
-               </p>
-               <button onClick={handleDownload} className="mt-8 btn-accent flex items-center gap-3 px-8 h-12 text-sm shadow-xl shadow-accent/20">
-                 <HiOutlineDownload className="w-5 h-5" /> Execute Download
-               </button>
-            </div>
-          )}
+        <div className="content-card-body p-0">
+          <div className="bg-[#f8fbff] relative w-full h-[500px]">
+            {['pdf'].includes(resource.fileType) ? (
+              <iframe 
+                src={`/uploads/${resource.storedFilename}`} 
+                className="w-full h-full border-none"
+                title="PDF Preview"
+              />
+            ) : ['png', 'jpg', 'jpeg'].includes(resource.fileType) ? (
+              <div className="p-8 flex justify-center items-center h-full">
+                 <img src={`/uploads/${resource.storedFilename}`} alt="Resource Preview" className="max-h-[400px] max-w-full rounded shadow-md" />
+              </div>
+            ) : ['txt'].includes(resource.fileType) ? (
+               <iframe 
+                src={`/uploads/${resource.storedFilename}`} 
+                className="w-full h-full border-none bg-white p-6 font-mono text-sm leading-relaxed"
+                title="Text Preview"
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                 <div className="text-5xl mb-4">{FILE_ICONS[resource.fileType] || '📄'}</div>
+                 <h4 className="text-lg font-bold text-[#1a3a6e] mb-2">Native Preview Unavailable</h4>
+                 <p className="text-sm text-[#6c7a8e] max-w-md">
+                   The system cannot natively render .{resource.fileType.toUpperCase()} files. Please download the resource to view its contents securely.
+                 </p>
+                 <button onClick={handleDownload} className="mt-6 btn-nitj-primary px-6 py-2">
+                   <HiOutlineDownload className="w-5 h-5 mr-2 inline" /> Execute Download
+                 </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Version History Table */}
       {resource.versions && resource.versions.length > 0 && (
-        <div className="card overflow-hidden border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
-          <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
-            <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-800 flex items-center gap-2">
-              <HiOutlineClock className="w-4 h-4 text-nitj-gold" /> Version Archives
-            </h3>
+        <section className="panel mb-6">
+          <div className="content-card-header">
+            <HiOutlineClock className="w-5 h-5 mr-2" /> Version Archives
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">
-                <tr>
-                  <th className="px-6 py-4">Version</th>
-                  <th className="px-6 py-4">Filename Bound</th>
-                  <th className="px-6 py-4">Archived On</th>
-                  <th className="px-6 py-4 text-right">Payload Access</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {resource.versions.map(v => (
-                  <tr key={v._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4 font-black text-slate-800">v{v.version}</td>
-                    <td className="px-6 py-4 font-medium">{v.originalFilename}</td>
-                    <td className="px-6 py-4 text-[11px] font-bold tracking-wider text-slate-400">
-                      {new Date(v.uploadedAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => downloadOldVersion(v)} className="text-nitj-gold hover:text-nitj-navy transition-colors font-black text-[10px] uppercase tracking-widest">
-                        Execute Download
-                      </button>
-                    </td>
+          <div className="content-card-body p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-[#f8fbff] text-[#1a3a6e] font-bold border-b border-[#c5d8ed]">
+                  <tr>
+                    <th className="px-6 py-3">Version</th>
+                    <th className="px-6 py-3">Filename Bound</th>
+                    <th className="px-6 py-3">Archived On</th>
+                    <th className="px-6 py-3 text-right">Access</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-[#e8eef5]">
+                  {resource.versions.map(v => (
+                    <tr key={v._id} className="hover:bg-[#f8fbff]">
+                      <td className="px-6 py-3 font-bold">v{v.version}</td>
+                      <td className="px-6 py-3 text-[#6c7a8e]">{v.originalFilename}</td>
+                      <td className="px-6 py-3 text-[#6c7a8e]">
+                        {new Date(v.uploadedAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <button onClick={() => downloadOldVersion(v)} className="text-[#1a3a6e] hover:underline font-bold text-xs uppercase">
+                          Download
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Rejection Reason */}
@@ -373,23 +312,25 @@ export default function ResourceDetailPage() {
   );
 }
 
-function StatBox({ icon: Icon, label, value, color }) {
+function StatBox({ icon: Icon, label, value }) {
   return (
-    <div className="p-3 rounded-lg text-center" style={{ background: `${color}08` }}>
-      <Icon className="w-5 h-5 mx-auto mb-1" style={{ color }} />
-      <p className="text-[15px] font-bold" style={{ color: '#1a202c' }}>{value}</p>
-      <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: '#a0aec0' }}>{label}</p>
+    <div className="bg-[#f8fbff] border border-[#c5d8ed] rounded px-4 py-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className="w-4 h-4 text-[#1a3a6e]" />
+        <span className="text-xs font-bold text-[#6c7a8e] uppercase">{label}</span>
+      </div>
+      <p className="text-lg font-bold text-[#1a1a2e]">{value}</p>
     </div>
   );
 }
 
 function DetailRow({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-3 py-2 px-3 rounded-lg" style={{ background: '#f7fafc' }}>
-      <Icon className="w-4 h-4 flex-shrink-0" style={{ color: '#718096' }} />
+    <div className="flex items-center gap-3 px-4 py-2 border-l-2 border-[#1a3a6e] bg-[#f8fbff]">
+      <Icon className="w-4 h-4 text-[#1a3a6e]" />
       <div>
-        <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: '#a0aec0' }}>{label}</p>
-        <p className="text-[13px] font-medium" style={{ color: '#2d3748' }}>{value}</p>
+        <p className="text-[10px] font-bold text-[#6c7a8e] uppercase">{label}</p>
+        <p className="text-sm font-semibold text-[#1a1a2e]">{value}</p>
       </div>
     </div>
   );

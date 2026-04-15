@@ -146,215 +146,182 @@ export default function UploadResourcePage() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Left Column — File and Main Details */}
-        <div className="lg:col-span-2 space-y-10">
+        <div className="lg:col-span-2 space-y-6">
           {/* Drop Zone */}
-          <div
-            className={`card p-0 overflow-hidden transition-all duration-300 border-none shadow-sm ${dragging ? 'ring-4 ring-nitj-gold/20' : 'hover:shadow-xl'}`}
-            style={{ borderRadius: '10px' }}
-            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={handleDrop}
-          >
-            {!file ? (
-              <label
-                htmlFor="file-upload"
-                className="flex flex-col items-center justify-center py-24 px-8 cursor-pointer group bg-slate-50/30"
+          <section className="panel">
+            <div className="content-card-header">
+              <HiOutlineCloudUpload className="w-5 h-5 mr-2" /> Upload Protocol
+            </div>
+            <div className="content-card-body p-6">
+              <div
+                className={`border-2 border-dashed ${dragging ? 'border-[#e8a020] bg-[#fffaf0]' : 'border-[#aac0d8] bg-[#f8fbff]'} rounded-lg transition-all text-center`}
+                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={handleDrop}
               >
-                <div
-                  className="w-24 h-24 rounded-xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 bg-white shadow-xl"
-                  style={{ border: '2px dashed rgba(214,158,46,0.2)' }}
-                >
-                  <HiOutlineCloudUpload className="w-12 h-12 text-nitj-gold" />
-                </div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight uppercase">Deploy Academic File</h3>
-                <p className="text-base text-slate-500 mt-3 max-w-sm text-center font-medium">
-                  Drag and drop your document here or <span className="text-nitj-gold font-black underline decoration-2 underline-offset-4">select from system</span>
-                </p>
-                <div className="mt-10 flex flex-wrap justify-center gap-3">
-                  {['PDF', 'PPTX', 'DOCX', 'ZIP'].map(ext => (
-                    <span key={ext} className="px-3 py-1.5 rounded-md bg-white border border-slate-200 text-[11px] font-black text-slate-400 tracking-widest">{ext}</span>
-                  ))}
-                </div>
-                <input
-                  id="file-upload"
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => e.target.files[0] && selectFile(e.target.files[0])}
-                />
-              </label>
-            ) : (
-              <div className="p-10 bg-white">
-                <div className="flex items-center gap-8">
-                  <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center text-4xl flex-shrink-0 bg-slate-50 shadow-inner"
-                  >
-                    {FILE_ICONS[ext] || '📄'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-black text-slate-800 truncate tracking-tight">{file.name}</h3>
-                    <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-2">
-                      {formatSize(file.size)} • {ext} archive
-                    </p>
-                  </div>
-                  {!uploading && (
-                    <button type="button" onClick={removeFile} className="p-4 rounded-xl bg-slate-50 text-slate-400 hover:text-danger hover:bg-danger/5 transition-all shadow-sm">
-                      <HiOutlineX className="w-6 h-6" />
-                    </button>
-                  )}
-                </div>
-                {/* Upload Progress */}
-                {uploading && (
-                  <div className="mt-10">
-                    <div className="flex justify-between items-end mb-3">
-                      <span className="text-[11px] font-black text-nitj-gold uppercase tracking-[0.25em]">Transmission in Progress...</span>
-                      <span className="text-lg font-black text-slate-800">{progress}%</span>
+                {!file ? (
+                  <label htmlFor="file-upload" className="block py-16 cursor-pointer">
+                    <HiOutlineCloudUpload className="w-12 h-12 text-[#1a3a6e] mx-auto mb-3" />
+                    <p className="text-sm font-bold text-[#1a3a6e]">Click to upload or drag and drop</p>
+                    <p className="text-xs text-[#6c7a8e] mt-1">PDF, PPT, DOC, ZIP (Max. 50MB)</p>
+                    <input
+                      id="file-upload"
+                      ref={fileInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={(e) => e.target.files[0] && selectFile(e.target.files[0])}
+                    />
+                  </label>
+                ) : (
+                  <div className="p-6">
+                    <div className="flex items-center gap-4 bg-white p-4 border border-[#c5d8ed] rounded-md shadow-sm">
+                      <div className="text-3xl">{FILE_ICONS[ext] || '📄'}</div>
+                      <div className="text-left flex-1 min-w-0">
+                        <p className="font-bold text-[#1a3a6e] truncate text-sm">{file.name}</p>
+                        <p className="text-xs text-[#6c7a8e] uppercase">{formatSize(file.size)}</p>
+                      </div>
+                      {!uploading && (
+                        <button type="button" onClick={removeFile} className="text-[#dc3545] hover:bg-[#ffebeb] p-2 rounded">
+                          <HiOutlineX className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
-                    <div className="h-3 rounded-full bg-slate-100 overflow-hidden shadow-inner">
-                      <div
-                        className="h-full rounded-full transition-all duration-300"
-                        style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #d69e2e, #ecc94b)' }}
-                      />
-                    </div>
+                    {uploading && (
+                      <div className="mt-4">
+                        <div className="flex justify-between text-xs font-bold text-[#1a3a6e] mb-1">
+                          <span>Uploading...</span>
+                          <span>{progress}%</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-[#e8eef5] overflow-hidden">
+                          <div className="h-full bg-[#1a3a6e] transition-all" style={{ width: `${progress}%` }} />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          </section>
 
           {/* Metadata */}
-          <div className="card p-10 space-y-8 border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
-            <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
-              <div className="p-3 rounded-xl bg-slate-50 text-slate-600 shadow-sm">
-                 <HiOutlineDocumentText className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Resource Classification</h2>
+          <section className="panel">
+            <div className="content-card-header">
+              <HiOutlineDocumentText className="w-5 h-5 mr-2" /> Content Metdata
             </div>
+            <div className="content-card-body p-6">
+              <div className="space-y-4">
+                <Field label="Document Identification (Title) *" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="e.g. ADVANCED ALGORITHMS" />
+                
+                <div className="space-y-1">
+                  <label className="nitj-label">Resource Context / Abstract</label>
+                  <textarea
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Provide abstract..."
+                    className="form-control nitj-textarea w-full"
+                  />
+                </div>
 
-            <div className="space-y-8">
-              <Field label="Document Identification (Title) *" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="e.g. ADVANCED ALGORITHMS - UNIT 1 LECTURE NOTES" />
-              
-              <div className="space-y-3">
-                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Resource Context / Abstract</label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Provide a detailed technical abstract of the resource content..."
-                  rows={5}
-                  className="input-field !pl-5 pt-4 h-auto text-base"
-                  style={{ resize: 'vertical' }}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Field label="Academic Author / Professor" value={form.author} onChange={(v) => setForm({ ...form, author: v })} placeholder="e.g. DR. R.K. SINGH" />
-                <Field label="Academic Year" value={form.academicYear} onChange={(v) => setForm({ ...form, academicYear: v })} placeholder="e.g. 2026-27" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Field label="Academic Author" value={form.author} onChange={(v) => setForm({ ...form, author: v })} placeholder="DR. R.K. SINGH" />
+                  <Field label="Academic Year" value={form.academicYear} onChange={(v) => setForm({ ...form, academicYear: v })} placeholder="2026-27" />
+                </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
         {/* Right Column — Categorization */}
-        <div className="space-y-10">
-          {/* Categorization */}
-          <div className="card p-10 space-y-8 border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-slate-50 text-slate-600 shadow-sm">
-                 <HiOutlineAcademicCap className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Hierarchy</h2>
+        <div className="space-y-6">
+          <section className="panel">
+            <div className="content-card-header">
+              <HiOutlineAcademicCap className="w-5 h-5 mr-2" /> Hierarchy
             </div>
+            <div className="content-card-body p-6">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="nitj-label">Department *</label>
+                  <select
+                    value={form.department}
+                    onChange={(e) => setForm({ ...form, department: e.target.value, subject: '' })}
+                    className="form-select nitj-select w-full"
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((d) => (
+                      <option key={d._id} value={d._id}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
 
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Department</label>
-                <select
-                  value={form.department}
-                  onChange={(e) => setForm({ ...form, department: e.target.value, subject: '' })}
-                  className="input-field !pl-5 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat font-bold text-slate-700"
-                >
-                  <option value="">Select Department</option>
-                  {departments.map((d) => (
-                    <option key={d._id} value={d._id}>{d.name}</option>
-                  ))}
-                </select>
+                <div className="space-y-1">
+                  <label className="nitj-label">Semester</label>
+                  <select
+                    value={form.semester}
+                    onChange={(e) => setForm({ ...form, semester: e.target.value, subject: '' })}
+                    className="form-select nitj-select w-full"
+                  >
+                    <option value="">Select Semester</option>
+                    {[1,2,3,4,5,6,7,8].map((s) => (
+                      <option key={s} value={s}>Semester {s}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="nitj-label">Subject</label>
+                  <select
+                    value={form.subject}
+                    onChange={(e) => {
+                      const sub = subjects.find((s) => s._id === e.target.value);
+                      setForm({ ...form, subject: e.target.value, courseCode: sub?.code || form.courseCode });
+                    }}
+                    className="form-select nitj-select w-full"
+                    disabled={!form.department}
+                  >
+                    <option value="">Select Subject</option>
+                    {subjects.map((s) => (
+                      <option key={s._id} value={s._id}>{s.name} ({s.code})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <Field label="System Course Code" value={form.courseCode} onChange={(v) => setForm({ ...form, courseCode: v })} placeholder="e.g. CSP-301" />
               </div>
-
-              <div className="space-y-3">
-                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Semester Cycle</label>
-                <select
-                  value={form.semester}
-                  onChange={(e) => setForm({ ...form, semester: e.target.value, subject: '' })}
-                  className="input-field !pl-5 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_1rem_center] bg-no-repeat font-bold text-slate-700"
-                >
-                  <option value="">Select Semester</option>
-                  {[1,2,3,4,5,6,7,8].map((s) => (
-                    <option key={s} value={s}>Semester {s}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-3">
-                <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Subject Module</label>
-                <select
-                  value={form.subject}
-                  onChange={(e) => {
-                    const sub = subjects.find((s) => s._id === e.target.value);
-                    setForm({ ...form, subject: e.target.value, courseCode: sub?.code || form.courseCode });
-                  }}
-                  className="input-field !pl-4 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
-                  disabled={!form.department}
-                >
-                  <option value="">Select Subject</option>
-                  {subjects.map((s) => (
-                    <option key={s._id} value={s._id}>{s.name} ({s.code})</option>
-                  ))}
-                </select>
-              </div>
-
-              <Field label="System Course Code" value={form.courseCode} onChange={(v) => setForm({ ...form, courseCode: v })} placeholder="e.g. CSP-301" />
             </div>
-          </div>
+          </section>
 
-          {/* Tags */}
-          <div className="card p-10 space-y-8 border-none shadow-sm bg-white" style={{ borderRadius: '10px' }}>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-slate-50 text-slate-600 shadow-sm">
-                 <HiOutlineTag className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Keywords</h2>
+          <section className="panel">
+            <div className="content-card-header">
+              <HiOutlineTag className="w-5 h-5 mr-2" /> Keywords
             </div>
-            
-            <div className="space-y-6">
+            <div className="content-card-body p-6">
               <Field
-                label="Search Keywords (CSV)"
+                label="Tags (Comma separated)"
                 value={form.tags}
                 onChange={(v) => setForm({ ...form, tags: v })}
-                placeholder="e.g. notes, midterm, verified"
+                placeholder="e.g. notes, midterm"
               />
               {form.tags && (
-                <div className="flex flex-wrap gap-2 pt-2">
+                <div className="flex flex-wrap gap-1 pt-3">
                   {form.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, i) => (
-                    <span key={i} className="px-4 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                    <span key={i} className="text-[10px] bg-[#e8eef5] text-[#1a3a6e] px-2 py-0.5 rounded-md font-bold uppercase">
                       #{tag}
                     </span>
                   ))}
                 </div>
               )}
             </div>
-          </div>
+          </section>
 
-          {/* Actions */}
-          <div className="flex flex-col gap-4">
-            <button type="submit" disabled={uploading || !file} className="btn-primary h-[56px] text-base font-black uppercase tracking-widest shadow-2xl shadow-primary/20">
+          <div className="flex flex-col gap-2">
+            <button type="submit" disabled={uploading || !file} className="btn-nitj-submit w-full py-3 flex items-center justify-center gap-2">
               {uploading ? (
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
               ) : (
-                <><HiOutlineCloudUpload className="w-6 h-6" /> Deploy Resource</>
+                <><HiOutlineCloudUpload className="w-5 h-5" /> Deploy Resource</>
               )}
             </button>
-            <button type="button" onClick={() => navigate(-1)}
-              className="w-full h-[52px] rounded-xl text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-danger hover:bg-danger/5 transition-all border border-transparent hover:border-danger/10">
+            <button type="button" onClick={() => navigate(-1)} className="btn-nitj-secondary w-full py-2">
               Abort Transmission
             </button>
           </div>
@@ -366,9 +333,9 @@ export default function UploadResourcePage() {
 
 function Field({ label, value, onChange, placeholder, type = 'text' }) {
   return (
-    <div>
-      <label className="block text-[12px] font-semibold mb-1" style={{ color: '#4a5568' }}>{label}</label>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="input-field !pl-3" />
+    <div className="space-y-1">
+      <label className="nitj-label">{label}</label>
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-control nitj-input w-full" />
     </div>
   );
 }

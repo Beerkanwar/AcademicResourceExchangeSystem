@@ -25,27 +25,15 @@ const statColors = {
 function StatCard({ icon: Icon, label, value, color, subtext, delay = 0 }) {
   const c = statColors[color] || statColors.navy;
   return (
-    <div
-      className="card p-8 animate-slide-up group border-none shadow-sm hover:shadow-xl bg-white"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">
-            {label}
-          </p>
-          <p className="text-4xl font-black text-slate-800 tracking-tighter">{value}</p>
-          {subtext && (
-            <p className="text-xs font-bold mt-2 text-slate-300 uppercase tracking-widest">{subtext}</p>
-          )}
-        </div>
-        <div
-          className="w-16 h-16 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-inner"
-          style={{ background: c.iconBg }}
-        >
-          <Icon className="w-8 h-8" style={{ color: c.icon }} />
+    <div className="bg-white border border-[#c5d8ed] rounded-md p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-bold text-[#6c7a8e] uppercase tracking-wider">{label}</p>
+        <div style={{ background: c.iconBg }} className="p-2 rounded-lg">
+          <Icon className="w-5 h-5" style={{ color: c.icon }} />
         </div>
       </div>
+      <p className="text-3xl font-bold text-[#1a1a2e]">{value}</p>
+      {subtext && <p className="text-[10px] text-[#6c7a8e] mt-1 uppercase">{subtext}</p>}
     </div>
   );
 }
@@ -98,121 +86,90 @@ export default function DashboardPage() {
   return (
     <div className="space-y-10">
       {/* Welcome Banner */}
-      <div
-        className="px-10 py-12 animate-fade-in relative overflow-hidden"
-        style={{
-          borderRadius: '18px',
-          background: 'linear-gradient(135deg, #0a1929 0%, #1a365d 40%, #2c5282 100%)',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-        }}
-      >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -mr-40 -mt-40 blur-3xl" />
-        
-        <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-          <div
-            className="w-24 h-24 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '2px solid rgba(236,201,75,0.3)',
-              boxShadow: '0 0 30px rgba(0,0,0,0.2)',
-            }}
-          >
-            <span className="text-4xl font-black" style={{ color: '#ecc94b' }}>
+      <section className="panel mb-6">
+        <div className="content-card-header">
+          <HiOutlineAcademicCap className="w-5 h-5 mr-2" /> Welcome to Academic Resource Exchange
+        </div>
+        <div className="content-card-body">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[#1a3a6e] text-[#e8a020] text-3xl font-bold">
               {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || '?'}
-            </span>
-          </div>
-          <div className="text-center md:text-left">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight">
-              Welcome, {user?.firstName || user?.email?.split('@')[0]}!
-            </h1>
-            <p className="text-white/50 text-base md:text-lg mt-2 font-medium">
-              {isAdmin
-                ? 'System Administrator • Full Repository Access'
-                : isTeacher
-                ? 'Faculty Member • Resource Management Access'
-                : 'Student Member • Resource Discovery Access'}
-            </p>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#1a3a6e]">
+                Welcome back, {user?.firstName || user?.email?.split('@')[0]}
+              </h1>
+              <p className="text-[#6c7a8e] font-medium text-sm">
+                {isAdmin ? 'System Administrator • Full Repository Access' : isTeacher ? 'Faculty Member • Resource Management Access' : 'Student Member • Resource Discovery Access'}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Stats Grid */}
-      <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[13px] font-black uppercase tracking-[0.25em] text-slate-400">System Repository Stats</h2>
-          <div className="h-px flex-1 bg-slate-200 ml-6 hidden sm:block" />
+      <section className="panel mb-6">
+        <div className="content-card-header">
+          <HiOutlineStar className="w-5 h-5 mr-2" /> System Repository Stats
         </div>
-        <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 20vw, 280px), 1fr))' }}>
-          {stats.map((stat, i) => (
-            <StatCard key={stat.label} {...stat} delay={i * 50} />
-          ))}
+        <div className="content-card-body">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat, i) => (
+              <StatCard key={stat.label} {...stat} delay={i * 50} />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Admin Stats */}
       {(isAdmin || isTeacher) && (
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-[13px] font-black uppercase tracking-[0.25em] text-slate-400">
-              {isAdmin ? 'Administrative Control' : 'Teaching Analytics'}
-            </h2>
-            <div className="h-px flex-1 bg-slate-200 ml-6 hidden sm:block" />
+        <section className="panel mb-6">
+          <div className="content-card-header">
+            <HiOutlineShieldCheck className="w-5 h-5 mr-2" /> {isAdmin ? 'Administrative Control' : 'Teaching Analytics'}
           </div>
-          <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 20vw, 280px), 1fr))' }}>
-            {adminStats.map((stat, i) => (
-              <StatCard key={stat.label} {...stat} delay={i * 50} />
-            ))}
+          <div className="content-card-body">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+              {adminStats.map((stat, i) => (
+                <StatCard key={stat.label} {...stat} delay={i * 50} />
+              ))}
+            </div>
           </div>
         </section>
       )}
 
       {/* Quick Actions */}
-      <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[13px] font-black uppercase tracking-[0.25em] text-slate-400">Rapid Deployment</h2>
-          <div className="h-px flex-1 bg-slate-200 ml-6 hidden sm:block" />
+      <section className="panel mb-6">
+        <div className="content-card-header">
+          <HiOutlineUpload className="w-5 h-5 mr-2" /> Rapid Deployment
         </div>
-        <div className="grid gap-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(260px, 30vw, 360px), 1fr))' }}>
-          {quickActions.map((action, i) => (
-            <Link
-              key={action.title}
-              to={action.href}
-              className="card p-8 group animate-slide-up block relative overflow-hidden bg-white border-none shadow-sm hover:shadow-2xl transition-all"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <div className="relative z-10">
-                <div
-                  className="w-16 h-16 rounded-lg flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg"
-                  style={{ background: action.gradient }}
-                >
-                  <action.icon className="w-8 h-8 text-white" />
+        <div className="content-card-body">
+          <div className="grid gap-5 md:grid-cols-3">
+            {quickActions.map((action, i) => (
+              <Link
+                key={action.title}
+                to={action.href}
+                className="bg-[#f8fbff] border border-[#d0e4f4] rounded-md p-5 block hover:border-[#1a3a6e] hover:bg-[#e8f0fd] transition-all"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded text-center flex items-center justify-center text-white" style={{ background: action.gradient }}>
+                    <action.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-[#1a3a6e] text-sm">{action.title}</h3>
                 </div>
-                <h3 className="font-black text-xl text-slate-800 tracking-tight">{action.title}</h3>
-                <p className="text-base mt-2 text-slate-500 font-medium leading-relaxed">{action.desc}</p>
-                <div className="mt-8 flex items-center gap-2 text-nitj-gold font-bold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                  Launch Action <span className="text-lg">→</span>
-                </div>
-              </div>
-              {/* Decorative accent */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 group-hover:bg-slate-100/50 transition-colors" />
-            </Link>
-          ))}
+                <p className="text-xs text-[#6c7a8e]">{action.desc}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* System Status */}
-      <div className="card p-10 animate-slide-up border-none shadow-sm bg-white">
-        <h2 className="text-lg font-black text-slate-800 mb-4 uppercase tracking-tight">Technical Infrastructure Status</h2>
-        <div className="flex items-center gap-4 p-5 bg-success/5 rounded-lg border border-success/10">
-          <div className="w-4 h-4 rounded-full bg-success animate-pulse shadow-[0_0_12px_rgba(56,161,105,0.4)]" />
-          <span className="text-base font-bold text-success-dark">
-            Phase 8 Operational — Full Dashboard Sync Active
-          </span>
+      <section className="panel">
+        <div className="nitj-info-box border-l-[#28a745]">
+          <strong><HiOutlineShieldCheck className="w-4 h-4 inline me-1" /> Technical Infrastructure Status:</strong> Phase 10 Output Sync Active.<br />
+          <span className="text-xs text-muted">Secure Database Connections Alive • Native Roles Guarded</span>
         </div>
-        <p className="text-sm mt-5 text-slate-500 font-bold uppercase tracking-widest leading-loose">
-          Secure Database Connections Alive • Native Roles Guarded
-        </p>
-      </div>
+      </section>
     </div>
   );
 }
