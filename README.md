@@ -10,7 +10,7 @@ AcademicResourceExchangeSystem/
 ├── .env.example            # Environment template
 ├── .gitignore
 ├── README.md
-├── server/                 # Express.js Backend
+├── backend/                 # Express.js Backend
 │   ├── package.json
 │   └── src/
 │       ├── index.js        # Entry point
@@ -21,7 +21,7 @@ AcademicResourceExchangeSystem/
 │       ├── routes/         # API route definitions
 │       ├── seeds/          # Database seed data
 │       └── utils/          # Helpers, constants, errors
-└── client/                 # React Frontend
+└── frontend/                 # React Frontend
     ├── package.json
     ├── vite.config.js
     ├── index.html
@@ -55,25 +55,25 @@ cp .env.example .env
 ### 2. Install Dependencies
 ```bash
 # Server
-cd server && npm install
+cd backend && npm install
 
 # Client
-cd ../client && npm install
+cd ../frontend && npm install
 ```
 
 ### 3. Seed Database
 ```bash
-cd server
+cd backend
 npm run seed
 ```
 
 ### 4. Run Development Servers
 ```bash
 # Terminal 1 — Backend (port 5000)
-cd server && npm run dev
+cd backend && npm run dev
 
 # Terminal 2 — Frontend (port 5173)
-cd client && npm run dev
+cd frontend && npm run dev
 ```
 
 ### 5. Open
