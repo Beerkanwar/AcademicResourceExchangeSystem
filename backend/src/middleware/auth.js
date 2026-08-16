@@ -3,6 +3,34 @@ const env = require('../config/env');
 const User = require('../models/User');
 const { UnauthorizedError, ForbiddenError } = require('../utils/apiError');
 
+/** Routes still allowed while mustChangePassword is true */
+const MUST_CHANGE_PASSWORD_EXEMPT = [
+  { method: 'POST', pattern: /\/auth\/change-password\/?$/i },
+  { method: 'POST', pattern: /\/auth\/logout\/?$/i },
+];
+
+/**
+ * Whether this request may proceed when the user must change their password.
+ */
+const isMustChangePasswordExempt = (req) => {
+  const path = (req.originalUrl || req.url || '').split('?')[0];
+  return MUST_CHANGE_PASSWORD_EXEMPT.some(
+    (rule) => req.method === rule.method && rule.pattern.test(path)
+  );
+};
+
+/**
+ * Block authenticated users who still need to change their password,
+ * except for the password-change and logout endpoints.
+ */
+const enforcePasswordChange = (req) => {
+  if (req.user?.mustChangePassword && !isMustChangePasswordExempt(req)) {
+    throw new ForbiddenError(
+      'Password change required. Please update your password before accessing this resource.'
+    );
+  }
+};
+
 /**
  * JWT Authentication Middleware
  * Extracts token from Authorization header, verifies it, and attaches user to req
@@ -35,6 +63,7 @@ const auth = async (req, res, next) => {
 
     // Attach user to request
     req.user = user;
+    enforcePasswordChange(req);
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
@@ -56,17 +85,22 @@ const optionalAuth = async (req, res, next) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       if (token) {
-        const decoded = jwt.verify(token, env.JWT_SECRET);
-        const user = await User.findById(decoded.id).select('-password');
-        if (user && user.isActive) {
-          req.user = user;
+        try {
+          const decoded = jwt.verify(token, env.JWT_SECRET);
+          const user = await User.findById(decoded.id).select('-password');
+          if (user && user.isActive) {
+            req.user = user;
+          }
+        } catch {
+          // Invalid/expired token — continue without attaching a user
         }
       }
     }
+
+    enforcePasswordChange(req);
     next();
-  } catch {
-    // Silently continue — optional auth
-    next();
+  } catch (error) {
+    next(error);
   }
 };
 
