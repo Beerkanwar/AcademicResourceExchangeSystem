@@ -1,6 +1,5 @@
 // Seed runner — populates MongoDB with initial departments, subjects, and admin user
 
-const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv');
 

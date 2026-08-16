@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const departmentController = require('../controllers/departmentController');
-const { auth } = require('../middleware/auth');
-const roleGuard = require('../middleware/roleGuard');
+const { auth, roleGuard } = require('../middleware/auth');
 const { ROLES } = require('../utils/constants');
 
 // Public

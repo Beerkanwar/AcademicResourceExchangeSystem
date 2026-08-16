@@ -17,7 +17,7 @@ AcademicResourceExchangeSystem/
 │       ├── config/         # DB & env config
 │       ├── controllers/    # Route handlers
 │       ├── middleware/      # Auth, roles, errors, upload
-│       ├── models/         # MongoDB schemas (10 models)
+│       ├── models/         # MongoDB schemas (8 models)
 │       ├── routes/         # API route definitions
 │       ├── seeds/          # Database seed data
 │       └── utils/          # Helpers, constants, errors

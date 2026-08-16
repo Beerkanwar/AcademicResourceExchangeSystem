@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auditController = require('../controllers/auditController');
-const { auth } = require('../middleware/auth');
-const roleGuard = require('../middleware/roleGuard');
+const { auth, roleGuard } = require('../middleware/auth');
 const { ROLES } = require('../utils/constants');
 
 // Admin only

@@ -2,7 +2,6 @@ const User = require('./User');
 const Department = require('./Department');
 const Subject = require('./Subject');
 const Resource = require('./Resource');
-const ResourceVersion = require('./ResourceVersion');
 const Bookmark = require('./Bookmark');
 const Rating = require('./Rating');
 const AuditLog = require('./AuditLog');
@@ -13,7 +12,6 @@ module.exports = {
   Department,
   Subject,
   Resource,
-  ResourceVersion,
   Bookmark,
   Rating,
   AuditLog,

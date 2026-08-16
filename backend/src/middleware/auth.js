@@ -105,17 +105,43 @@ const optionalAuth = async (req, res, next) => {
 };
 
 /**
- * Role Guardian Middleware
- * Checks if authenticated user has required role(s)
+ * Normalize role arguments into a flat list of allowed roles.
+ * Supports: roleGuard('admin'), roleGuard('admin', 'teacher'),
+ * and roleGuard(['admin', 'teacher']).
+ */
+const normalizeAllowedRoles = (roles) => {
+  return roles
+    .flat(Infinity)
+    .filter((role) => typeof role === 'string' && role.length > 0);
+};
+
+/**
+ * Role-based access control middleware (single source of truth).
+ * Usage:
+ *   roleGuard('admin')
+ *   roleGuard('admin', 'teacher')
+ *   roleGuard([ROLES.ADMIN, ROLES.TEACHER])
  */
 const roleGuard = (...allowedRoles) => {
+  const roles = normalizeAllowedRoles(allowedRoles);
+
+  if (roles.length === 0) {
+    throw new Error('roleGuard requires at least one allowed role');
+  }
+
   return (req, res, next) => {
     if (!req.user) {
-      return next(new ForbiddenError('Access denied. Authentication required.'));
+      return next(new UnauthorizedError('Access denied. Authentication required.'));
     }
-    if (!allowedRoles.includes(req.user.role)) {
-      return next(new ForbiddenError('Access denied. Insufficient permissions.'));
+
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ForbiddenError(
+          `Access denied. Required role(s): ${roles.join(', ')}. Your role: ${req.user.role}.`
+        )
+      );
     }
+
     next();
   };
 };

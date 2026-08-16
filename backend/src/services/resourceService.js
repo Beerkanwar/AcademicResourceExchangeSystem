@@ -5,7 +5,6 @@ const AuditLog = require('../models/AuditLog');
 const { NotFoundError, BadRequestError, ForbiddenError } = require('../utils/apiError');
 const { generateFileHashFromPath } = require('../utils/fileHelpers');
 const { AUDIT_ACTIONS, RESOURCE_STATUS, ROLES } = require('../utils/constants');
-const env = require('../config/env');
 
 class ResourceService {
   /**
@@ -420,7 +419,7 @@ class ResourceService {
     let extractedText = '';
     try {
       extractedText = await ResourceService.extractText(file.path, file.mimetype);
-    } catch (err) { /* ignore */ }
+    } catch (_err) { /* ignore */ }
 
     // Overwrite master properties
     resource.originalFilename = file.originalname;

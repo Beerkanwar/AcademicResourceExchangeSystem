@@ -3,6 +3,7 @@ const ResourceService = require('../services/resourceService');
 const ApiResponse = require('../utils/apiResponse');
 const { BadRequestError } = require('../utils/apiError');
 const upload = require('../middleware/upload');
+const { validateMimeType } = upload;
 const { ROLES } = require('../utils/constants');
 
 const resourceController = {
@@ -51,6 +52,9 @@ const resourceController = {
         next();
       });
     },
+
+    // Magic-byte MIME validation against MIME_TYPE_MAP
+    validateMimeType,
 
     // Validation
     body('title').trim().notEmpty().withMessage('Title is required'),
@@ -172,6 +176,7 @@ const resourceController = {
         next();
       });
     },
+    validateMimeType,
     async (req, res, next) => {
       try {
         const resource = await ResourceService.uploadNewVersion(
