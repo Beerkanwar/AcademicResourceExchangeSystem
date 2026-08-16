@@ -1,9 +1,37 @@
 const { validationResult, body, query } = require('express-validator');
+const User = require('../models/User');
+const Resource = require('../models/Resource');
+const Department = require('../models/Department');
 const UserService = require('../services/userService');
 const ApiResponse = require('../utils/apiResponse');
 const { BadRequestError } = require('../utils/apiError');
+const { RESOURCE_STATUS } = require('../utils/constants');
 
 const userController = {
+  /**
+   * GET /api/users/stats
+   * Global system metrics for administration
+   */
+  getStats: async (req, res, next) => {
+    try {
+      const [totalUsers, totalResources, pendingResources, totalDepartments] = await Promise.all([
+        User.countDocuments({ isActive: true }),
+        Resource.countDocuments({ isDeleted: false }),
+        Resource.countDocuments({ status: RESOURCE_STATUS.PENDING, isDeleted: false }),
+        Department.countDocuments({ isActive: true }),
+      ]);
+
+      return ApiResponse.success(res, {
+        totalUsers,
+        totalResources,
+        pendingResources,
+        totalDepartments,
+      }, 'Admin stats retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  },
+
   /**
    * GET /api/users
    */

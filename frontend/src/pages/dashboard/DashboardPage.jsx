@@ -55,7 +55,7 @@ export default function DashboardPage() {
         setUserStats(uStats.data.data);
         
         if (isAdmin || isTeacher) {
-          const aStats = await api.get('/admin/stats');
+          const aStats = await api.get('/users/stats');
           setAdminData(aStats.data.data);
         }
       } catch { /* ignore */ }

@@ -14,7 +14,6 @@ import UserManagementPage from './pages/admin/UserManagementPage';
 import DepartmentsPage from './pages/admin/DepartmentsPage';
 import AuditLogsPage from './pages/admin/AuditLogsPage';
 import NotFoundPage from './pages/NotFoundPage';
-import AdminPanelPage from './pages/admin/AdminPanelPage';
 
 export default function App() {
   return (
@@ -104,16 +103,11 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin/*"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminPanelPage />
-            </ProtectedRoute>
-          }
-        />
-
         {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={<Navigate to="/admin/users" replace />}
+        />
         <Route
           path="/admin/users"
           element={
