@@ -43,6 +43,9 @@ export default function ResourceDetailPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [userRating, setUserRating] = useState(null);
+  const [ratingSubmitting, setRatingSubmitting] = useState(false);
+  const [hoverStars, setHoverStars] = useState(0);
 
   useEffect(() => {
     const fetchResource = async () => {
@@ -68,8 +71,24 @@ export default function ResourceDetailPage() {
       } catch { /* ignore */ }
     };
 
+    const fetchRatings = async () => {
+      try {
+        const res = await api.get(`/ratings/resource/${id}`);
+        if (res.data.success) {
+          const { averageRating, totalRatings, userRating: mine } = res.data.data;
+          setUserRating(mine);
+          setResource((prev) =>
+            prev
+              ? { ...prev, averageRating, totalRatings }
+              : prev
+          );
+        }
+      } catch { /* ignore */ }
+    };
+
     fetchResource();
     fetchBookmarkStatus();
+    fetchRatings();
   }, [id, navigate]);
 
   // Authenticated preview — /uploads requires Bearer token
@@ -181,6 +200,61 @@ export default function ResourceDetailPage() {
     }
   };
 
+  const handleRate = async (stars) => {
+    if (!user) {
+      toast.error('Please log in to rate this resource');
+      return;
+    }
+    if (resource.status !== 'approved') {
+      toast.error('Only approved resources can be rated');
+      return;
+    }
+    if (ratingSubmitting) return;
+
+    setRatingSubmitting(true);
+    try {
+      let res;
+      if (userRating?._id) {
+        res = await api.put(`/ratings/${userRating._id}`, { stars });
+      } else {
+        res = await api.post(`/ratings/resource/${id}`, { stars });
+      }
+
+      if (res.data.success) {
+        const { rating, averageRating, totalRatings } = res.data.data;
+        setUserRating(rating);
+        setResource((prev) =>
+          prev ? { ...prev, averageRating, totalRatings } : prev
+        );
+        toast.success(res.data.message || 'Rating saved');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit rating');
+    } finally {
+      setRatingSubmitting(false);
+    }
+  };
+
+  const handleClearRating = async () => {
+    if (!userRating?._id || ratingSubmitting) return;
+    setRatingSubmitting(true);
+    try {
+      const res = await api.delete(`/ratings/${userRating._id}`);
+      if (res.data.success) {
+        const { averageRating, totalRatings } = res.data.data;
+        setUserRating(null);
+        setResource((prev) =>
+          prev ? { ...prev, averageRating, totalRatings } : prev
+        );
+        toast.success('Rating removed');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to remove rating');
+    } finally {
+      setRatingSubmitting(false);
+    }
+  };
+
   const formatSize = (bytes) => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -254,9 +328,75 @@ export default function ResourceDetailPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <StatBox icon={HiOutlineEye} label="Views" value={resource.views} />
               <StatBox icon={HiOutlineDownload} label="Downloads" value={resource.downloads} />
-              <StatBox icon={HiOutlineStar} label="Rating" value={resource.averageRating > 0 ? resource.averageRating.toFixed(1) : '—'} />
+              <StatBox
+                icon={HiOutlineStar}
+                label="Rating"
+                value={
+                  resource.averageRating > 0
+                    ? `${Number(resource.averageRating).toFixed(1)}${resource.totalRatings ? ` (${resource.totalRatings})` : ''}`
+                    : '—'
+                }
+              />
               <StatBox icon={HiOutlineClock} label="Uploaded" value={new Date(resource.createdAt).toLocaleDateString()} />
             </div>
+
+            {resource.status === 'approved' && (
+              <div className="bg-[#f8fbff] border border-[#c5d8ed] rounded px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-bold text-[#6c7a8e] uppercase mb-1">
+                      {userRating ? 'Your Rating' : 'Rate this Resource'}
+                    </p>
+                    <div
+                      className="flex items-center gap-1"
+                      onMouseLeave={() => setHoverStars(0)}
+                    >
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const active = (hoverStars || userRating?.stars || 0) >= star;
+                        return (
+                          <button
+                            key={star}
+                            type="button"
+                            disabled={ratingSubmitting || !user}
+                            onClick={() => handleRate(star)}
+                            onMouseEnter={() => setHoverStars(star)}
+                            className="p-0.5 disabled:cursor-not-allowed transition-transform hover:scale-110"
+                            title={user ? `Rate ${star} star${star > 1 ? 's' : ''}` : 'Log in to rate'}
+                            aria-label={`Rate ${star} stars`}
+                          >
+                            <HiOutlineStar
+                              className="w-6 h-6"
+                              style={{
+                                color: active ? '#e8a020' : '#c5d8ed',
+                                fill: active ? '#e8a020' : 'transparent',
+                              }}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {!user && (
+                      <p className="text-[11px] text-[#6c7a8e] mt-1">
+                        <Link to="/login" className="text-[#1a3a6e] font-semibold hover:underline">
+                          Log in
+                        </Link>
+                        {' '}to submit a rating
+                      </p>
+                    )}
+                  </div>
+                  {user && userRating && (
+                    <button
+                      type="button"
+                      onClick={handleClearRating}
+                      disabled={ratingSubmitting}
+                      className="text-xs font-semibold text-[#dc3545] hover:underline disabled:opacity-50"
+                    >
+                      Clear rating
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {resource.department && <DetailRow icon={HiOutlineAcademicCap} label="Department" value={`${resource.department.name} (${resource.department.code})`} />}
