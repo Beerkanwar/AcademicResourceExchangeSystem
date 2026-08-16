@@ -1,49 +1,92 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+/* ============================================================
+   NITJ ResourceHub — Design System
+   Institutional Platform Stylesheet
+   ============================================================ */
 
+/* ── 1. Fonts ─────────────────────────────────────────────── */
+/* Inter is loaded via index.html — no @import needed here.   */
+
+/* ── 2. Design Tokens ─────────────────────────────────────── */
 :root {
-  --nitj-navy: #1a3a6e;
-  --nitj-navy-dark: #0f2347;
-  --nitj-navy-mid: #1e4080;
-  --nitj-gold: #e8a020;
-  --nitj-gold-dark: #c8861a;
+  /* Brand */
+  --nitj-navy:        #1a3a6e;
+  --nitj-navy-dark:   #0f2347;
+  --nitj-navy-mid:    #1e4080;
+  --nitj-gold:        #e8a020;
+  --nitj-gold-dark:   #c8861a;
+  --nitj-gold-light:  #fef3d8;
 
-  --erp-header-bg: #ffffff;
-  --erp-navbar-bg: #1a3a6e;
-  --erp-sidebar-bg: #d6e4f5;
-  --erp-content-bg: #f0f4f8;
-  --erp-card-bg: #ffffff;
-  --erp-card-header: #3d7ab5;
-  --erp-border: #c5d8ed;
-  --erp-input-bg: #ffffff;
-  --erp-input-border: #aac0d8;
-  --erp-footer-bg: #1a3a6e;
+  /* Semantic status */
+  --color-success:    #16a34a;
+  --color-success-bg: #f0fdf4;
+  --color-danger:     #ef4444;
+  --color-danger-bg:  #fef2f2;
+  --color-warning:    #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-info:       #2563eb;
+  --color-info-bg:    #eff6ff;
 
-  --text-dark: #1a1a2e;
-  --text-body: #2c3e50;
-  --text-muted: #6c7a8e;
-  --text-white: #ffffff;
-  --text-nav: #d6e9ff;
-  --text-label: #2c3e50;
+  /* Surfaces */
+  --surface-page:     #f8fafc;
+  --surface-card:     #ffffff;
+  --surface-card-hover: #fafbfc;
+  --surface-sidebar:  #0f172a;
+  --surface-sidebar-item: rgba(255, 255, 255, 0.06);
+  --surface-sidebar-active: rgba(232, 160, 32, 0.15);
+  --surface-input:    #ffffff;
+  --surface-input-hover: #f8fafc;
+  --surface-muted:    #f1f5f9;
 
-  /* Status */
-  --priority-high: #dc3545;
-  --priority-mid: #fd7e14;
-  --priority-low: #28a745;
+  /* Borders */
+  --border-color:     #e2e8f0;
+  --border-strong:    #cbd5e1;
+  --border-sidebar:   rgba(255, 255, 255, 0.08);
+  --border-input:     #d1d5db;
+  --border-input-focus: var(--nitj-navy);
 
-  /* Sizing */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --sidebar-w: 230px;
-  --header-h: 90px;
-  --navbar-h: 42px;
-  --footer-h: 56px;
+  /* Text */
+  --text-primary:     #0f172a;
+  --text-secondary:   #334155;
+  --text-muted:       #64748b;
+  --text-faint:       #94a3b8;
+  --text-white:       #ffffff;
+  --text-nav:         rgba(255, 255, 255, 0.75);
+  --text-nav-active:  #ffffff;
+  --text-sidebar:     rgba(255, 255, 255, 0.70);
+  --text-sidebar-active: #ffffff;
 
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.1);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.12);
-  --transition: all 0.18s ease;
+  /* Layout */
+  --topbar-h:         64px;
+  --sidebar-w:        240px;
+  --footer-h:         48px;
+
+  /* Radius */
+  --radius-xs:        4px;
+  --radius-sm:        6px;
+  --radius-md:        12px;
+  --radius-lg:        16px;
+  --radius-xl:        20px;
+  --radius-full:      9999px;
+
+  /* Shadows — subtle, institutional */
+  --shadow-xs:        0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-sm:        0 1px 4px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md:        0 4px 12px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-lg:        0 8px 24px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --shadow-card:      0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 4px 16px rgba(15, 23, 42, 0.10), 0 2px 4px rgba(15, 23, 42, 0.06);
+
+  /* Typography */
+  --font-sans:        'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:        'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Transitions */
+  --transition-fast:  all 0.15s ease;
+  --transition:       all 0.20s ease;
+  --transition-slow:  all 0.30s ease;
 }
 
+/* ── 3. Reset & Base ──────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -52,12 +95,19 @@
   padding: 0;
 }
 
-html,
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  font-family: 'Open Sans', Arial, sans-serif;
-  font-size: 14px;
-  background: var(--erp-content-bg);
-  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -65,105 +115,292 @@ body {
 
 a {
   text-decoration: none;
+  color: inherit;
 }
 
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+input, select, textarea {
+  font-family: var(--font-sans);
+}
+
+/* ── 4. App Shell ─────────────────────────────────────────── */
+
+/* ── Topbar (merged header + navbar) ── */
 .nitj-header {
-  background: var(--erp-header-bg);
-  border-bottom: 3px solid var(--nitj-gold);
-  height: var(--header-h);
-  flex-shrink: 0;
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  height: 100%;
-  padding: 0 24px;
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
-.nitj-logo {
-  height: 72px;
-  width: auto;
-  flex-shrink: 0;
-  object-fit: contain;
-}
-
-.header-text {
-  flex: 1;
-  padding-left: 4px;
-}
-
-.header-hindi {
-  font-size: 0.82rem;
-  color: #555;
-  line-height: 1.4;
-  font-family: 'Arial', sans-serif;
-}
-
-.header-sub-en {
-  font-size: 0.8rem;
-  color: #555;
-  font-style: italic;
-}
-
-.header-title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  color: var(--nitj-navy);
-  letter-spacing: 0.01em;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.nitj-navbar {
-  background: var(--erp-navbar-bg);
-  height: var(--navbar-h);
+  background: var(--nitj-navy);
+  height: var(--topbar-h);
   flex-shrink: 0;
   border-bottom: 1px solid var(--nitj-navy-dark);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 4px rgba(10, 25, 47, 0.30);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
+/* Keep .nitj-navbar for the legacy JSX structure — it sits inside .nitj-header */
+.nitj-navbar {
+  height: 100%;
+  background: transparent;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+/* ── Topbar inner layout ── */
+.header-inner,
 .navbar-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 100%;
   padding: 0 20px;
-  gap: 0;
   max-width: 1600px;
   margin: 0 auto;
+  width: 100%;
 }
 
-.navbar-brand-erp {
+/* Left zone */
+.topbar-left {
   display: flex;
   align-items: center;
-  padding-right: 18px;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  margin-right: 4px;
+  gap: 0;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
-.erp-divider {
+/* Mobile hamburger button */
+.topbar-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.70);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  margin-right: 8px;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.topbar-hamburger:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Logo */
+.nitj-logo {
+  height: 40px;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: brightness(1.05);
+}
+
+/* Institution text block */
+.header-text {
+  flex: 0 0 auto;
+  padding-left: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  padding-right: 16px;
+  margin-right: 16px;
+}
+
+.header-hindi {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.3;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.header-sub-en {
+  display: none;
+}
+
+.header-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.005em;
+  line-height: 1.25;
+  margin: 1px 0 0;
+  white-space: nowrap;
+}
+
+/* ResourceHub product subtitle — beneath institution name */
+.header-product {
+  font-size: 0.68rem;
+  font-weight: 600;
   color: var(--nitj-gold);
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-right: 6px;
-}
-
-.erp-label {
-  color: var(--text-white);
-  font-size: 0.92rem;
-  font-weight: 700;
   letter-spacing: 0.04em;
+  line-height: 1.3;
+  margin-top: 1px;
+  white-space: nowrap;
 }
 
+/* Right zone */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Search bar */
+.topbar-search {
+  display: none;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  min-width: 240px;
+  transition: var(--transition-fast);
+}
+
+.topbar-search:focus-within {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.topbar-search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  color: rgba(255, 255, 255, 0.45);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  height: 34px;
+}
+
+.topbar-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 0.845rem;
+  font-weight: 400;
+  padding: 0 12px 0 10px;
+  width: 100%;
+  height: 34px;
+}
+
+.topbar-search input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* User avatar pill */
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 4px 12px 4px 5px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  color: inherit;
+}
+
+.topbar-user:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+.topbar-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--nitj-gold);
+  color: var(--nitj-navy-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.topbar-username {
+  font-size: 0.815rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.90);
+  white-space: nowrap;
+}
+
+/* Vertical divider */
+.topbar-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+/* Logout button */
+.topbar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+  border: none;
+  padding: 7px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.topbar-logout:hover {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* Login link (unauthenticated) */
+.topbar-login-link {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.845rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.topbar-login-link:hover {
+  background: rgba(255, 255, 255, 0.20);
+  color: #fff;
+}
+
+/* Legacy classes — kept for compatibility */
+.navbar-brand-erp { display: none; }
+.erp-divider      { display: none; }
+.erp-label        { display: none; }
+.navbar-right     { display: none; }
+.navbar-links     { display: none; }
+
+/* Nav links (topbar) */
 .navbar-links {
   display: flex;
   list-style: none;
+  height: 100%;
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
 .navbar-links li {
@@ -174,477 +411,586 @@ a {
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 0 16px;
+  padding: 0 14px;
   color: var(--text-nav);
-  font-size: 0.855rem;
+  font-size: 0.825rem;
   font-weight: 500;
-  transition: var(--transition);
-  border-bottom: 3px solid transparent;
+  transition: var(--transition-fast);
+  border-bottom: 2px solid transparent;
   white-space: nowrap;
 }
 
 .nav-link-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-bottom-color: var(--nitj-gold);
+  color: var(--text-nav-active);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .nav-link-item.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  color: var(--text-nav-active);
   border-bottom-color: var(--nitj-gold);
+  background: rgba(255, 255, 255, 0.07);
 }
 
+/* Right side of topbar */
 .navbar-right {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
+/* Connection/status badge */
 .model-status-nav {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 4px 12px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 5px 14px;
   font-size: 0.75rem;
   color: var(--text-nav);
   white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition-fast);
 }
 
+.model-status-nav:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+/* Status dot */
 .status-dot-nav {
-  font-size: 0.45rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
-.status-dot-nav.online {
-  color: #5eff8a;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-.status-dot-nav.offline {
-  color: #ff6b6b;
-}
-
-.status-dot-nav.dummy {
-  color: #ffd166;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-.status-dot-nav.checking {
-  color: #aaa;
-}
+.status-dot-nav.online  { background: #4ade80; box-shadow: 0 0 6px rgba(74, 222, 128, 0.5); animation: pulse-dot 2.5s ease-in-out infinite; }
+.status-dot-nav.offline { background: var(--color-danger); }
+.status-dot-nav.dummy   { background: var(--nitj-gold); animation: pulse-dot 2.5s ease-in-out infinite; }
+.status-dot-nav.checking { background: var(--text-faint); }
 
 @keyframes pulse-dot {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.40; }
 }
 
+/* ── Portal Layout ── */
 .portal-layout {
   display: flex;
   flex: 1;
   min-height: 0;
-  max-width: 1600px;
   width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
+/* ── Sidebar ── */
 .portal-sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  background: var(--erp-sidebar-bg);
-  border-right: 1px solid var(--erp-border);
-  padding: 16px 0;
-  min-height: calc(100vh - var(--header-h) - var(--navbar-h) - var(--footer-h));
+  background: var(--surface-sidebar);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 0 16px;
+  min-height: calc(100vh - var(--topbar-h) - var(--footer-h));
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Mobile drawer header */
+.sidebar-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 8px;
+}
+
+.sidebar-mobile-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.40);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+
+.sidebar-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.50);
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.sidebar-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-heading {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--nitj-navy);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.32);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0 16px 10px;
-  border-bottom: 1px solid var(--erp-border);
-  margin-bottom: 8px;
+  letter-spacing: 0.12em;
+  padding: 10px 16px 5px;
+  margin-top: 4px;
+}
+
+.sidebar-heading:first-child {
+  margin-top: 0;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 0 10px;
+  gap: 1px;
+  padding: 0 8px;
 }
 
 .sidebar-item {
   display: flex;
   align-items: center;
-  padding: 9px 14px;
+  gap: 10px;
+  padding: 8.5px 12px;
   border-radius: var(--radius-sm);
-  color: var(--nitj-navy);
-  font-size: 0.855rem;
+  color: var(--text-sidebar);
+  font-size: 0.845rem;
   font-weight: 500;
-  transition: var(--transition);
-  position: relative;
-}
-
-.sidebar-item i {
-  font-size: 0.9rem;
+  transition: var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
 }
 
 .sidebar-item:hover {
-  background: rgba(26, 58, 110, 0.1);
-  color: var(--nitj-navy-dark);
+  background: var(--surface-sidebar-item);
+  color: var(--text-sidebar-active);
 }
 
 .sidebar-item.active {
-  background: var(--nitj-navy);
-  color: #fff;
+  background: var(--surface-sidebar-active);
+  color: var(--nitj-gold);
   font-weight: 600;
 }
 
 .sidebar-item.active:hover {
-  background: var(--nitj-navy-dark);
-  color: #fff;
+  background: rgba(232, 160, 32, 0.18);
 }
 
 .sidebar-badge {
   margin-left: auto;
   background: var(--nitj-gold);
-  color: #fff;
-  font-size: 0.65rem;
+  color: var(--nitj-navy-dark);
+  font-size: 0.64rem;
   font-weight: 700;
   padding: 1px 7px;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  text-align: center;
+  line-height: 1.6;
 }
 
+/* ── Main Content ── */
 .portal-main {
   flex: 1;
-  padding: 20px 24px;
+  padding: 28px 32px;
   overflow-y: auto;
-  background: var(--erp-content-bg);
+  background: var(--surface-page);
+  min-width: 0;
 }
 
+/* ── Footer ── */
+.nitj-footer {
+  background: var(--nitj-navy);
+  color: rgba(255, 255, 255, 0.60);
+  font-size: 0.755rem;
+  padding: 0 24px;
+  height: var(--footer-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 2px solid var(--nitj-gold);
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.nitj-footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.nitj-footer-dot {
+  color: rgba(255, 255, 255, 0.30);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ── 5. Cards ─────────────────────────────────────────────── */
 .panel {
-  display: block;
-  animation: fadeInPanel 0.2s ease;
+  animation: fadeInUp 0.22s ease both;
 }
 
-@keyframes fadeInPanel {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Legacy ERP card pattern — redesigned as clean institutional card */
 .content-card-header {
-  background: var(--erp-card-header);
-  color: #fff;
-  font-size: 0.95rem;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 0.88rem;
   font-weight: 600;
-  padding: 10px 18px;
+  padding: 14px 20px;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   display: flex;
   align-items: center;
-  box-shadow: var(--shadow-sm);
+  gap: 8px;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+}
+
+.content-card-header svg,
+.content-card-header i {
+  color: var(--nitj-navy);
+  opacity: 0.70;
+  flex-shrink: 0;
 }
 
 .content-card-body {
-  background: var(--erp-card-bg);
-  border: 1px solid var(--erp-border);
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
   border-top: none;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
-  padding: 24px;
+  padding: 20px;
   box-shadow: var(--shadow-card);
   margin-bottom: 20px;
 }
 
+/* Generic card utility */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ── 6. Forms ─────────────────────────────────────────────── */
 .form-section {
-  background: #f8fbff;
-  border: 1px solid #d0e4f4;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 20px;
 }
 
 .form-section-label {
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--nitj-navy);
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 16px;
-}
-
-.step-num {
-  background: var(--nitj-navy);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 9px;
-  border-radius: 20px;
-  letter-spacing: 0.07em;
-}
-
-.step-num-success {
-  background: #28a745;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .nitj-label {
   display: block;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-label);
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--text-secondary);
   margin-bottom: 5px;
 }
 
-.nitj-textarea,
 .nitj-input,
-.nitj-select {
-  background: var(--erp-input-bg) !important;
-  border: 1px solid var(--erp-input-border) !important;
+.nitj-select,
+.nitj-textarea {
+  width: 100%;
+  background: var(--surface-input) !important;
+  border: 1px solid var(--border-input) !important;
   border-radius: var(--radius-sm) !important;
-  color: var(--text-body) !important;
-  font-family: 'Open Sans', Arial, sans-serif !important;
-  font-size: 0.855rem !important;
-  transition: var(--transition);
-  padding: 10px 14px;
+  color: var(--text-primary) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  padding: 9px 13px;
+  transition: var(--transition-fast);
+  outline: none;
+  line-height: 1.5;
 }
 
-.nitj-textarea:focus,
+.nitj-input:hover,
+.nitj-select:hover,
+.nitj-textarea:hover {
+  background: var(--surface-input-hover) !important;
+  border-color: var(--border-strong) !important;
+}
+
 .nitj-input:focus,
-.nitj-select:focus {
-  border-color: var(--nitj-navy) !important;
-  box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.15) !important;
-  outline: none !important;
+.nitj-select:focus,
+.nitj-textarea:focus {
+  border-color: var(--border-input-focus) !important;
+  box-shadow: 0 0 0 3px rgba(26, 58, 110, 0.10) !important;
+  background: var(--surface-input) !important;
+}
+
+.nitj-input::placeholder,
+.nitj-textarea::placeholder {
+  color: var(--text-faint) !important;
+  font-weight: 400 !important;
 }
 
 .nitj-textarea {
   resize: vertical;
-  min-height: 90px;
+  min-height: 96px;
 }
 
+/* ── 7. Buttons ───────────────────────────────────────────── */
+
+/* Primary — NITJ Navy */
 .btn-nitj-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   background: var(--nitj-navy);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 0.855rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
   font-weight: 600;
-  padding: 8px 20px;
-  transition: var(--transition);
+  padding: 9px 20px;
+  transition: var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
-.btn-nitj-primary:hover {
+.btn-nitj-primary:hover:not(:disabled) {
   background: var(--nitj-navy-dark);
-  color: #fff;
-  box-shadow: 0 3px 10px rgba(26, 58, 110, 0.3);
-}
-
-.btn-nitj-secondary {
-  background: #6c757d;
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.855rem;
-  font-weight: 600;
-  padding: 8px 20px;
-  transition: var(--transition);
-}
-
-.btn-nitj-secondary:hover {
-  background: #5a6268;
-  color: #fff;
-}
-
-.btn-nitj-submit {
-  background: #e05a2b;
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 9px 28px;
-  transition: var(--transition);
-  box-shadow: 0 2px 6px rgba(224, 90, 43, 0.3);
-}
-
-.btn-nitj-submit:hover {
-  background: #c44e24;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(224, 90, 43, 0.4);
+  box-shadow: 0 3px 10px rgba(26, 58, 110, 0.25);
   transform: translateY(-1px);
 }
 
-.btn-nitj-reclassify {
+.btn-nitj-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-nitj-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Gold accent CTA */
+.btn-nitj-submit,
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   background: var(--nitj-gold);
-  color: #fff;
+  color: var(--nitj-navy-dark);
   border: none;
   border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 9px 22px;
+  transition: var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.btn-nitj-submit:hover:not(:disabled),
+.btn-accent:hover:not(:disabled) {
+  background: var(--nitj-gold-dark);
+  box-shadow: 0 3px 12px rgba(232, 160, 32, 0.30);
+  transform: translateY(-1px);
+}
+
+.btn-nitj-submit:active:not(:disabled),
+.btn-accent:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-nitj-submit:disabled,
+.btn-accent:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Secondary — neutral ghost */
+.btn-nitj-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 9px 20px;
+  transition: var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-nitj-secondary:hover:not(:disabled) {
+  background: var(--surface-muted);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.btn-nitj-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Reclassify (small gold button) */
+.btn-nitj-reclassify {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--nitj-gold-light);
+  color: var(--nitj-gold-dark);
+  border: 1px solid #f5d58a;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
   font-weight: 600;
-  padding: 5px 14px;
-  transition: var(--transition);
+  padding: 5px 12px;
+  transition: var(--transition-fast);
+  cursor: pointer;
 }
 
 .btn-nitj-reclassify:hover {
-  background: var(--nitj-gold-dark);
-  color: #fff;
+  background: #fde9a6;
+  border-color: var(--nitj-gold);
 }
 
-.btn-classify {
-  min-width: 190px;
-}
-
-.classify-meta-row {
-  display: flex;
+/* ── 8. Badges & Pills ────────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  background: #f0f6ff;
-  border: 1px solid #c5d8ed;
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
 }
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+}
+
+.priority-badge.high   { background: var(--color-danger-bg); color: var(--color-danger); border-color: #fecaca; }
+.priority-badge.medium { background: var(--color-warning-bg); color: var(--color-warning); border-color: #fde68a; }
+.priority-badge.low    { background: var(--color-success-bg); color: var(--color-success); border-color: #bbf7d0; }
 
 .meta-pill {
   display: inline-flex;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
 }
 
-.meta-model {
-  background: var(--nitj-navy);
-  color: #fff;
-}
+.meta-model      { background: var(--nitj-navy); color: #fff; }
+.meta-confidence { background: var(--color-success-bg); color: var(--color-success); border: 1px solid #bbf7d0; }
+.meta-fallback   { background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid #fde68a; }
 
-.meta-confidence {
-  background: #28a745;
-  color: #fff;
-}
-
-.meta-fallback {
-  background: #fd7e14;
-  color: #fff;
-}
-
+/* ── 9. Info / Alert Boxes ────────────────────────────────── */
 .nitj-info-box {
-  background: #e8f0fd;
-  border: 1px solid #b8cff9;
-  border-left: 4px solid var(--nitj-navy);
+  background: var(--color-info-bg);
+  border: 1px solid #bfdbfe;
+  border-left: 3px solid var(--color-info);
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-size: 0.82rem;
-  color: var(--nitj-navy-dark);
+  padding: 12px 16px;
+  font-size: 0.84rem;
+  color: #1e3a8a;
+  line-height: 1.6;
 }
 
 .nitj-info-box code {
-  background: rgba(26, 58, 110, 0.08);
-  color: var(--nitj-navy-dark);
+  background: rgba(37, 99, 235, 0.08);
+  color: #1e3a8a;
   padding: 1px 5px;
   border-radius: 3px;
+  font-size: 0.82em;
+  font-family: var(--font-mono);
 }
 
-.nitj-input-group-text {
-  background: #e8eef5 !important;
-  border: 1px solid var(--erp-input-border) !important;
-  color: var(--text-muted) !important;
-}
-
-.success-banner {
-  background: linear-gradient(135deg, #e8f5e9, #f1f8f0);
-  border: 1px solid #a5d6a7;
-  border-left: 5px solid #28a745;
-  border-radius: var(--radius-lg);
-  padding: 36px 28px;
-  text-align: center;
-  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes popIn {
-  from {
-    transform: scale(0.93);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.success-icon {
-  font-size: 3rem;
-  color: #28a745;
-  margin-bottom: 14px;
-}
-
-.success-banner h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #1b5e20;
-  margin-bottom: 8px;
-}
-
+/* ── 10. Filter Bar ───────────────────────────────────────── */
 .filter-bar {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  background: #f0f6ff;
-  border: 1px solid var(--erp-border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-xs);
 }
 
 .filter-bar .nitj-select,
 .filter-bar .nitj-input {
-  max-width: 200px;
+  max-width: 220px;
 }
 
+/* ── 11. Resource Cards ───────────────────────────────────── */
 .complaint-card {
-  background: var(--erp-card-bg);
-  border: 1px solid var(--erp-border);
-  border-left: 4px solid var(--nitj-navy);
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--nitj-navy);
   border-radius: var(--radius-md);
-  padding: 14px 18px;
+  padding: 16px 20px;
   margin-bottom: 10px;
   transition: var(--transition);
-  animation: slideIn 0.22s ease;
-  box-shadow: var(--shadow-sm);
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  animation: fadeInUp 0.22s ease both;
+  box-shadow: var(--shadow-card);
 }
 
 .complaint-card:hover {
   border-left-color: var(--nitj-gold);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-card-hover);
   transform: translateX(2px);
 }
 
@@ -653,18 +999,18 @@ a {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .complaint-id {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.70rem;
+  font-weight: 600;
   color: var(--text-muted);
-  font-family: monospace;
-  background: #f0f4f8;
-  padding: 1px 7px;
-  border-radius: 3px;
-  border: 1px solid #dde3ea;
+  font-family: var(--font-mono);
+  background: var(--surface-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-color);
 }
 
 .complaint-type-badge {
@@ -672,54 +1018,21 @@ a {
   color: #fff;
   font-size: 0.68rem;
   font-weight: 600;
-  padding: 2px 9px;
-  border-radius: 20px;
-}
-
-.priority-badge {
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 9px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #fff;
-}
-
-.priority-badge.high {
-  background: var(--priority-high);
-}
-
-.priority-badge.medium {
-  background: var(--priority-mid);
-}
-
-.priority-badge.low {
-  background: var(--priority-low);
-}
-
-.status-badge {
-  margin-left: auto;
-  background: #e8f0fe;
-  border: 1px solid #c5d8f8;
-  color: var(--nitj-navy);
-  font-size: 0.67rem;
-  font-weight: 600;
-  padding: 2px 9px;
-  border-radius: 20px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
 }
 
 .complaint-summary {
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--text-dark);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .complaint-meta-row {
   display: flex;
   gap: 14px;
-  font-size: 0.75rem;
+  font-size: 0.775rem;
   color: var(--text-muted);
   flex-wrap: wrap;
 }
@@ -728,91 +1041,170 @@ a {
   margin-right: 3px;
 }
 
+/* ── 12. Empty State ──────────────────────────────────────── */
 .empty-state {
   text-align: center;
-  padding: 50px 24px;
+  padding: 56px 24px;
   color: var(--text-muted);
-  background: #f8fbff;
-  border: 1px dashed var(--erp-border);
+  background: var(--surface-card);
+  border: 1px dashed var(--border-color);
   border-radius: var(--radius-md);
 }
 
 .empty-state i {
   font-size: 2.5rem;
   display: block;
-  margin-bottom: 10px;
-  opacity: 0.45;
+  margin-bottom: 12px;
+  opacity: 0.35;
 }
 
+/* ── 13. Mode Cards ───────────────────────────────────────── */
 .mode-card {
   flex: 1;
-  background: #f0f6ff;
-  border: 2px solid var(--erp-border);
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 18px;
+  padding: 20px;
   text-align: center;
   cursor: pointer;
   transition: var(--transition);
+  box-shadow: var(--shadow-xs);
 }
 
 .mode-card:hover {
   border-color: var(--nitj-navy);
-  background: #e8f0fa;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .mode-card.active {
   border-color: var(--nitj-navy);
-  background: #ddeeff;
-  box-shadow: 0 2px 8px rgba(26, 58, 110, 0.18);
+  background: #eef3fa;
+  box-shadow: 0 0 0 3px rgba(26, 58, 110, 0.10);
 }
 
 .mode-icon {
-  font-size: 1.8rem;
+  font-size: 1.75rem;
   color: var(--nitj-navy);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   display: block;
 }
 
 .mode-label {
   font-weight: 700;
   font-size: 0.875rem;
-  color: var(--nitj-navy);
-  margin-bottom: 3px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
 .mode-desc {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
 }
 
+/* ── 14. Form Sections / Step Labels ─────────────────────── */
+.step-num {
+  background: var(--nitj-navy);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.06em;
+}
+
+.step-num-success {
+  background: var(--color-success);
+}
+
+/* Input group addon */
+.nitj-input-group-text {
+  background: var(--surface-muted) !important;
+  border: 1px solid var(--border-input) !important;
+  color: var(--text-muted) !important;
+  font-size: 0.875rem;
+  padding: 9px 13px;
+}
+
+/* Classify row */
+.classify-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.btn-classify {
+  min-width: 190px;
+}
+
+/* ── 15. Success Banner ───────────────────────────────────── */
+.success-banner {
+  background: var(--color-success-bg);
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid var(--color-success);
+  border-radius: var(--radius-md);
+  padding: 32px 28px;
+  text-align: center;
+  animation: scaleIn 0.30s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.94); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.success-icon {
+  font-size: 2.75rem;
+  color: var(--color-success);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.success-banner h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #14532d;
+  margin-bottom: 8px;
+}
+
+/* ── 16. Ping / Debug Panel ───────────────────────────────── */
 .ping-result {
-  background: #f3f7fd;
-  border: 1px solid var(--erp-border);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
   border-left: 3px solid var(--nitj-navy);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  font-size: 0.78rem;
-  color: #1a3a6e;
+  font-size: 0.80rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
   white-space: pre-wrap;
   word-break: break-all;
   max-height: 220px;
   overflow-y: auto;
 }
 
-.alert {
-  border-radius: var(--radius-sm) !important;
-  font-size: 0.83rem !important;
+/* ── 17. Misc Utilities ───────────────────────────────────── */
+.text-muted {
+  color: var(--text-muted) !important;
 }
 
-.nitj-footer {
-  background: var(--erp-footer-bg);
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  font-size: 0.8rem;
-  padding: 10px 20px;
-  border-top: 3px solid var(--nitj-gold);
-  line-height: 1.8;
-  flex-shrink: 0;
+code {
+  background: rgba(26, 58, 110, 0.06) !important;
+  color: var(--nitj-navy-dark) !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  font-size: 0.82em !important;
+  font-family: var(--font-mono) !important;
+}
+
+.alert {
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.84rem !important;
 }
 
 .toast {
@@ -821,66 +1213,101 @@ a {
   min-width: 260px;
 }
 
-.text-muted {
-  color: var(--text-muted) !important;
+/* ── 18. Animations ───────────────────────────────────────── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-code {
-  background: rgba(26, 58, 110, 0.07) !important;
-  color: var(--nitj-navy-dark) !important;
-  padding: 1px 5px !important;
-  border-radius: 3px !important;
-  font-size: 0.82em !important;
+@keyframes popIn {
+  from { transform: scale(0.93); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
-@media (max-width: 900px) {
-  .portal-sidebar {
-    width: 180px;
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
-  .sidebar-item span {
-    font-size: 0.8rem;
+/* Loading spinner */
+.animate-spin {
+  animation: spin 0.75s linear infinite;
+}
+
+/* ── 19. Responsive ───────────────────────────────────────── */
+
+/* md and up: show search bar */
+@media (min-width: 768px) {
+  .topbar-search {
+    display: flex;
   }
 }
 
-@media (max-width: 700px) {
-  .portal-layout {
-    flex-direction: column;
-  }
-
-  .portal-sidebar {
-    width: 100%;
-    min-height: unset;
-    padding: 10px;
-    border-right: none;
-    border-bottom: 1px solid var(--erp-border);
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    gap: 6px;
-  }
-
-  .sidebar-heading {
+/* below md: hide username text (avatar still shows) */
+@media (max-width: 767px) {
+  .topbar-username {
     display: none;
   }
-
-  .portal-main {
-    padding: 12px;
+  .topbar-user {
+    padding: 4px 6px;
   }
-
-  .header-title {
-    font-size: 1.1rem;
-  }
-
   .header-hindi {
     display: none;
   }
-
-  .nitj-logo {
-    height: 52px;
+  .header-product {
+    display: none;
   }
+  .header-title {
+    font-size: 0.80rem;
+  }
+}
 
+/* lg and up: hide hamburger (sidebar always visible inline) */
+@media (min-width: 1024px) {
+  .topbar-hamburger {
+    display: none !important;
+  }
+  .portal-sidebar {
+    position: relative;
+    transform: none !important;
+  }
+}
+
+/* below lg: show hamburger; sidebar is a fixed drawer */
+@media (max-width: 1023px) {
+  .topbar-hamburger {
+    display: flex;
+  }
+  .portal-main {
+    padding: 20px;
+  }
+}
+
+/* very small screens */
+@media (max-width: 480px) {
+  .header-text {
+    display: none;
+  }
+  .nitj-logo {
+    height: 34px;
+  }
+  .portal-main {
+    padding: 14px 12px;
+  }
+  .nitj-footer-inner {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .nitj-footer-dot {
+    display: none;
+  }
+}
+
+.filter-bar .nitj-select,
+.filter-bar .nitj-input {
+  max-width: 220px;
+}
+
+@media (max-width: 640px) {
   .filter-bar .nitj-select,
   .filter-bar .nitj-input {
     max-width: 100%;

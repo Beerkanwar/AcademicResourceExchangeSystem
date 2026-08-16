@@ -3,8 +3,11 @@ export default function Footer() {
 
   return (
     <footer className="nitj-footer">
-      <div>Copyright {currentYear} © NIT Jalandhar</div>
-      <div>Developed by: Computer Centre, Dr. B.R. Ambedkar National Institute of Technology, Jalandhar</div>
+      <div className="nitj-footer-inner">
+        <span>Copyright {currentYear} &copy; NIT Jalandhar</span>
+        <span className="nitj-footer-dot" aria-hidden="true">·</span>
+        <span>Developed by: Computer Centre, Dr. B.R. Ambedkar National Institute of Technology, Jalandhar</span>
+      </div>
     </footer>
   );
 }

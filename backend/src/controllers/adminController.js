@@ -41,13 +41,13 @@ const adminController = {
       const skip = (page - 1) * limit;
 
       const [users, total] = await Promise.all([
-        User.find({ isDeleted: false })
+        User.find()
           .select('-password')
           .populate('department', 'name code')
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit),
-        User.countDocuments({ isDeleted: false })
+        User.countDocuments()
       ]);
 
       return ApiResponse.success(res, {

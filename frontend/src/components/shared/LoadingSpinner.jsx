@@ -11,8 +11,8 @@ export default function LoadingSpinner({ size = 'md', className = '' }) {
       <div
         className={`${sizeClasses[size]} rounded-full animate-spin`}
         style={{
-          borderColor: 'rgba(214,158,46,0.3)',
-          borderTopColor: '#d69e2e',
+          borderColor: 'rgba(232, 160, 32, 0.25)',
+          borderTopColor: '#e8a020',
         }}
       />
     </div>

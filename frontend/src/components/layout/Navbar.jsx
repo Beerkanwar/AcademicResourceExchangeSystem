@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { HiOutlineSearch, HiOutlineBell, HiOutlineLogout, HiMenu } from 'react-icons/hi';
+import { HiOutlineSearch, HiOutlineLogout, HiMenu } from 'react-icons/hi';
 
 export default function Navbar({ onToggleSidebar }) {
   const { user, isAuthenticated, logout } = useAuth();
@@ -15,93 +15,106 @@ export default function Navbar({ onToggleSidebar }) {
   };
 
   return (
-    <>
-      <header className="nitj-header" id="main-header">
-        <div className="header-inner flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="header-logo">
-              <img src="/nitj-logo.png" alt="NIT Jalandhar Logo" className="nitj-logo" style={{ height: '72px', width: 'auto' }} />
+    <header className="nitj-header" id="main-header">
+      <div className="navbar-inner">
+
+        {/* ── Left zone: hamburger + branding ── */}
+        <div className="topbar-left">
+          {/* Mobile hamburger — only shown when authenticated */}
+          {isAuthenticated && (
+            <button
+              onClick={onToggleSidebar}
+              className="topbar-hamburger"
+              aria-label="Toggle sidebar"
+            >
+              <HiMenu className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Logo */}
+          <img
+            src="/nitj-logo.png"
+            alt="NIT Jalandhar Logo"
+            className="nitj-logo"
+          />
+
+          {/* Institution text block */}
+          <div className="header-text">
+            <div className="header-hindi">
+              डॉ बी आर अम्बेडकर राष्ट्रीय प्रौद्योगिकी संस्थान जालंधर
             </div>
-            <div className="header-text">
-              <div className="header-hindi">डॉ बी आर अम्बेडकर राष्ट्रीय प्रौद्योगिकी संस्थान जालंधर</div>
-              <div className="header-sub-en">Dr B R Ambedkar</div>
-              <h1 className="header-title">National Institute of Technology Jalandhar</h1>
+            <h1 className="header-title">
+              National Institute of Technology Jalandhar
+            </h1>
+            <div className="header-product">
+              NITJ ResourceHub
             </div>
           </div>
         </div>
-      </header>
 
-      <nav className="nitj-navbar" id="main-navbar">
-        <div className="navbar-inner flex items-center w-full justify-between">
-          <div className="flex items-center">
-            {isAuthenticated && (
+        {/* ── Right zone: search + user + logout ── */}
+        <div className="topbar-right">
+          {isAuthenticated ? (
+            <>
+              {/* Search bar — hidden below md */}
+              <div className="topbar-search">
+                <div className="topbar-search-icon">
+                  <HiOutlineSearch className="w-4 h-4" />
+                </div>
+                <input
+                  type="text"
+                  id="topbar-search-input"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      navigate('/resources?search=' + encodeURIComponent(searchQuery.trim()));
+                      setSearchQuery('');
+                    }
+                  }}
+                  placeholder="Search resources…"
+                  aria-label="Search resources"
+                  autoComplete="off"
+                />
+              </div>
+
+              {/* User avatar pill */}
               <button
-                onClick={onToggleSidebar}
-                className="text-white/70 hover:text-white lg:hidden transition-colors p-1 mr-2"
-                aria-label="Toggle sidebar"
+                className="topbar-user"
+                onClick={() => navigate('/profile')}
+                title="View profile"
               >
-                <HiMenu className="w-5 h-5" />
+                <div className="topbar-avatar">
+                  {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                </div>
+                <span className="topbar-username">
+                  {user?.firstName || user?.email?.split('@')[0]}
+                </span>
               </button>
-            )}
-            <div className="navbar-brand-erp mr-6">
-              <span className="erp-divider">|</span>
-              <span className="erp-label">Resource Exchange System (RES)</span>
-            </div>
-          </div>
 
-          <div className="navbar-right ml-auto flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                <div className="md:flex hidden bg-white/10 border border-white/20 rounded-md overflow-hidden" style={{ minWidth: '300px' }}>
-                  <div className="px-3 flex items-center justify-center border-r border-white/20 text-white/50">
-                    <HiOutlineSearch className="w-4 h-4" />
-                  </div>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && searchQuery.trim()) {
-                        navigate('/resources?search=' + encodeURIComponent(searchQuery.trim()));
-                        setSearchQuery('');
-                      }
-                    }}
-                    placeholder="Search resources..."
-                    className="w-full bg-transparent text-white px-2 py-1 text-sm outline-none placeholder:text-white/40"
-                  />
-                </div>
+              {/* Divider */}
+              <div className="topbar-divider" aria-hidden="true" />
 
-                <div className="model-status-nav flex items-center gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
-                  <div className="w-6 h-6 rounded-full bg-white text-[10px] font-bold flex items-center justify-center text-primary">
-                    {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                  <div className="hidden sm:block">
-                    <span className="text-[11px] font-bold text-white block leading-tight">
-                      {user?.firstName || user?.email?.split('@')[0]}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mx-2 w-px h-6 bg-white/20"></div>
-
-                <button
-                  onClick={handleLogout}
-                  className="text-white/60 hover:text-red-400 p-2 ml-1"
-                  title="Logout"
-                >
-                  <HiOutlineLogout className="w-5 h-5" />
-                </button>
-              </>
-            ) : (
-              location.pathname !== '/login' && (
-                <Link to="/login" className="btn-nitj-secondary py-1 px-4 text-xs bg-white/20 ml-2">
-                  Login
-                </Link>
-              )
-            )}
-          </div>
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className="topbar-logout"
+                title="Logout"
+                aria-label="Logout"
+              >
+                <HiOutlineLogout className="w-[18px] h-[18px]" />
+              </button>
+            </>
+          ) : (
+            location.pathname !== '/login' && (
+              <Link to="/login" className="topbar-login-link">
+                Sign In
+              </Link>
+            )
+          )}
         </div>
-      </nav>
-    </>
+
+      </div>
+    </header>
   );
 }
