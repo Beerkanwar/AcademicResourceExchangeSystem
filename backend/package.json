@@ -7,7 +7,8 @@
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "seed": "node src/seeds/index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit"
   },
   "keywords": [
     "nitj",
@@ -38,6 +39,9 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.8.1",
     "globals": "^17.11.0",
-    "nodemon": "^3.1.9"
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.2.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.2.2"
   }
 }

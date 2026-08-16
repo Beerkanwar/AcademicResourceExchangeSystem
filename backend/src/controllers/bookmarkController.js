@@ -1,12 +1,13 @@
 const ApiResponse = require('../utils/apiResponse');
 const Bookmark = require('../models/Bookmark');
 const Resource = require('../models/Resource');
+const { clampLimit, clampPage } = require('../utils/pagination');
 
 const bookmarkController = {
   getMyBookmarks: async (req, res, next) => {
     try {
-      const page = parseInt(req.query.page, 10) || 1;
-      const limit = parseInt(req.query.limit, 10) || 12;
+      const page = clampPage(req.query.page);
+      const limit = clampLimit(req.query.limit);
       const skip = (page - 1) * limit;
 
       const [bookmarks, total] = await Promise.all([

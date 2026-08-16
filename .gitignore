@@ -12,6 +12,7 @@ build/
 
 # Uploads
 backend/uploads/
+backend/uploads-test*/
 
 # Logs
 *.log

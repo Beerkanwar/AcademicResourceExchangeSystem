@@ -10,7 +10,8 @@ const { RESOURCE_STATUS } = require('../utils/constants');
 const userController = {
   /**
    * GET /api/users/stats
-   * Global system metrics for administration
+   * Returns aggregate counts for the admin/teacher dashboard
+   * (active users, resources, pending verifications, departments).
    */
   getStats: async (req, res, next) => {
     try {
@@ -34,6 +35,7 @@ const userController = {
 
   /**
    * GET /api/users
+   * Paginated, filterable user list for administration.
    */
   getAll: [
     query('page').optional().isInt({ min: 1 }),
@@ -52,6 +54,7 @@ const userController = {
 
   /**
    * GET /api/users/:id
+   * Fetch a single user by ID.
    */
   getById: async (req, res, next) => {
     try {
@@ -64,6 +67,8 @@ const userController = {
 
   /**
    * POST /api/users
+   * Create a user account (admin only). Default password is derived
+   * from roll number for students, or a fixed default for other roles.
    */
   create: [
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
@@ -90,6 +95,8 @@ const userController = {
 
   /**
    * PUT /api/users/:id
+   * Update user profile fields and role assignments.
+   * Admins cannot change their own role via this endpoint.
    */
   update: [
     body('firstName').optional().trim().isLength({ max: 50 }),
@@ -114,7 +121,8 @@ const userController = {
   ],
 
   /**
-   * DELETE /api/users/:id (toggle active status)
+   * DELETE /api/users/:id
+   * Toggle the user's active status (soft deactivate / reactivate).
    */
   delete: async (req, res, next) => {
     try {
@@ -128,6 +136,7 @@ const userController = {
 
   /**
    * POST /api/users/:id/reset-password
+   * Reset a user's password to the system default and require a change on next login.
    */
   resetPassword: async (req, res, next) => {
     try {

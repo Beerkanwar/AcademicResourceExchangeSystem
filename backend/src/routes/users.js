@@ -4,10 +4,16 @@ const userController = require('../controllers/userController');
 const { auth, roleGuard } = require('../middleware/auth');
 const { ROLES } = require('../utils/constants');
 
-// System stats — admins and teachers (dashboard overview)
+/**
+ * Dashboard metrics — accessible to admins and teachers.
+ * Mounted before the admin-only guard so teachers can load overview stats.
+ */
 router.get('/stats', auth, roleGuard(ROLES.ADMIN, ROLES.TEACHER), userController.getStats);
 
-// All user management routes require admin
+/**
+ * Remaining routes require an authenticated admin.
+ * Covers user listing, CRUD, and password reset.
+ */
 router.use(auth, roleGuard(ROLES.ADMIN));
 
 router.get('/', userController.getAll);

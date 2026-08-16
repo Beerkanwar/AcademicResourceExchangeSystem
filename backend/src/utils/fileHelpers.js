@@ -3,13 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Generate SHA-256 hash from file buffer
- */
-const generateFileHash = (buffer) => {
-  return crypto.createHash('sha256').update(buffer).digest('hex');
-};
-
-/**
  * Generate SHA-256 hash from file path
  */
 const generateFileHashFromPath = async (filePath) => {
@@ -55,20 +48,6 @@ const ensureDir = (dirPath) => {
 };
 
 /**
- * Generate organized upload path: uploads/<department>/<semester>/<year>/
- */
-const generateUploadPath = (baseDir, department, semester, academicYear) => {
-  const uploadPath = path.join(
-    baseDir,
-    department || 'general',
-    `semester-${semester || 'misc'}`,
-    academicYear || 'unknown'
-  );
-  ensureDir(uploadPath);
-  return uploadPath;
-};
-
-/**
  * Get file size in human readable format
  */
 const formatFileSize = (bytes) => {
@@ -79,11 +58,9 @@ const formatFileSize = (bytes) => {
 };
 
 module.exports = {
-  generateFileHash,
   generateFileHashFromPath,
   sanitizeFilename,
   getFileExtension,
   ensureDir,
-  generateUploadPath,
   formatFileSize,
 };

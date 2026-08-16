@@ -1,11 +1,12 @@
 const ApiResponse = require('../utils/apiResponse');
 const AuditLog = require('../models/AuditLog');
+const { clampLimit, clampPage } = require('../utils/pagination');
 
 const auditController = {
   getAll: async (req, res, next) => {
     try {
-      const page = parseInt(req.query.page, 10) || 1;
-      const limit = parseInt(req.query.limit, 10) || 20;
+      const page = clampPage(req.query.page);
+      const limit = clampLimit(req.query.limit);
       const skip = (page - 1) * limit;
 
       const [logs, total] = await Promise.all([

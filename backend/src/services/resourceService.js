@@ -5,6 +5,7 @@ const AuditLog = require('../models/AuditLog');
 const { NotFoundError, BadRequestError, ForbiddenError } = require('../utils/apiError');
 const { generateFileHashFromPath } = require('../utils/fileHelpers');
 const { AUDIT_ACTIONS, RESOURCE_STATUS, ROLES } = require('../utils/constants');
+const { clampLimit, clampPage } = require('../utils/pagination');
 
 class ResourceService {
   /**
@@ -121,7 +122,9 @@ class ResourceService {
       filter.$text = { $search: search };
     }
 
-    const skip = (page - 1) * limit;
+    const safePage = clampPage(page);
+    const safeLimit = clampLimit(limit);
+    const skip = (safePage - 1) * safeLimit;
     const sort = {};
     if (search) {
       sort.score = { $meta: 'textScore' };
@@ -137,7 +140,7 @@ class ResourceService {
         .populate('department', 'name code')
         .sort(sort)
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(safeLimit),
       Resource.countDocuments(filter),
     ]);
 
@@ -145,9 +148,9 @@ class ResourceService {
       resources,
       pagination: {
         total,
-        page: Number(page),
-        limit: Number(limit),
-        pages: Math.ceil(total / limit),
+        page: safePage,
+        limit: safeLimit,
+        pages: Math.ceil(total / safeLimit),
       },
     };
   }
@@ -433,7 +436,7 @@ class ResourceService {
     
     resource.currentVersion += 1;
 
-    // Reset verification natively unless Admin or Teacher
+    // Student uploads of a new version return to pending review
     if (userRole !== ROLES.ADMIN && userRole !== ROLES.TEACHER) {
       resource.status = RESOURCE_STATUS.PENDING;
     }

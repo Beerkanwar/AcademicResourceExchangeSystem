@@ -19,14 +19,16 @@ const env = {
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
 };
 
-// Validate required variables
-const required = ['MONGODB_URI', 'JWT_SECRET'];
-const missing = required.filter((key) => !env[key]);
+// Validate required variables (skipped in test — setupEnv provides them)
+if (env.NODE_ENV !== 'test') {
+  const required = ['MONGODB_URI', 'JWT_SECRET'];
+  const missing = required.filter((key) => !env[key]);
 
-if (missing.length > 0) {
-  console.error(`❌ Missing required environment variables: ${missing.join(', ')}`);
-  console.error('   Copy .env.example to .env and fill in the values.');
-  process.exit(1);
+  if (missing.length > 0) {
+    console.error(`❌ Missing required environment variables: ${missing.join(', ')}`);
+    console.error('   Copy .env.example to .env and fill in the values.');
+    process.exit(1);
+  }
 }
 
 module.exports = env;

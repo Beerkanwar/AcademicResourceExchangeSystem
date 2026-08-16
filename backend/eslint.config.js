@@ -6,6 +6,7 @@ module.exports = [
     ignores: [
       'node_modules/**',
       'uploads/**',
+      'uploads-test/**',
       'coverage/**',
       'dist/**',
     ],
@@ -33,6 +34,14 @@ module.exports = [
       'prefer-const': 'error',
       eqeqeq: ['error', 'smart'],
       'no-var': 'error',
+    },
+  },
+  {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
     },
   },
 ];

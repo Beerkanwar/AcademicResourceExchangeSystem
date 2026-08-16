@@ -2,6 +2,7 @@ const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const { BadRequestError, NotFoundError } = require('../utils/apiError');
 const { AUDIT_ACTIONS, ROLES } = require('../utils/constants');
+const { escapeRegex } = require('../utils/escapeRegex');
 
 class UserService {
   /**
@@ -14,11 +15,12 @@ class UserService {
     if (department) filter.department = department;
     if (isActive !== undefined) filter.isActive = isActive === 'true' || isActive === true;
     if (search) {
+      const escapedSearch = escapeRegex(search);
       filter.$or = [
-        { email: { $regex: search, $options: 'i' } },
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { rollNumber: { $regex: search, $options: 'i' } },
+        { email: { $regex: escapedSearch, $options: 'i' } },
+        { firstName: { $regex: escapedSearch, $options: 'i' } },
+        { lastName: { $regex: escapedSearch, $options: 'i' } },
+        { rollNumber: { $regex: escapedSearch, $options: 'i' } },
       ];
     }
 
@@ -94,7 +96,8 @@ class UserService {
   }
 
   /**
-   * Update a user (Admin only)
+   * Update a user (Admin only).
+   * Supports profile fields and role changes; an admin cannot change their own role.
    */
   static async updateUser(userId, data, adminId) {
     const allowedFields = ['firstName', 'lastName', 'rollNumber', 'department', 'phone', 'role', 'isActive'];
@@ -103,7 +106,6 @@ class UserService {
       if (data[key] !== undefined) updates[key] = data[key];
     }
 
-    // Prevent admin from demoting themselves
     if (userId === adminId.toString() && updates.role && updates.role !== ROLES.ADMIN) {
       throw new BadRequestError('You cannot change your own role');
     }

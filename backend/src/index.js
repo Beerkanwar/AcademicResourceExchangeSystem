@@ -1,70 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const path = require('path');
-
 const env = require('./config/env');
 const connectDB = require('./config/db');
-const routes = require('./routes');
-const errorHandler = require('./middleware/errorHandler');
-const { apiLimiter } = require('./middleware/rateLimiter');
-const { auth } = require('./middleware/auth');
-const uploadAccessGuard = require('./middleware/secureUpload');
-const { ensureDir } = require('./utils/fileHelpers');
+const createApp = require('./app');
 
-const app = express();
+const app = createApp();
 
-// Security middleware
-app.use(helmet());
-app.use(cors({
-  origin: env.CLIENT_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
-
-// Rate limiting
-app.use('/api/', apiLimiter);
-
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Request logging
-if (env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
-
-// Ensure upload directory exists
-ensureDir(path.resolve(env.UPLOAD_DIR));
-
-// Secured uploads — auth + status/role checks before static serve
-app.use('/uploads', auth, uploadAccessGuard, express.static(path.resolve(env.UPLOAD_DIR)));
-app.use('/uploads', (req, res) => {
-  res.status(404).json({ success: false, message: 'File not found' });
-});
-
-// API routes
-app.use('/api', routes);
-
-// 404 handler for unknown API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.method} ${req.originalUrl}`,
-  });
-});
-
-// Global error handler
-app.use(errorHandler);
-
-// Start server
 const startServer = async () => {
   try {
-    // Connect to MongoDB Atlas
     await connectDB();
 
     app.listen(env.PORT, () => {
@@ -80,6 +21,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = app;
