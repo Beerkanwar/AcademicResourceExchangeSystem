@@ -11,7 +11,7 @@ dist/
 build/
 
 # Uploads
-server/uploads/
+backend/uploads/
 
 # Logs
 *.log
