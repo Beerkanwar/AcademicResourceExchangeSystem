@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import api from '../../api/axios';
+import api, { fetchUploadBlob } from '../../api/axios';
 import {
   HiOutlineDownload,
   HiOutlineEye,
@@ -32,6 +32,8 @@ const STATUS_COLORS = {
   rejected: { bg: '#e53e3e15', color: '#e53e3e', label: 'Rejected' },
 };
 
+const PREVIEWABLE_TYPES = ['pdf', 'png', 'jpg', 'jpeg', 'txt'];
+
 export default function ResourceDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,6 +41,8 @@ export default function ResourceDetailPage() {
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   useEffect(() => {
     const fetchResource = async () => {
@@ -67,6 +71,38 @@ export default function ResourceDetailPage() {
     fetchResource();
     fetchBookmarkStatus();
   }, [id, navigate]);
+
+  // Authenticated preview — /uploads requires Bearer token
+  useEffect(() => {
+    let objectUrl;
+    let cancelled = false;
+
+    const loadPreview = async () => {
+      if (!resource?.storedFilename || !PREVIEWABLE_TYPES.includes(resource.fileType)) {
+        setPreviewUrl(null);
+        return;
+      }
+
+      setPreviewLoading(true);
+      try {
+        const blob = await fetchUploadBlob(resource.storedFilename);
+        if (cancelled) return;
+        objectUrl = window.URL.createObjectURL(blob);
+        setPreviewUrl(objectUrl);
+      } catch {
+        if (!cancelled) setPreviewUrl(null);
+      } finally {
+        if (!cancelled) setPreviewLoading(false);
+      }
+    };
+
+    loadPreview();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+    };
+  }, [resource?.storedFilename, resource?.fileType]);
 
   const handleDownload = async () => {
     try {
@@ -260,22 +296,33 @@ export default function ResourceDetailPage() {
         </div>
         <div className="content-card-body p-0">
           <div className="bg-[#f8fbff] relative w-full h-[500px]">
-            {['pdf'].includes(resource.fileType) ? (
-              <iframe 
-                src={`/uploads/${resource.storedFilename}`} 
+            {previewLoading ? (
+              <div className="flex items-center justify-center h-full text-sm text-[#6c7a8e]">
+                Loading preview…
+              </div>
+            ) : previewUrl && resource.fileType === 'pdf' ? (
+              <iframe
+                src={previewUrl}
                 className="w-full h-full border-none"
                 title="PDF Preview"
               />
-            ) : ['png', 'jpg', 'jpeg'].includes(resource.fileType) ? (
+            ) : previewUrl && ['png', 'jpg', 'jpeg'].includes(resource.fileType) ? (
               <div className="p-8 flex justify-center items-center h-full">
-                 <img src={`/uploads/${resource.storedFilename}`} alt="Resource Preview" className="max-h-[400px] max-w-full rounded shadow-md" />
+                <img src={previewUrl} alt="Resource Preview" className="max-h-[400px] max-w-full rounded shadow-md" />
               </div>
-            ) : ['txt'].includes(resource.fileType) ? (
-               <iframe 
-                src={`/uploads/${resource.storedFilename}`} 
+            ) : previewUrl && resource.fileType === 'txt' ? (
+              <iframe
+                src={previewUrl}
                 className="w-full h-full border-none bg-white p-6 font-mono text-sm leading-relaxed"
                 title="Text Preview"
               />
+            ) : PREVIEWABLE_TYPES.includes(resource.fileType) && !previewUrl ? (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                <h4 className="text-lg font-bold text-[#1a3a6e] mb-2">Preview Unavailable</h4>
+                <p className="text-sm text-[#6c7a8e] max-w-md">
+                  You do not have permission to preview this file, or it could not be loaded.
+                </p>
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center p-6">
                  <div className="text-5xl mb-4">{FILE_ICONS[resource.fileType] || '📄'}</div>

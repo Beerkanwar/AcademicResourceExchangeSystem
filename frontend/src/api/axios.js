@@ -10,6 +10,14 @@ const api = axios.create({
   timeout: 30000,
 });
 
+const clearSessionAndRedirect = () => {
+  localStorage.removeItem('nitj_token');
+  localStorage.removeItem('nitj_user');
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+};
+
 // Request interceptor — attach JWT token
 api.interceptors.request.use(
   (config) => {
@@ -27,15 +35,33 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('nitj_token');
-      localStorage.removeItem('nitj_user');
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+      clearSessionAndRedirect();
     }
     return Promise.reject(error);
   }
 );
+
+/**
+ * Fetch a file from /uploads with JWT (img/iframe cannot send Authorization).
+ */
+export const fetchUploadBlob = async (storedFilename) => {
+  const token = localStorage.getItem('nitj_token');
+  try {
+    const response = await axios.get(
+      `/uploads/${encodeURIComponent(storedFilename)}`,
+      {
+        responseType: 'blob',
+        timeout: 60000,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      clearSessionAndRedirect();
+    }
+    throw error;
+  }
+};
 
 export default api;

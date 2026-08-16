@@ -9,6 +9,8 @@ const connectDB = require('./config/db');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
+const { auth } = require('./middleware/auth');
+const uploadAccessGuard = require('./middleware/secureUpload');
 const { ensureDir } = require('./utils/fileHelpers');
 
 const app = express();
@@ -39,8 +41,11 @@ if (env.NODE_ENV === 'development') {
 // Ensure upload directory exists
 ensureDir(path.resolve(env.UPLOAD_DIR));
 
-// Static files — serve uploaded files
-app.use('/uploads', express.static(path.resolve(env.UPLOAD_DIR)));
+// Secured uploads — auth + status/role checks before static serve
+app.use('/uploads', auth, uploadAccessGuard, express.static(path.resolve(env.UPLOAD_DIR)));
+app.use('/uploads', (req, res) => {
+  res.status(404).json({ success: false, message: 'File not found' });
+});
 
 // API routes
 app.use('/api', routes);
