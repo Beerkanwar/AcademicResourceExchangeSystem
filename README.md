@@ -8,9 +8,11 @@
 AcademicResourceExchangeSystem/
 ├── .env                    # Environment configuration
 ├── .env.example            # Environment template
+├── docker-compose.yml      # Local MongoDB + backend
 ├── .gitignore
 ├── README.md
 ├── backend/                 # Express.js Backend
+│   ├── Dockerfile          # Dev image (nodemon + live reload)
 │   ├── package.json
 │   └── src/
 │       ├── index.js        # Entry point
@@ -43,14 +45,43 @@ AcademicResourceExchangeSystem/
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB Atlas account (free tier works)
+- MongoDB (local via Docker, or MongoDB Atlas)
+- Docker Desktop (optional — for one-command backend + MongoDB)
 
 ### 1. Configure Environment
 ```bash
 # Copy and edit the .env file
 cp .env.example .env
-# Fill in your MongoDB Atlas URI and JWT secret
+# Set JWT_SECRET (required). For Docker Compose, MONGODB_URI is overridden automatically.
 ```
+
+### Docker Compose (backend + MongoDB)
+
+Spin up MongoDB and the Express API with live reload:
+
+```bash
+docker compose up --build
+```
+
+- API: http://localhost:5000
+- Health: http://localhost:5000/api/health
+- MongoDB: `localhost:27017` (data persisted in the `mongo_data` volume)
+
+Seed the database (once containers are running):
+
+```bash
+docker compose exec backend npm run seed
+```
+
+Stop and remove containers (volumes keep DB/uploads data):
+
+```bash
+docker compose down
+```
+
+Run the frontend separately on the host (`cd frontend && npm run dev`) — it is not part of this Compose file.
+
+### Local setup (without Docker)
 
 ### 2. Install Dependencies
 ```bash

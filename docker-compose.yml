@@ -1,0 +1,53 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: nitj-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nitj-backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5000}:5000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Override Atlas URI from .env so the backend talks to the Compose MongoDB service
+      PORT: ${PORT:-5000}
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongo:27017/nitj_resources
+      JWT_SECRET: ${JWT_SECRET:-dev_only_change_me_in_production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:5173}
+      UPLOAD_DIR: ./uploads
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@nitj.ac.in}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    volumes:
+      # Live-reload source during development
+      - ./backend:/app
+      # Keep container node_modules (do not overwrite with host mount)
+      - backend_node_modules:/app/node_modules
+      # Persist uploaded files
+      - backend_uploads:/app/uploads
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:
+  backend_node_modules:
+  backend_uploads:
