@@ -11,6 +11,7 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 const { auth } = require('./middleware/auth');
 const uploadAccessGuard = require('./middleware/secureUpload');
 const { ensureDir } = require('./utils/fileHelpers');
+const logger = require('./utils/logger');
 
 /**
  * Build the Express application (no DB connection / listen).
@@ -32,10 +33,9 @@ const createApp = () => {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-  if (env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-  } else if (env.NODE_ENV !== 'test') {
-    app.use(morgan('combined'));
+  if (env.NODE_ENV !== 'test') {
+    const format = env.NODE_ENV === 'development' ? 'dev' : 'combined';
+    app.use(morgan(format, { stream: logger.stream }));
   }
 
   ensureDir(path.resolve(env.UPLOAD_DIR));

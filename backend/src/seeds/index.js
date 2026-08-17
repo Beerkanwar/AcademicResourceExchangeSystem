@@ -11,14 +11,15 @@ const User = require('../models/User');
 const Department = require('../models/Department');
 const Subject = require('../models/Subject');
 const cseSubjects = require('./subjects');
+const logger = require('../utils/logger');
 
 const seedDatabase = async () => {
   try {
     await connectDB();
-    console.log('\n🌱 Starting database seed...\n');
+    logger.info('Starting database seed');
 
     // 1. Seed CSE Department
-    console.log('📁 Seeding departments...');
+    logger.info('Seeding departments');
     let cseDept = await Department.findOne({ code: 'CSE' });
     if (!cseDept) {
       cseDept = await Department.create({
@@ -26,9 +27,9 @@ const seedDatabase = async () => {
         code: 'CSE',
         description: 'Department of Computer Science and Engineering, NIT Jalandhar',
       });
-      console.log('   ✅ CSE department created');
+      logger.info('Department created', { code: 'CSE' });
     } else {
-      console.log('   ⏭️  CSE department already exists');
+      logger.debug('Department already exists', { code: 'CSE' });
     }
 
     // Add more departments for future extensibility
@@ -48,14 +49,14 @@ const seedDatabase = async () => {
       const exists = await Department.findOne({ code: dept.code });
       if (!exists) {
         await Department.create(dept);
-        console.log(`   ✅ ${dept.code} department created`);
+        logger.info('Department created', { code: dept.code });
       } else {
-        console.log(`   ⏭️  ${dept.code} department already exists`);
+        logger.debug('Department already exists', { code: dept.code });
       }
     }
 
     // 2. Seed CSE Subjects
-    console.log('\n📚 Seeding CSE subjects...');
+    logger.info('Seeding CSE subjects');
     let subjectsCreated = 0;
     for (const subj of cseSubjects) {
       const exists = await Subject.findOne({ code: subj.code, department: cseDept._id });
@@ -67,10 +68,13 @@ const seedDatabase = async () => {
         subjectsCreated++;
       }
     }
-    console.log(`   ✅ ${subjectsCreated} new subjects created (${cseSubjects.length - subjectsCreated} already existed)`);
+    logger.info('Subjects seeded', {
+      created: subjectsCreated,
+      alreadyExisted: cseSubjects.length - subjectsCreated,
+    });
 
     // 3. Seed Admin User
-    console.log('\n👤 Seeding admin user...');
+    logger.info('Seeding admin user');
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@nitj.ac.in';
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
@@ -86,13 +90,13 @@ const seedDatabase = async () => {
         isActive: true,
         department: cseDept._id,
       });
-      console.log(`   ✅ Admin user created: ${adminEmail}`);
+      logger.info('Admin user created', { email: adminEmail });
     } else {
-      console.log(`   ⏭️  Admin user already exists: ${adminEmail}`);
+      logger.debug('Admin user already exists', { email: adminEmail });
     }
 
     // 4. Seed a sample teacher and student for testing
-    console.log('\n👥 Seeding test users...');
+    logger.info('Seeding test users');
     const testUsers = [
       {
         email: 'teacher@nitj.ac.in',
@@ -119,21 +123,23 @@ const seedDatabase = async () => {
       const exists = await User.findOne({ email: testUser.email });
       if (!exists) {
         await User.create(testUser);
-        console.log(`   ✅ ${testUser.role} created: ${testUser.email}`);
+        logger.info('Test user created', { role: testUser.role, email: testUser.email });
       } else {
-        console.log(`   ⏭️  ${testUser.role} already exists: ${testUser.email}`);
+        logger.debug('Test user already exists', { role: testUser.role, email: testUser.email });
       }
     }
 
-    console.log('\n✅ Database seeding complete!\n');
-    console.log('📋 Test Credentials:');
-    console.log('   Admin:   admin@nitj.ac.in / admin123');
-    console.log('   Teacher: teacher@nitj.ac.in / teacher123');
-    console.log('   Student: student@nitj.ac.in / 21105001\n');
+    logger.info('Database seeding complete', {
+      credentials: {
+        admin: 'admin@nitj.ac.in / admin123',
+        teacher: 'teacher@nitj.ac.in / teacher123',
+        student: 'student@nitj.ac.in / 21105001',
+      },
+    });
 
     process.exit(0);
   } catch (error) {
-    console.error('\n❌ Seeding failed:', error.message);
+    logger.error('Seeding failed', { error: error.message, stack: error.stack });
     process.exit(1);
   }
 };

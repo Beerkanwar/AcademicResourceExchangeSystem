@@ -1,6 +1,7 @@
 const env = require('./config/env');
 const connectDB = require('./config/db');
 const createApp = require('./app');
+const logger = require('./utils/logger');
 
 const app = createApp();
 
@@ -9,14 +10,15 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(env.PORT, () => {
-      console.log(`\n🚀 NITJ Resource Exchange API`);
-      console.log(`   Environment: ${env.NODE_ENV}`);
-      console.log(`   Server:      http://localhost:${env.PORT}`);
-      console.log(`   Health:      http://localhost:${env.PORT}/api/health`);
-      console.log(`   Client:      ${env.CLIENT_URL}\n`);
+      logger.info('NITJ Resource Exchange API started', {
+        environment: env.NODE_ENV,
+        port: env.PORT,
+        health: `http://localhost:${env.PORT}/api/health`,
+        clientUrl: env.CLIENT_URL,
+      });
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error.message);
+    logger.error('Failed to start server', { error: error.message, stack: error.stack });
     process.exit(1);
   }
 };

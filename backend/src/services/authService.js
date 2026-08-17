@@ -4,6 +4,7 @@ const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const { UnauthorizedError, BadRequestError, NotFoundError } = require('../utils/apiError');
 const { AUDIT_ACTIONS } = require('../utils/constants');
+const logger = require('../utils/logger');
 
 class AuthService {
   /**
@@ -158,7 +159,7 @@ class AuthService {
       });
     } catch (err) {
       // Don't let audit logging failures break the main flow
-      console.error('Audit log failed:', err.message);
+      logger.error('Audit log failed', { error: err.message });
     }
   }
 }

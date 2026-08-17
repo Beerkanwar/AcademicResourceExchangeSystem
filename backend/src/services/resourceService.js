@@ -6,6 +6,7 @@ const { NotFoundError, BadRequestError, ForbiddenError } = require('../utils/api
 const { generateFileHashFromPath } = require('../utils/fileHelpers');
 const { AUDIT_ACTIONS, RESOURCE_STATUS, ROLES } = require('../utils/constants');
 const { clampLimit, clampPage } = require('../utils/pagination');
+const logger = require('../utils/logger');
 
 class ResourceService {
   /**
@@ -32,7 +33,7 @@ class ResourceService {
     try {
       extractedText = await ResourceService.extractText(file.path, file.mimetype);
     } catch (err) {
-      console.warn('Text extraction failed:', err.message);
+      logger.warn('Text extraction failed', { error: err.message });
     }
 
     // Parse tags from string
@@ -379,7 +380,7 @@ class ResourceService {
         return fs.readFileSync(filePath, 'utf8').substring(0, 50000);
       }
     } catch (err) {
-      console.warn(`Text extraction failed for ${mimeType}:`, err.message);
+      logger.warn('Text extraction failed', { mimeType, error: err.message });
     }
     return '';
   }

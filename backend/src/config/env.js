@@ -4,6 +4,8 @@ const path = require('path');
 // Load .env from project root
 dotenv.config({ path: path.join(__dirname, '..', '..', '..', '.env') });
 
+const logger = require('../utils/logger');
+
 const env = {
   PORT: process.env.PORT || 5000,
   NODE_ENV: process.env.NODE_ENV || 'development',
@@ -25,8 +27,10 @@ if (env.NODE_ENV !== 'test') {
   const missing = required.filter((key) => !env[key]);
 
   if (missing.length > 0) {
-    console.error(`❌ Missing required environment variables: ${missing.join(', ')}`);
-    console.error('   Copy .env.example to .env and fill in the values.');
+    logger.error('Missing required environment variables', {
+      missing,
+      hint: 'Copy .env.example to .env and fill in the values.',
+    });
     process.exit(1);
   }
 }

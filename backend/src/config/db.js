@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
 const env = require('./env');
+const logger = require('../utils/logger');
 
 // Force IPv4 DNS resolution — fixes SRV lookup failures on Windows
 dns.setDefaultResultOrder('ipv4first');
@@ -22,33 +23,42 @@ const connectDB = async (retries = 3) => {
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      console.log(`🔄 MongoDB connection attempt ${attempt}/${retries}...`);
+      logger.info('MongoDB connection attempt', { attempt, retries });
 
       const conn = await mongoose.connect(uri, {
         serverSelectionTimeoutMS: 10000,
         family: 4, // Force IPv4
       });
 
-      console.log(`✅ MongoDB connected: ${conn.connection.host} | DB: ${conn.connection.name}`);
+      logger.info('MongoDB connected', {
+        host: conn.connection.host,
+        database: conn.connection.name,
+      });
 
       // Handle connection events
       mongoose.connection.on('error', (err) => {
-        console.error(`❌ MongoDB connection error: ${err.message}`);
+        logger.error('MongoDB connection error', { error: err.message });
       });
 
       mongoose.connection.on('disconnected', () => {
-        console.warn('⚠️  MongoDB disconnected. Attempting reconnection...');
+        logger.warn('MongoDB disconnected; attempting reconnection');
       });
 
       return conn;
     } catch (error) {
-      console.error(`❌ Attempt ${attempt} failed: ${error.message}`);
+      logger.error('MongoDB connection attempt failed', {
+        attempt,
+        error: error.message,
+      });
       if (attempt === retries) {
-        console.error('\n💡 Troubleshooting tips:');
-        console.error('   1. Check your MONGODB_URI in .env');
-        console.error('   2. Ensure your IP is whitelisted in Atlas (Network Access → 0.0.0.0/0)');
-        console.error('   3. Try using the non-SRV connection string from Atlas');
-        console.error('   4. Check your internet connection\n');
+        logger.error('MongoDB connection exhausted retries', {
+          tips: [
+            'Check your MONGODB_URI in .env',
+            'Ensure your IP is whitelisted in Atlas (Network Access → 0.0.0.0/0)',
+            'Try using the non-SRV connection string from Atlas',
+            'Check your internet connection',
+          ],
+        });
         process.exit(1);
       }
       // Wait before retry
