@@ -7,7 +7,7 @@ const isTest = NODE_ENV === 'test';
 const { combine, timestamp, errors, json, colorize, printf, splat } = winston.format;
 
 /** Human-readable format for local development */
-const prettyFormat = printf(({ level, message, timestamp: ts, stack, service, ...meta }) => {
+const prettyFormat = printf(({ level, message, timestamp: ts, stack, service: _service, ...meta }) => {
   const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
   const stackStr = stack ? `\n${stack}` : '';
   return `${ts} [${level}]: ${message}${metaStr}${stackStr}`;
