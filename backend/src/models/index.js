@@ -6,6 +6,7 @@ const Bookmark = require('./Bookmark');
 const Rating = require('./Rating');
 const AuditLog = require('./AuditLog');
 const Notification = require('./Notification');
+const RefreshToken = require('./RefreshToken');
 
 module.exports = {
   User,
@@ -16,4 +17,5 @@ module.exports = {
   Rating,
   AuditLog,
   Notification,
+  RefreshToken,
 };

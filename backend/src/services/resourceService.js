@@ -7,6 +7,7 @@ const { generateFileHashFromPath } = require('../utils/fileHelpers');
 const { AUDIT_ACTIONS, RESOURCE_STATUS, ROLES } = require('../utils/constants');
 const { clampLimit, clampPage } = require('../utils/pagination');
 const logger = require('../utils/logger');
+const NotificationService = require('./notificationService');
 
 class ResourceService {
   /**
@@ -352,6 +353,8 @@ class ResourceService {
         reason: action === 'reject' ? reason : undefined
       },
     });
+
+    await NotificationService.notifyResourceVerification(resource, action);
 
     return resource;
   }

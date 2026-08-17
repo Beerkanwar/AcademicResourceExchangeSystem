@@ -9,8 +9,8 @@ export default function Navbar({ onToggleSidebar }) {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 

@@ -6,16 +6,14 @@ const { BadRequestError } = require('../utils/apiError');
 const authController = {
   /**
    * POST /api/auth/login
-   * Authenticate user and return JWT token
+   * Authenticate user and return access + refresh tokens
    */
   login: [
-    // Validation rules
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
     body('password').notEmpty().withMessage('Password is required'),
 
     async (req, res, next) => {
       try {
-        // Check validation
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           throw new BadRequestError('Validation failed', errors.array());
@@ -23,8 +21,9 @@ const authController = {
 
         const { email, password } = req.body;
         const ipAddress = req.ip || req.connection?.remoteAddress || '';
+        const userAgent = req.get('user-agent') || '';
 
-        const result = await AuthService.login(email, password, ipAddress);
+        const result = await AuthService.login(email, password, ipAddress, userAgent);
 
         return ApiResponse.success(res, result, 'Login successful');
       } catch (error) {
@@ -32,6 +31,48 @@ const authController = {
       }
     },
   ],
+
+  /**
+   * POST /api/auth/refresh
+   * Rotate refresh token and issue a new access token
+   */
+  refresh: [
+    body('refreshToken').notEmpty().withMessage('Refresh token is required'),
+
+    async (req, res, next) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          throw new BadRequestError('Validation failed', errors.array());
+        }
+
+        const ipAddress = req.ip || req.connection?.remoteAddress || '';
+        const userAgent = req.get('user-agent') || '';
+        const result = await AuthService.refresh(req.body.refreshToken, ipAddress, userAgent);
+
+        return ApiResponse.success(res, result, 'Token refreshed successfully');
+      } catch (error) {
+        next(error);
+      }
+    },
+  ],
+
+  /**
+   * POST /api/auth/logout
+   * Revoke refresh token server-side
+   */
+  logout: async (req, res, next) => {
+    try {
+      const refreshToken = req.body?.refreshToken;
+      const ipAddress = req.ip || req.connection?.remoteAddress || '';
+      const userId = req.user?._id || null;
+
+      const result = await AuthService.logout(refreshToken, userId, ipAddress);
+      return ApiResponse.success(res, null, result.message);
+    } catch (error) {
+      next(error);
+    }
+  },
 
   /**
    * POST /api/auth/change-password

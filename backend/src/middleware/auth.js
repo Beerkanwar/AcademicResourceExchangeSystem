@@ -51,6 +51,10 @@ const auth = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, env.JWT_SECRET);
 
+    if (decoded.type && decoded.type !== 'access') {
+      throw new UnauthorizedError('Invalid access token.');
+    }
+
     // Get user from database
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
@@ -87,9 +91,13 @@ const optionalAuth = async (req, res, next) => {
       if (token) {
         try {
           const decoded = jwt.verify(token, env.JWT_SECRET);
-          const user = await User.findById(decoded.id).select('-password');
-          if (user && user.isActive) {
-            req.user = user;
+          if (decoded.type && decoded.type !== 'access') {
+            // Ignore non-access tokens for optional auth
+          } else {
+            const user = await User.findById(decoded.id).select('-password');
+            if (user && user.isActive) {
+              req.user = user;
+            }
           }
         } catch {
           // Invalid/expired token — continue without attaching a user

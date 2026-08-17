@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
         setUser(JSON.parse(storedUser));
       } catch {
         localStorage.removeItem('nitj_token');
+        localStorage.removeItem('nitj_refresh_token');
         localStorage.removeItem('nitj_user');
       }
     }
@@ -26,19 +27,33 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
-    const { token: newToken, user: newUser } = response.data.data;
-    setToken(newToken);
-    setUser(newUser);
-    localStorage.setItem('nitj_token', newToken);
-    localStorage.setItem('nitj_user', JSON.stringify(newUser));
+    const data = response.data.data;
+    const accessToken = data.accessToken || data.token;
+    const refreshToken = data.refreshToken;
+
+    setToken(accessToken);
+    setUser(data.user);
+    localStorage.setItem('nitj_token', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('nitj_refresh_token', refreshToken);
+    }
+    localStorage.setItem('nitj_user', JSON.stringify(data.user));
     return response.data;
   }, []);
 
-  const logout = useCallback(() => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('nitj_token');
-    localStorage.removeItem('nitj_user');
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem('nitj_refresh_token');
+    try {
+      await api.post('/auth/logout', { refreshToken });
+    } catch {
+      // Always clear local session even if revoke fails
+    } finally {
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem('nitj_token');
+      localStorage.removeItem('nitj_refresh_token');
+      localStorage.removeItem('nitj_user');
+    }
   }, []);
 
   const updateUser = useCallback((updatedUser) => {

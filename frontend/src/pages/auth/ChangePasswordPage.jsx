@@ -29,7 +29,7 @@ export default function ChangePasswordPage() {
       toast.success(res.data.message || 'Password changed successfully!');
       if (user?.mustChangePassword) {
         toast('Please login with your new password', { icon: '🔑' });
-        logout();
+        await logout();
         navigate('/login');
       } else {
         navigate('/dashboard');

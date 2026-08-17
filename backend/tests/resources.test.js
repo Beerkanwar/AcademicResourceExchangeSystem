@@ -12,6 +12,7 @@ const {
   createPngBuffer,
 } = require('./helpers');
 const { RESOURCE_STATUS } = require('../src/utils/constants');
+const Notification = require('../src/models/Notification');
 
 describe('Resource upload & verification', () => {
   let department;
@@ -177,7 +178,7 @@ describe('Resource upload & verification', () => {
     });
 
     it('allows a teacher to approve a pending resource', async () => {
-      const { resource } = await uploadPendingResource();
+      const { resource, student: uploader } = await uploadPendingResource();
 
       const { token: teacherToken } = await createAuthenticatedUser({
         email: 'teacher@nitj.ac.in',
@@ -192,10 +193,19 @@ describe('Resource upload & verification', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.status).toBe(RESOURCE_STATUS.APPROVED);
       expect(res.body.data.verifiedBy).toBeTruthy();
+
+      const notification = await Notification.findOne({
+        user: uploader._id,
+        type: 'resource_approved',
+      });
+      expect(notification).toBeTruthy();
+      expect(notification.message).toContain(resource.title);
+      expect(notification.link).toBe(`/resources/${resource._id}`);
+      expect(notification.read).toBe(false);
     });
 
     it('allows a teacher to reject a pending resource with a reason', async () => {
-      const { resource } = await uploadPendingResource();
+      const { resource, student: uploader } = await uploadPendingResource();
 
       const { token: teacherToken } = await createAuthenticatedUser({
         email: 'teacher@nitj.ac.in',
@@ -211,6 +221,15 @@ describe('Resource upload & verification', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.status).toBe(RESOURCE_STATUS.REJECTED);
       expect(res.body.data.rejectionReason).toBe('Incomplete notes');
+
+      const notification = await Notification.findOne({
+        user: uploader._id,
+        type: 'resource_rejected',
+      });
+      expect(notification).toBeTruthy();
+      expect(notification.message).toContain(resource.title);
+      expect(notification.message).toContain('Incomplete notes');
+      expect(notification.link).toBe(`/resources/${resource._id}`);
     });
 
     it('blocks students from approving resources', async () => {
