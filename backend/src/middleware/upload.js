@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const env = require('../config/env');
-const { sanitizeFilename } = require('../utils/fileHelpers');
+const { sanitizeFilename, generateUploadPath } = require('../utils/fileHelpers');
 const { BadRequestError } = require('../utils/apiError');
 const { MIME_TYPE_MAP } = require('../utils/constants');
 
@@ -75,8 +75,19 @@ const detectActualMimeType = async (filePath, claimedExt) => {
 // Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.resolve(env.UPLOAD_DIR);
-    cb(null, uploadDir);
+    try {
+      const uploadDir = path.resolve(env.UPLOAD_DIR);
+      // Multipart fields sent before the file are available on req.body
+      const dest = generateUploadPath(
+        uploadDir,
+        req.body?.department,
+        req.body?.semester,
+        req.body?.academicYear
+      );
+      cb(null, dest);
+    } catch (err) {
+      cb(err);
+    }
   },
   filename: (req, file, cb) => {
     const sanitized = sanitizeFilename(file.originalname);

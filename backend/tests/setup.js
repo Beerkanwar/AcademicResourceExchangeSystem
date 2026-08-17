@@ -24,8 +24,8 @@ afterEach(async () => {
 
   const uploadDir = path.resolve(process.env.UPLOAD_DIR);
   if (fs.existsSync(uploadDir)) {
-    for (const file of fs.readdirSync(uploadDir)) {
-      fs.unlinkSync(path.join(uploadDir, file));
+    for (const entry of fs.readdirSync(uploadDir)) {
+      fs.rmSync(path.join(uploadDir, entry), { recursive: true, force: true });
     }
   }
 });

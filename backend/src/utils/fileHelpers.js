@@ -48,6 +48,33 @@ const ensureDir = (dirPath) => {
 };
 
 /**
+ * Sanitize a single path segment to prevent traversal / illegal chars
+ */
+const sanitizePathSegment = (value, fallback) => {
+  const raw = String(value ?? '').trim();
+  const cleaned = raw
+    .replace(/[/\\:*?"<>|]/g, '_')
+    .replace(/\.\./g, '_')
+    .replace(/^\.+/, '');
+  return cleaned || fallback;
+};
+
+/**
+ * Generate organized upload path: uploads/<department>/<semester>/<year>/
+ * Creates the directory (recursive) before returning.
+ */
+const generateUploadPath = (baseDir, department, semester, academicYear) => {
+  const uploadPath = path.join(
+    baseDir,
+    sanitizePathSegment(department, 'general'),
+    `semester-${sanitizePathSegment(semester, 'misc')}`,
+    sanitizePathSegment(academicYear, 'unknown')
+  );
+  ensureDir(uploadPath);
+  return uploadPath;
+};
+
+/**
  * Get file size in human readable format
  */
 const formatFileSize = (bytes) => {
@@ -62,5 +89,6 @@ module.exports = {
   sanitizeFilename,
   getFileExtension,
   ensureDir,
+  generateUploadPath,
   formatFileSize,
 };

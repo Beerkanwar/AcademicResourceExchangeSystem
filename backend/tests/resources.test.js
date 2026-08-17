@@ -53,6 +53,9 @@ describe('Resource upload & verification', () => {
         mimeType: 'application/pdf',
       });
       expect(fs.existsSync(res.body.data.filePath)).toBe(true);
+      expect(res.body.data.filePath).toContain(
+        path.join(department._id.toString(), 'semester-3')
+      );
     });
 
     it('auto-approves uploads from teachers', async () => {
@@ -119,8 +122,14 @@ describe('Resource upload & verification', () => {
       expect(res.body.message).toMatch(/does not match|not allowed|Unable to determine/i);
 
       const uploadDir = path.resolve(process.env.UPLOAD_DIR);
-      const leftover = fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : [];
-      expect(leftover).toHaveLength(0);
+      const collectFiles = (dir) => {
+        if (!fs.existsSync(dir)) return [];
+        return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+          const full = path.join(dir, entry.name);
+          return entry.isDirectory() ? collectFiles(full) : [full];
+        });
+      };
+      expect(collectFiles(uploadDir)).toHaveLength(0);
     });
 
     it('requires authentication to upload', async () => {

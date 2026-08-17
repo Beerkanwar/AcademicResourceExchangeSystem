@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 
 const env = require('./config/env');
 const routes = require('./routes');
@@ -40,7 +41,15 @@ const createApp = () => {
 
   ensureDir(path.resolve(env.UPLOAD_DIR));
 
-  app.use('/uploads', auth, uploadAccessGuard, express.static(path.resolve(env.UPLOAD_DIR)));
+  // Serve uploads by DB-resolved absolute path so nested department/semester/year
+  // folders work while clients still request /uploads/<storedFilename>.
+  app.use('/uploads', auth, uploadAccessGuard, (req, res) => {
+    const filePath = req.uploadFilePath;
+    if (!filePath || !fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+    return res.sendFile(filePath);
+  });
   app.use('/uploads', (req, res) => {
     res.status(404).json({ success: false, message: 'File not found' });
   });
