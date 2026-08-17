@@ -17,6 +17,8 @@ const env = {
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || process.env.JWT_EXPIRES_IN || '15m',
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   UPLOAD_DIR: process.env.UPLOAD_DIR || './uploads',
+  /** Short-lived signed download URL TTL (default 5 minutes) */
+  DOWNLOAD_SIGNED_URL_EXPIRES_IN: process.env.DOWNLOAD_SIGNED_URL_EXPIRES_IN || '5m',
   MAX_FILE_SIZE: parseInt(process.env.MAX_FILE_SIZE, 10) || 52428800, // 50MB
   ALLOWED_FILE_TYPES: (process.env.ALLOWED_FILE_TYPES || 'pdf,ppt,pptx,doc,docx,txt,zip,rar,xlsx,xls,csv,png,jpg,jpeg').split(','),
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@nitj.ac.in',

@@ -51,6 +51,62 @@ class NotificationService {
       return null;
     }
   }
+
+  /**
+   * Bulk-create verification notifications with a single insertMany.
+   */
+  static async notifyResourceVerificationBulk(resources, action) {
+    if (!Array.isArray(resources) || resources.length === 0) {
+      return [];
+    }
+
+    const isApproved = action === 'approve';
+    const type = isApproved ? 'resource_approved' : 'resource_rejected';
+
+    const docs = [];
+    for (const resource of resources) {
+      if (!resource?.uploadedBy) {
+        logger.warn('Skipping verification notification: missing uploader', {
+          resourceId: resource?._id,
+        });
+        continue;
+      }
+
+      const title = resource.title || 'your resource';
+      const message = isApproved
+        ? `Your resource "${title}" has been approved and is now available in the repository.`
+        : `Your resource "${title}" was rejected${
+            resource.rejectionReason ? `: ${resource.rejectionReason}` : '.'
+          }`;
+
+      docs.push({
+        user: resource.uploadedBy,
+        message,
+        type,
+        link: `/resources/${resource._id}`,
+        read: false,
+      });
+    }
+
+    if (docs.length === 0) {
+      return [];
+    }
+
+    try {
+      const created = await Notification.insertMany(docs, { ordered: false });
+      logger.info('Bulk verification notifications created', {
+        count: created.length,
+        type,
+      });
+      return created;
+    } catch (err) {
+      logger.error('Failed to create bulk verification notifications', {
+        error: err.message,
+        attempted: docs.length,
+      });
+      return [];
+    }
+  }
 }
 
 module.exports = NotificationService;

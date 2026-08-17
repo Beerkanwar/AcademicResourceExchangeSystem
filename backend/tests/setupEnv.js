@@ -13,3 +13,5 @@ process.env.UPLOAD_DIR = path.join(
 );
 process.env.CLIENT_URL = 'http://localhost:5173';
 process.env.MAX_FILE_SIZE = '52428800';
+process.env.DOWNLOAD_SIGNED_URL_EXPIRES_IN =
+  process.env.DOWNLOAD_SIGNED_URL_EXPIRES_IN || '5m';

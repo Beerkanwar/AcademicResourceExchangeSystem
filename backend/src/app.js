@@ -3,14 +3,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
-const fs = require('fs');
 
 const env = require('./config/env');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
-const { auth } = require('./middleware/auth');
-const uploadAccessGuard = require('./middleware/secureUpload');
 const { ensureDir } = require('./utils/fileHelpers');
 const logger = require('./utils/logger');
 
@@ -41,17 +38,13 @@ const createApp = () => {
 
   ensureDir(path.resolve(env.UPLOAD_DIR));
 
-  // Serve uploads by DB-resolved absolute path so nested department/semester/year
-  // folders work while clients still request /uploads/<storedFilename>.
-  app.use('/uploads', auth, uploadAccessGuard, (req, res) => {
-    const filePath = req.uploadFilePath;
-    if (!filePath || !fs.existsSync(filePath)) {
-      return res.status(404).json({ success: false, message: 'File not found' });
-    }
-    return res.sendFile(filePath);
-  });
+  // Protected uploads are only available via signed download URLs.
+  // Direct /uploads static serving has been removed.
   app.use('/uploads', (req, res) => {
-    res.status(404).json({ success: false, message: 'File not found' });
+    res.status(404).json({
+      success: false,
+      message: 'Direct file access is disabled. Use /api/downloads/sign/:fileId to obtain a signed download URL.',
+    });
   });
 
   app.use('/api', routes);

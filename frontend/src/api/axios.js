@@ -105,44 +105,44 @@ api.interceptors.response.use(
 );
 
 /**
- * Fetch a file from /uploads with JWT (img/iframe cannot send Authorization).
+ * Request a short-lived signed URL for a resource file.
+ * @param {string} fileId - Resource ID
+ * @param {{ versionId?: string, purpose?: 'download'|'preview' }} [options]
  */
-export const fetchUploadBlob = async (storedFilename) => {
-  const token = localStorage.getItem('nitj_token');
-  try {
-    const response = await axios.get(
-      `/uploads/${encodeURIComponent(storedFilename)}`,
-      {
-        responseType: 'blob',
-        timeout: 60000,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (error.response?.status === 401) {
-      try {
-        if (!refreshPromise) {
-          refreshPromise = refreshAccessToken().finally(() => {
-            refreshPromise = null;
-          });
-        }
-        const accessToken = await refreshPromise;
-        const retry = await axios.get(
-          `/uploads/${encodeURIComponent(storedFilename)}`,
-          {
-            responseType: 'blob',
-            timeout: 60000,
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
-        return retry.data;
-      } catch {
-        clearSessionAndRedirect();
-      }
-    }
-    throw error;
-  }
+export const signDownloadUrl = async (fileId, options = {}) => {
+  const params = new URLSearchParams();
+  if (options.versionId) params.set('versionId', options.versionId);
+  if (options.purpose) params.set('purpose', options.purpose);
+  const qs = params.toString();
+  const response = await api.get(
+    `/downloads/sign/${encodeURIComponent(fileId)}${qs ? `?${qs}` : ''}`
+  );
+  return response.data?.data;
+};
+
+/**
+ * Fetch file bytes from a signed download URL (no Bearer header needed).
+ */
+export const fetchSignedFileBlob = async (signedUrl) => {
+  const response = await axios.get(signedUrl, {
+    responseType: 'blob',
+    timeout: 60000,
+  });
+  return response.data;
+};
+
+/**
+ * Sign + download a resource (or version) as a Blob.
+ */
+export const downloadResourceBlob = async (fileId, { versionId } = {}) => {
+  const signed = await signDownloadUrl(fileId, {
+    versionId,
+    purpose: 'download',
+  });
+  return {
+    blob: await fetchSignedFileBlob(signed.url),
+    signed,
+  };
 };
 
 export default api;

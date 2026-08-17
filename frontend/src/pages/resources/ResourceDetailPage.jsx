@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import api, { fetchUploadBlob } from '../../api/axios';
+import api, { downloadResourceBlob } from '../../api/axios';
+import ResourcePreview from '../../components/resources/ResourcePreview';
 import {
   HiOutlineDownload,
   HiOutlineEye,
@@ -32,8 +33,6 @@ const STATUS_COLORS = {
   rejected: { bg: '#e53e3e15', color: '#e53e3e', label: 'Rejected' },
 };
 
-const PREVIEWABLE_TYPES = ['pdf', 'png', 'jpg', 'jpeg', 'txt'];
-
 export default function ResourceDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -41,8 +40,6 @@ export default function ResourceDetailPage() {
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
   const [userRating, setUserRating] = useState(null);
   const [ratingSubmitting, setRatingSubmitting] = useState(false);
   const [hoverStars, setHoverStars] = useState(0);
@@ -91,42 +88,10 @@ export default function ResourceDetailPage() {
     fetchRatings();
   }, [id, navigate]);
 
-  // Authenticated preview — /uploads requires Bearer token
-  useEffect(() => {
-    let objectUrl;
-    let cancelled = false;
-
-    const loadPreview = async () => {
-      if (!resource?.storedFilename || !PREVIEWABLE_TYPES.includes(resource.fileType)) {
-        setPreviewUrl(null);
-        return;
-      }
-
-      setPreviewLoading(true);
-      try {
-        const blob = await fetchUploadBlob(resource.storedFilename);
-        if (cancelled) return;
-        objectUrl = window.URL.createObjectURL(blob);
-        setPreviewUrl(objectUrl);
-      } catch {
-        if (!cancelled) setPreviewUrl(null);
-      } finally {
-        if (!cancelled) setPreviewLoading(false);
-      }
-    };
-
-    loadPreview();
-
-    return () => {
-      cancelled = true;
-      if (objectUrl) window.URL.revokeObjectURL(objectUrl);
-    };
-  }, [resource?.storedFilename, resource?.fileType]);
-
   const handleDownload = async () => {
     try {
-      const response = await api.get(`/resources/${id}/download`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const { blob } = await downloadResourceBlob(id);
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', resource.originalFilename);
@@ -174,8 +139,8 @@ export default function ResourceDetailPage() {
 
   const downloadOldVersion = async (version) => {
     try {
-      const response = await api.get(`/resources/${id}/versions/${version._id}/download`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const { blob } = await downloadResourceBlob(id, { versionId: version._id });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', version.originalFilename);
@@ -429,53 +394,28 @@ export default function ResourceDetailPage() {
         </div>
       </section>
 
-      {/* Resource Preview */}
+      {/* Resource Preview — PDFs/images via signed URL; others download-only */}
       <section className="panel mb-6">
-        <div className="content-card-header">
-          <HiOutlineEye className="w-5 h-5 mr-2" /> Content Preview
+        <div className="content-card-header flex items-center justify-between">
+          <span className="flex items-center">
+            <HiOutlineEye className="w-5 h-5 mr-2" /> Content Preview
+          </span>
+          {(resource.mimeType || resource.fileType) && (
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">
+              {resource.mimeType || `.${resource.fileType}`}
+            </span>
+          )}
         </div>
-        <div className="content-card-body p-0">
-          <div className="bg-[#f8fbff] relative w-full h-[500px]">
-            {previewLoading ? (
-              <div className="flex items-center justify-center h-full text-sm text-[#6c7a8e]">
-                Loading preview…
-              </div>
-            ) : previewUrl && resource.fileType === 'pdf' ? (
-              <iframe
-                src={previewUrl}
-                className="w-full h-full border-none"
-                title="PDF Preview"
-              />
-            ) : previewUrl && ['png', 'jpg', 'jpeg'].includes(resource.fileType) ? (
-              <div className="p-8 flex justify-center items-center h-full">
-                <img src={previewUrl} alt="Resource Preview" className="max-h-[400px] max-w-full rounded shadow-md" />
-              </div>
-            ) : previewUrl && resource.fileType === 'txt' ? (
-              <iframe
-                src={previewUrl}
-                className="w-full h-full border-none bg-white p-6 font-mono text-sm leading-relaxed"
-                title="Text Preview"
-              />
-            ) : PREVIEWABLE_TYPES.includes(resource.fileType) && !previewUrl ? (
-              <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                <h4 className="text-lg font-bold text-[#1a3a6e] mb-2">Preview Unavailable</h4>
-                <p className="text-sm text-[#6c7a8e] max-w-md">
-                  You do not have permission to preview this file, or it could not be loaded.
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                 <div className="text-5xl mb-4">{FILE_ICONS[resource.fileType] || '📄'}</div>
-                 <h4 className="text-lg font-bold text-[#1a3a6e] mb-2">Native Preview Unavailable</h4>
-                 <p className="text-sm text-[#6c7a8e] max-w-md">
-                   The system cannot natively render .{resource.fileType.toUpperCase()} files. Please download the resource to view its contents securely.
-                 </p>
-                 <button onClick={handleDownload} className="mt-6 btn-nitj-primary px-6 py-2">
-                   <HiOutlineDownload className="w-5 h-5 mr-2 inline" /> Execute Download
-                 </button>
-              </div>
-            )}
-          </div>
+        <div className="content-card-body p-0 overflow-hidden">
+          <ResourcePreview
+            resourceId={resource._id}
+            mimeType={resource.mimeType}
+            fileType={resource.fileType}
+            previewable={resource.previewable}
+            previewKind={resource.previewKind}
+            fileIcon={FILE_ICONS[resource.fileType] || '📄'}
+            onDownload={handleDownload}
+          />
         </div>
       </section>
 

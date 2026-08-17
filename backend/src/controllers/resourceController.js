@@ -1,5 +1,6 @@
 const { validationResult, body } = require('express-validator');
 const ResourceService = require('../services/resourceService');
+const DownloadService = require('../services/downloadService');
 const ApiResponse = require('../utils/apiResponse');
 const { BadRequestError } = require('../utils/apiError');
 const upload = require('../middleware/upload');
@@ -124,17 +125,16 @@ const resourceController = {
 
   /**
    * GET /api/resources/:id/download
+   * Returns a short-lived signed URL; client must call /api/downloads/file.
    */
   download: async (req, res, next) => {
     try {
-      const { filePath, filename, mimeType } = await ResourceService.download(
-        req.params.id,
-        req.user._id
-      );
-
-      res.setHeader('Content-Type', mimeType);
-      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
-      return res.sendFile(filePath);
+      const result = await DownloadService.createSignedUrl({
+        fileId: req.params.id,
+        user: req.user,
+        purpose: 'download',
+      });
+      return ApiResponse.success(res, result, 'Signed download URL generated');
     } catch (error) {
       next(error);
     }
@@ -197,18 +197,17 @@ const resourceController = {
 
   /**
    * GET /api/resources/:id/versions/:versionId/download
+   * Returns a short-lived signed URL for an archived version.
    */
   downloadVersion: async (req, res, next) => {
     try {
-      const { filePath, filename, mimeType } = await ResourceService.downloadVersion(
-        req.params.id,
-        req.params.versionId,
-        req.user._id
-      );
-
-      res.setHeader('Content-Type', mimeType);
-      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
-      return res.sendFile(filePath);
+      const result = await DownloadService.createSignedUrl({
+        fileId: req.params.id,
+        user: req.user,
+        versionId: req.params.versionId,
+        purpose: 'download',
+      });
+      return ApiResponse.success(res, result, 'Signed download URL generated');
     } catch (error) {
       next(error);
     }

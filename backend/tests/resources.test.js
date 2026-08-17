@@ -78,6 +78,15 @@ describe('Resource upload & verification', () => {
 
       expect(res.status).toBe(201);
       expect(res.body.data.status).toBe(RESOURCE_STATUS.APPROVED);
+
+      const detail = await request(app).get(`/api/resources/${res.body.data._id}`);
+      expect(detail.status).toBe(200);
+      expect(detail.body.data).toMatchObject({
+        mimeType: 'application/pdf',
+        fileType: 'pdf',
+        previewable: true,
+        previewKind: 'pdf',
+      });
     });
 
     it('rejects disallowed file extensions', async () => {

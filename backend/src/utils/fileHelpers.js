@@ -84,6 +84,16 @@ const formatFileSize = (bytes) => {
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 };
 
+/**
+ * Ensure a resolved path stays inside UPLOAD_DIR (no traversal).
+ */
+const isInsideUploadDir = (filePath, uploadRoot) => {
+  const root = path.resolve(uploadRoot);
+  const resolved = path.resolve(filePath);
+  const relative = path.relative(root, resolved);
+  return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative);
+};
+
 module.exports = {
   generateFileHashFromPath,
   sanitizeFilename,
@@ -91,4 +101,5 @@ module.exports = {
   ensureDir,
   generateUploadPath,
   formatFileSize,
+  isInsideUploadDir,
 };

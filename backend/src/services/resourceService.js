@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
 const Resource = require('../models/Resource');
 const AuditLog = require('../models/AuditLog');
 const { NotFoundError, BadRequestError, ForbiddenError } = require('../utils/apiError');
@@ -8,6 +9,9 @@ const { AUDIT_ACTIONS, RESOURCE_STATUS, ROLES } = require('../utils/constants');
 const { clampLimit, clampPage } = require('../utils/pagination');
 const logger = require('../utils/logger');
 const NotificationService = require('./notificationService');
+const { getPreviewMeta } = require('../utils/previewMeta');
+
+const BULK_VERIFY_MAX_IDS = 100;
 
 class ResourceService {
   /**
@@ -174,7 +178,11 @@ class ResourceService {
       await resource.save();
     }
 
-    return resource;
+    const payload = resource.toObject({ virtuals: true });
+    return {
+      ...payload,
+      ...getPreviewMeta(payload),
+    };
   }
 
   /**
@@ -357,6 +365,159 @@ class ResourceService {
     await NotificationService.notifyResourceVerification(resource, action);
 
     return resource;
+  }
+
+  /**
+   * Bulk approve/reject pending resources.
+   * Uses updateMany + insertMany for status/audit/notifications; returns partial success summary.
+   */
+  static async bulkVerifyResources(resourceIds, action, userId, userRole, reason = '') {
+    if (![ROLES.ADMIN, ROLES.TEACHER].includes(userRole)) {
+      throw new ForbiddenError('Only teachers and admins can verify resources');
+    }
+
+    if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
+      throw new BadRequestError('resourceIds must be a non-empty array');
+    }
+
+    if (!['approve', 'reject'].includes(action)) {
+      throw new BadRequestError("action must be 'approve' or 'reject'");
+    }
+
+    const trimmedReason = typeof reason === 'string' ? reason.trim() : '';
+    if (action === 'reject' && !trimmedReason) {
+      throw new BadRequestError('Reason is required when rejecting resources');
+    }
+
+    const uniqueIds = [...new Set(resourceIds.map((id) => String(id)))];
+    if (uniqueIds.length > BULK_VERIFY_MAX_IDS) {
+      throw new BadRequestError(
+        `Cannot process more than ${BULK_VERIFY_MAX_IDS} resources in one request`
+      );
+    }
+
+    const failed = [];
+    const validObjectIds = [];
+
+    for (const id of uniqueIds) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        failed.push({ resourceId: id, reason: 'Invalid resource ID' });
+      } else {
+        validObjectIds.push(id);
+      }
+    }
+
+    if (validObjectIds.length === 0) {
+      return {
+        action,
+        succeeded: [],
+        failed,
+        succeededCount: 0,
+        failedCount: failed.length,
+      };
+    }
+
+    const candidates = await Resource.find({
+      _id: { $in: validObjectIds },
+      isDeleted: false,
+    }).select('_id title status uploadedBy');
+
+    const foundMap = new Map(candidates.map((r) => [r._id.toString(), r]));
+    const eligible = [];
+
+    for (const id of validObjectIds) {
+      const resource = foundMap.get(id);
+      if (!resource) {
+        failed.push({ resourceId: id, reason: 'Resource not found' });
+      } else if (resource.status !== RESOURCE_STATUS.PENDING) {
+        failed.push({
+          resourceId: id,
+          reason: `Resource is not pending (current status: ${resource.status})`,
+        });
+      } else {
+        eligible.push(resource);
+      }
+    }
+
+    if (eligible.length === 0) {
+      return {
+        action,
+        succeeded: [],
+        failed,
+        succeededCount: 0,
+        failedCount: failed.length,
+      };
+    }
+
+    const eligibleIds = eligible.map((r) => r._id);
+    const now = new Date();
+    const newStatus =
+      action === 'approve' ? RESOURCE_STATUS.APPROVED : RESOURCE_STATUS.REJECTED;
+
+    const updateFields = {
+      status: newStatus,
+      verifiedBy: userId,
+      verifiedAt: now,
+      rejectionReason: action === 'reject' ? trimmedReason : '',
+    };
+
+    await Resource.updateMany(
+      {
+        _id: { $in: eligibleIds },
+        status: RESOURCE_STATUS.PENDING,
+        isDeleted: false,
+      },
+      { $set: updateFields }
+    );
+
+    // Confirm which rows actually updated (handles concurrent verification races)
+    const succeededDocs = await Resource.find({
+      _id: { $in: eligibleIds },
+      status: newStatus,
+      verifiedBy: userId,
+      verifiedAt: now,
+    }).select('_id title uploadedBy rejectionReason status');
+
+    const succeededSet = new Set(succeededDocs.map((d) => d._id.toString()));
+    for (const resource of eligible) {
+      if (!succeededSet.has(resource._id.toString())) {
+        failed.push({
+          resourceId: resource._id.toString(),
+          reason: 'Resource could not be updated (may have been modified concurrently)',
+        });
+      }
+    }
+
+    if (succeededDocs.length > 0) {
+      await AuditLog.insertMany(
+        succeededDocs.map((resource) => ({
+          actor: userId,
+          action:
+            action === 'approve'
+              ? AUDIT_ACTIONS.RESOURCE_APPROVED
+              : AUDIT_ACTIONS.RESOURCE_REJECTED,
+          targetType: 'Resource',
+          targetId: resource._id,
+          details: {
+            title: resource.title,
+            status: resource.status,
+            reason: action === 'reject' ? trimmedReason : undefined,
+            bulk: true,
+          },
+        }))
+      );
+
+      await NotificationService.notifyResourceVerificationBulk(succeededDocs, action);
+    }
+
+    const succeeded = succeededDocs.map((d) => d._id.toString());
+    return {
+      action,
+      succeeded,
+      failed,
+      succeededCount: succeeded.length,
+      failedCount: failed.length,
+    };
   }
 
   /**

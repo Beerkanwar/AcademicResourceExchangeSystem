@@ -4,9 +4,11 @@ const Resource = require('../models/Resource');
 const env = require('../config/env');
 const { ForbiddenError, NotFoundError } = require('../utils/apiError');
 const { ROLES, RESOURCE_STATUS } = require('../utils/constants');
+const { isInsideUploadDir } = require('../utils/fileHelpers');
 
 /**
  * Resolve absolute file path from a resource document for the requested basename.
+ * @deprecated Prefer signed downloads via /api/downloads/* and services/resourceAccess.js
  */
 const resolveUploadFilePath = (resource, requested) => {
   if (resource.storedFilename === requested) {
@@ -19,17 +21,8 @@ const resolveUploadFilePath = (resource, requested) => {
 };
 
 /**
- * Ensure a resolved path stays inside UPLOAD_DIR (no traversal).
- */
-const isInsideUploadDir = (filePath) => {
-  const uploadRoot = path.resolve(env.UPLOAD_DIR);
-  const resolved = path.resolve(filePath);
-  const relative = path.relative(uploadRoot, resolved);
-  return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative);
-};
-
-/**
  * Guards /uploads file access after authentication.
+ * Kept for reference; direct /uploads serving has been removed.
  * - Approved (not deleted): any authenticated user
  * - Pending / rejected: uploader, teacher, or admin
  * - Soft-deleted: teacher or admin only
@@ -44,7 +37,6 @@ const uploadAccessGuard = async (req, res, next) => {
       throw new NotFoundError('File not found');
     }
 
-    // Prevent path traversal via encoded segments before basename
     if (req.path.includes('..')) {
       throw new ForbiddenError('Invalid file path');
     }
@@ -61,7 +53,7 @@ const uploadAccessGuard = async (req, res, next) => {
     }
 
     const filePath = resolveUploadFilePath(resource, requested);
-    if (!filePath || !isInsideUploadDir(filePath) || !fs.existsSync(path.resolve(filePath))) {
+    if (!filePath || !isInsideUploadDir(filePath, env.UPLOAD_DIR) || !fs.existsSync(path.resolve(filePath))) {
       throw new NotFoundError('File not found');
     }
 
@@ -91,7 +83,6 @@ const uploadAccessGuard = async (req, res, next) => {
       return next();
     }
 
-    // Approved resources: any authenticated user
     if (resource.status !== RESOURCE_STATUS.APPROVED) {
       throw new ForbiddenError('You do not have permission to access this file.');
     }
